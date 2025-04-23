@@ -45,10 +45,13 @@ const signupHandler = async (req: Request, res: Response): Promise<void> => {
   res.json({ token });
 };
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
+    console.log('req.body:', req.body);
+    
     const { email, password } = req.body;
     const users = readUsers();
     const user = users.find(u => u.email === email);
-  
+  if (req.body) return console.log(res.status(400));
+
     if (!user) {
       res.status(404).json({ error: 'User not found' });
       return;

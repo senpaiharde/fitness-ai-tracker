@@ -1,7 +1,8 @@
 /// <reference path="../types/express/index.d.ts" />
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
-import { readUsers } from '../utils/userstore';
+import { readUsers, writeUsers } from '../utils/userstore';
+import { write } from 'fs';
 
 const router = Router();
 
@@ -19,6 +20,34 @@ const getUserHandler = async (req: Request, res: Response): Promise<void> => {
   res.status(200).json({ email: user.email, profile: user.profile });
 };
 
+
+
+
+
+
+const getUserHandler2 = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user?.id;
+    console.log('User ID:', req.user?.id);
+    const users = readUsers();
+    const user = users.find((u) => u.id === userId);
+  
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+  
+    
+    user.profile = req.body;
+    writeUsers(users);
+    res.json({ success: true });
+  };
+
+
+
+
+
+
 router.get('/me', authMiddleware, getUserHandler);
+router.get('/profile', authMiddleware, getUserHandler);
 
 export default router;

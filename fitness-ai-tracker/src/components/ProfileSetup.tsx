@@ -2,8 +2,9 @@ import React from "react";
 
 import { useState } from "react";
 import { useAppDispatch } from "../app/hooks";
-import { updateProfile, login } from "../features/user/userSlice";
+import { updateProfile,  } from "../features/user/userSlice";
 import type { FC, JSX } from "react";
+import {  useNavigate } from "react-router-dom";
 
 // fc its funcinal component and jsx.element its gonna incloud jsx
 const ProfileSetup: FC = (): JSX.Element => {  
@@ -13,13 +14,11 @@ const ProfileSetup: FC = (): JSX.Element => {
     const [weight, setWeight] = useState<number | "">("");
     const [height, setHeight] = useState<number | "">("");
     const [isEnchanded, setIsEnchanded] = useState(false);
-
+    const navigate = useNavigate();
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const user = { id : '1515', age: 24,height:175,weight:80,isEnchanded:true,email:'you@gmail.con'}
-        dispatch(login(user));
-
+        
         dispatch(
             updateProfile({
                 age: typeof age === "number" ? age : undefined,
@@ -28,6 +27,7 @@ const ProfileSetup: FC = (): JSX.Element => {
                 isEnchanded,
             })
         );
+        navigate('/dashboard')
     };
     return(
         <div style={{padding:'2rem'}} className="">

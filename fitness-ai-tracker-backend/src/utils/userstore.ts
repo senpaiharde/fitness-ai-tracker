@@ -3,20 +3,17 @@ import path from 'path';
 import {User} from '../types/user';
 
 
-const filePath = path.join(__dirname, '../../data/users.json');
+const dbPath = path.join(__dirname, '..', 'data', 'users.json');
 
 export const readUsers = (): User[] => {
-    try{
-        const data = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(data);
-    }catch{
-        return [];
-    }
+    if(!fs.existsSync(dbPath)) return []
+    const data = fs.readFileSync(dbPath, 'utf-8')
+    return JSON.parse(data);
 };
 
 
-export const writeUsers = (users : User[]) => {
-    fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
+export const writeUsers = (users : User[]) : void=> {
+    fs.writeFileSync(dbPath, JSON.stringify(users, null, 2), 'utf-8');
 };
 
 

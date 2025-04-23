@@ -1,0 +1,14 @@
+[
+    {
+      "id": "123",
+      "email": "you@gmail.com",
+      "password": "$2b$10$y6M1RPBoK6OwUHgRSd2r6.xD..e9cayKj3i3dhVa0HdJ3cUWWfKzC",
+      "profile": {
+        "age": 24,
+        "weight": 80,
+        "height": 175,
+        "isEnchanded": true
+      }
+    }
+  ]
+  
