@@ -1,5 +1,5 @@
-import "./index.css";
-import App from "./App.tsx";
+import './assets/main.scss';
+
 import { Provider } from "react-redux";
 import { store } from "./app/store.ts";
 import React from "react";
