@@ -3,9 +3,10 @@ import path from 'path';
 import {User} from '../types/user';
 
 
-const dbPath = path.join(__dirname, '..', 'data', 'users.json');
+const dbPath = path.resolve(__dirname, '../../data/users.json');
 
 export const readUsers = (): User[] => {
+    console.log('🔍 Reading from:', dbPath);
     if(!fs.existsSync(dbPath)) return []
     const data = fs.readFileSync(dbPath, 'utf-8')
     return JSON.parse(data);
