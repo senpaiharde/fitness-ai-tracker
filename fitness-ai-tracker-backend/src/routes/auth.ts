@@ -45,26 +45,39 @@ const signupHandler = async (req: Request, res: Response): Promise<void> => {
   res.json({ token });
 };
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
-    console.log('req.body:', req.body);
-    
-    const { email, password } = req.body;
-    const users = readUsers();
-    const user = users.find(u => u.email === email);
-  if (req.body) return console.log(res.status(400));
-
-    if (!user) {
-      res.status(404).json({ error: 'User not found' });
-      return;
-    }
+    try {
+      console.log('🔥 Login route hit');
+      console.log('Body:', req.body); // This must log your JSON body
   
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      res.status(401).json({ error: 'Invalid credentials' });
-      return;
-    }
+      const { email, password } = req.body;
   
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '2h' });
-    res.status(200).json({ token });
+      if (!email || !password) {
+        res.status(400).json({ error: 'Missing fields' });
+        return;
+      }
+  
+      const users = readUsers();
+      const user = users.find(u => u.email === email);
+  
+      if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+  
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        res.status(401).json({ error: 'Invalid credentials' });
+        return;
+      }
+  
+      const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '2h' });
+      res.status(200).json({ token });
+  
+    } catch (err) {
+      console.error('❌ Login crash:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   });
+  
 router.post('/signup', signupHandler);
 export default router;
