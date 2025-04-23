@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-
+import userReducer from "../features/user/userSlice";
+import trackerReducer from "../features/tracker/trackerSlice";
 
 
 export const  store= configureStore({
