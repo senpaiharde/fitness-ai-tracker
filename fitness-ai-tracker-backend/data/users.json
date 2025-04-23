@@ -1,14 +1,20 @@
 [
-    {
-      "id": "123",
-      "email": "you@gmail.com",
-      "password": "$2b$10$.wUjWwX/QS/M5PjQBCL4.uGllpaY8IwJ0cFD9sE.Ox9gd.mefcceK",
-      "profile": {
-        "age": 24,
-        "weight": 80,
-        "height": 175,
-        "isEnchanded": true
-      }
+  {
+    "id": "123",
+    "email": "you@gmail.com",
+    "password": "$2b$10$.wUjWwX/QS/M5PjQBCL4.uGllpaY8IwJ0cFD9sE.Ox9gd.mefcceK",
+    "profile": {
+      "age": 24,
+      "weight": 80,
+      "height": 175,
+      "isEnchanded": true
     }
-  ]
-  
+  },
+  {
+    "id": "1745445381949",
+    "email": "xxslavan11@gmail.com",
+    "name": "1234",
+    "password": "$2b$10$dV1GfYQDHddHITFyodtGIOTPjsGJFmnjpc50IHm4OCKXk5YB3vxEi",
+    "profile": {}
+  }
+]

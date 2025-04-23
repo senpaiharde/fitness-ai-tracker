@@ -27,7 +27,8 @@ const ProfileSetup: FC = (): JSX.Element => {
                 isEnchanded,
             })
         );
-        navigate('/dashboard')
+        //navigate('/dashboard')
+        navigate('/profile')
     };
     return(
         <div style={{padding:'2rem'}} className="">

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { loginUser } from "../services/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React from "react";
 
 
@@ -48,7 +48,8 @@ export default function  LoginForm() {
             
             />
             {error && <div className="error">{error}</div>}
-            <button type="submit" className="btn"></button>
+            <button type="submit" className="btn">BtN</button>
+            <Link to="/signup">Don't have an account? Sign up</Link>
         </form>
     )
 }

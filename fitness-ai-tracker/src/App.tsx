@@ -8,6 +8,7 @@ import {
 import "./assets/main.scss";
 import LoginForm from "./components/LoginForm";
 import { Dashboard } from "./components/Dashboard";
+import SignupForm from "./components/SignupForm";
 
 function App() {
     const isAuthenticated = !!localStorage.getItem("token");
@@ -18,6 +19,7 @@ function App() {
                 <Route path ='/login' element={<LoginForm/>} />
                 <Route path ='/profile' element={isAuthenticated ? <ProfileSetup/>: 
                 <Navigate to={'/login'} replace/>}  />
+                <Route path="/signup" element={<SignupForm />} />
 
                 <Route path="/dashboard"
                 element={
