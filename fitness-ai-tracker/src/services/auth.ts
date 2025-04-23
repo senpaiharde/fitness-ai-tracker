@@ -18,3 +18,7 @@ export const loginUser = async (
     const data = await res.json();
     return data.token;
 };
+
+export const signupUser =async   (
+    email: string,
+)

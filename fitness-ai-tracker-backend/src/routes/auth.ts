@@ -12,7 +12,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 if (!JWT_SECRET) throw new Error('JWT_SECRET not defined');
 
 const signupHandler = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
+  const { email, password,name } = req.body;
 
   if (!email || !password) {
     res.status(400).json({ error: 'Missing fields' });
@@ -29,8 +29,10 @@ const signupHandler = async (req: Request, res: Response): Promise<void> => {
   const newUser: User = {
     id: Date.now().toString(),
     email,
+    name,
     password: hashed,
     profile: {},
+    
   };
 
   users.push(newUser);

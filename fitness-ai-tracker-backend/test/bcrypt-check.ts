@@ -6,3 +6,4 @@ const password = 'test123';
 bcrypt.compare(password, hash).then((result) => {
   console.log('✅ Match:', result); // should be true
 });
+//npx ts-node bcrypt-check.ts
