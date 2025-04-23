@@ -4,7 +4,9 @@ import { useState } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { updateProfile, login } from "../features/user/userSlice";
 import type { FC, JSX } from "react";
-const ProfileSetup: FC = (): JSX.Element => {
+
+// fc its funcinal component and jsx.element its gonna incloud jsx
+const ProfileSetup: FC = (): JSX.Element => {  
     const dispatch = useAppDispatch();
 
     const [age, setAge] = useState<number | "">("");
@@ -28,7 +30,36 @@ const ProfileSetup: FC = (): JSX.Element => {
     };
     return(
         <div style={{padding:'2rem'}} className="">
-            
+            <h2>Profile Setup</h2>
+            <form onSubmit={handleSubmit} 
+            style={{display:'flex',
+                flexDirection:'column',
+                gap:'1rem'
+            }}>
+                <input 
+                type="number"
+                placeholder="Weught (kg)"
+                value={weight}
+                onChange={(e) => setWeight(Number(e.target.value))}
+                />
+                <input 
+                type="number"
+                placeholder="Height (em)"
+                value={height}
+                onChange={(e) => setHeight(Number(e.target.value))}
+                />
+                <label>
+                <input 
+                type="checkbox"
+                
+                checked={isEnchanded}
+                onChange={() => setIsEnchanded(!isEnchanded)}
+                />
+                Enhanced (steroids/sarms)
+                </label>
+                <button type="submit">Save Profile</button>
+
+            </form>
         </div>
     )
 };
