@@ -1,11 +1,11 @@
 import fs from 'fs'
 import path from 'path';
-import {user} from '../types/user';
+import {User} from '../types/user';
 
 
 const filePath = path.join(__dirname, '../../data/users.json');
 
-export const readUsers = (): user[] => {
+export const readUsers = (): User[] => {
     try{
         const data = fs.readFileSync(filePath, 'utf-8');
         return JSON.parse(data);
@@ -15,7 +15,7 @@ export const readUsers = (): user[] => {
 };
 
 
-export const writeUsers = (users : user[]) => {
+export const writeUsers = (users : User[]) => {
     fs.writeFileSync(filePath, JSON.stringify(users, null, 2));
 };
 

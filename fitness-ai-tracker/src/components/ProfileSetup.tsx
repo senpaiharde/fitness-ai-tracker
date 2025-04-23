@@ -17,7 +17,8 @@ const ProfileSetup: FC = (): JSX.Element => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        dispatch(login({ id: "u123", email: "you@gmail.com" }));
+        const user = { id : '1515', age: 24,height:175,weight:80,isEnchanded:true,email:'you@gmail.con'}
+        dispatch(login(user));
 
         dispatch(
             updateProfile({
@@ -38,7 +39,14 @@ const ProfileSetup: FC = (): JSX.Element => {
             }}>
                 <input 
                 type="number"
-                placeholder="Weught (kg)"
+                placeholder="age"
+                value={age}
+                onChange={(e) => setAge(Number(e.target.value))}
+                />
+                
+                <input 
+                type="number"
+                placeholder="weight (kg)"
                 value={weight}
                 onChange={(e) => setWeight(Number(e.target.value))}
                 />
