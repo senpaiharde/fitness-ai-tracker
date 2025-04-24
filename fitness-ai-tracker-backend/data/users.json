@@ -14,8 +14,7 @@
     "id": "1745445381949",
     "email": "xxslavan11@gmail.com",
     "name": "1234",
-    "password": "$2b$10$dV1GfYQDHddHITFyodtGIOTPjsGJFmnjpc50IHm4OCKXk5YB3vxEi",
-    "profile": {}
+    "password": "$2b$10$dV1GfYQDHddHITFyodtGIOTPjsGJFmnjpc50IHm4OCKXk5YB3vxEi"
   },
   {
     "id": "1745492242878",
@@ -35,5 +34,17 @@
     "email": "st@gmail.com",
     "name": "slava",
     "password": "$2b$10$y9jXLU1hPExWcrBx78FzoOAB1kP1NYBACpVOFKfyU9wHyIqAcmOxC"
+  },
+  {
+    "id": "1745494779767",
+    "email": "slava1@gmail.com",
+    "name": "slava",
+    "password": "$2b$10$kd6Dc12r5YytAF4U3bh54uYlE/MO1XHobwlEAC/WHVGNMFsiTv5tm",
+    "profile": {
+      "age": 24,
+      "weight": 111,
+      "height": 177,
+      "isEnchanded": true
+    }
   }
 ]
