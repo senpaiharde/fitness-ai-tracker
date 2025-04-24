@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { updateProfile } from "../features/user/userSlice";
 import type { FC, JSX } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import LogoutButton from "./utilsCalls/LogoutButton";
 import { updateProfileSettings } from "../services/user";
 
@@ -87,6 +87,7 @@ const ProfileSetup: FC = (): JSX.Element => {
                 <button type="submit">Save Profile</button>
             </form>
             <LogoutButton />
+            <Link to='/dashboard' >Dashboard</Link>
         </div>
     );
 };

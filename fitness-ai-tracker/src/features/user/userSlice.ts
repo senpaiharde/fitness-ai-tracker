@@ -1,14 +1,23 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-
+export type EnchancementLog = {
+    date: string,
+    compound: string,
+    dose: string,
+    time: string,
+    goal? :string,
+}
 
 export type UserProfile = {
     id: string,
     email: string,
+    name: string | null,
     age? :number,
     weight?: number,
     height?:number,
     isEnchanded: boolean,
+    EnchancementLog? : EnchancementLog[];
+    
 
 }
 
@@ -16,12 +25,14 @@ type userState = {
     user : UserProfile | null;
     token: string | null;
     isLoggedIn: boolean;
+    
 };
 
 const initialState: userState = {
     user: null,
     token: null,
     isLoggedIn: false,
+    
 }
 
 const userSlice = createSlice({
@@ -43,8 +54,17 @@ const userSlice = createSlice({
             }
 
         },
+        addEnchanmentLog : (state,action: PayloadAction<EnchancementLog>) => {
+            if(state.user?.isEnchanded){
+                if(!state.user.EnchancementLog){
+                    state.user.EnchancementLog = []
+                }
+                state.user.EnchancementLog.push(action.payload)
+            }
+
+        }
     },
 });
 
-export const {login,logout, updateProfile} = userSlice.actions;
+export const {login,logout, updateProfile,addEnchanmentLog} = userSlice.actions;
 export default userSlice.reducer;
