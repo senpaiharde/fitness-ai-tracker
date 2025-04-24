@@ -2,8 +2,10 @@ import type { FC, JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
-//import { useAppDispatch } from "../app/hooks";
+import { useAppDispatch } from "../app/hooks";
 import { SignupUser } from "../services/auth";
+import { getMe } from "../services/user";
+import { login } from "../features/user/userSlice";
 
 const SignupForm: FC = (): JSX.Element => {
     const [email, setEmail] = useState("");
@@ -11,15 +13,17 @@ const SignupForm: FC = (): JSX.Element => {
     const [name, setName] = useState("");
 
     const [error, setError] = useState<string | null>(null);
-   // const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
-
+   
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
             const token = await SignupUser(email, name, password);
-
             localStorage.setItem("token", token);
+            const userDate = await getMe(token);
+
+            dispatch(login({user : userDate, token}))
             alert("Welcome to the family");
             navigate("/profile");
         } catch (err: any) {

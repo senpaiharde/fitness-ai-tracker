@@ -14,11 +14,13 @@ export type UserProfile = {
 
 type userState = {
     user : UserProfile | null;
+    token: string | null;
     isLoggedIn: boolean;
 };
 
 const initialState: userState = {
     user: null,
+    token: null,
     isLoggedIn: false,
 }
 
@@ -26,8 +28,9 @@ const userSlice = createSlice({
     name: "user",
     initialState,
     reducers: {
-        login: (state,action :PayloadAction<UserProfile>) => {
-            state.user = action.payload;
+        login: (state,action :PayloadAction<{user : UserProfile, token: string}>) => {
+            state.user = action.payload.user;
+            state.token = action.payload.token
             state.isLoggedIn = true;
         },
         logout : (state) => {
