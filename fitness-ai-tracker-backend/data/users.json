@@ -23,5 +23,17 @@
     "name": "1234",
     "password": "$2b$10$3kPlqaGYEbpNx8mit8I0UOJ9PM05BBkG.Lq1zD58O3Hd80CO/ZEkS",
     "profile": {}
+  },
+  {
+    "id": "1745492958877",
+    "email": "slava@gmail.com",
+    "name": "slava",
+    "password": "$2b$10$l7.cxlsmev.9jqitagcYkOxqHUq73XwAyhyKIcM5v2p0YafjRoLNK"
+  },
+  {
+    "id": "1745493400859",
+    "email": "st@gmail.com",
+    "name": "slava",
+    "password": "$2b$10$y9jXLU1hPExWcrBx78FzoOAB1kP1NYBACpVOFKfyU9wHyIqAcmOxC"
   }
 ]

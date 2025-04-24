@@ -2,7 +2,7 @@ export const getMe = async (token:string): Promise<any> => {
     const res = await fetch('http://localhost:4000/user/me', {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer${token}`
+            'Authorization': `Bearer ${token}`
         },
     });
 

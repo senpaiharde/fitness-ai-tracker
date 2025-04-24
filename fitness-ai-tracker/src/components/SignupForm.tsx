@@ -19,7 +19,7 @@ const SignupForm: FC = (): JSX.Element => {
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const token = await SignupUser(email, name, password);
+            const token = await SignupUser(email, password, name);
             localStorage.setItem("token", token);
             const userDate = await getMe(token);
 
