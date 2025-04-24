@@ -12,6 +12,7 @@ import SignupForm from "./components/SignupForm";
 import { useAppDispatch } from "./app/hooks";
 import { useEffect } from "react";
 import { loadUserFromToken } from "./features/user/loadUserFromToken";
+import Header from "./components/Header";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -21,6 +22,7 @@ function App() {
     });
     return (
         <Router>
+            <Header/>
             <Routes>
                 <Route path="/login" element={<LoginForm />} />
                 <Route

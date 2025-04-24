@@ -43,6 +43,7 @@ const ProfileSetup: FC = (): JSX.Element => {
         } catch (err: any) {
             alert(err.message || "Failed to update profile");
         }
+        alert('updated porfile')
     };
 
     return (
