@@ -30,6 +30,7 @@ const ProfileSetup: FC = (): JSX.Element => {
         //navigate('/dashboard')
         navigate('/profile')
     };
+    
     return(
         <div style={{padding:'2rem'}} className="">
             <h2>Profile Setup</h2>
