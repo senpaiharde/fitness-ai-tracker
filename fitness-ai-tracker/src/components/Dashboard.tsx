@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { RootState } from "../app/store";
 import { useState } from "react";
 import { EnhancementLog } from "./EnhancementLog";
+import { LogsPage } from "./LogsPage";
 
 
 
@@ -12,6 +13,7 @@ export const Dashboard = () => {
     const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
     const user = useSelector((state: RootState) => state.user)
     const [display,setdisplay] = useState(false);
+    const [displaylog,setdisplaylog] = useState(false);
     console.log(user)
     return (
         <div>
@@ -28,14 +30,21 @@ export const Dashboard = () => {
                             Add log
                             </button>
                         <p>Don't Forget To Update</p>
+                        <button onClick={() => setdisplaylog(prev => !prev)}>
+                            watch logs
+                            </button>
                     </div>)}
                     
                 </div>
             ): (
+            
 
                 <div >
                     <Link to='/login'>Login</Link> | <Link to='/signup'>Sign Up</Link>
                 </div>
+            )}
+            {displaylog && ( 
+                <LogsPage isOpenlog={displaylog} setIsOpenlog={setdisplaylog}/>
             )}
             {display && (
                 <EnhancementLog isOpen={display} setIsOpen={setdisplay}/>
