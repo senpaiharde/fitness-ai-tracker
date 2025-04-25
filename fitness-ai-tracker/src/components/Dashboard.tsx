@@ -17,11 +17,11 @@ export const Dashboard = () => {
         <div>
              {isLoggedIn ? (
                 <div style={{textAlign:'center',padding: '2rem'}}>
-                    <h2 >Welcome {user?.user?.email }</h2>
+                    <h2 >{`Welcome ${user?.user?.name }`}</h2>
                     <p>Age:{user.user?.age} </p>
                     <p>Height:{user.user?.height} </p>
                     <p>Weight:{user.user?.weight} </p>
-                    <p>isEnchanded:{user.user?.isEnchanded} </p>
+                    <p>{`isEnchanded:${user.user?.isEnchanded} `} </p>
                     {user.user?.isEnchanded && (<div>
                         <p>high Leauge</p>
                          <button onClick={() => setdisplay(prev => !prev)}>

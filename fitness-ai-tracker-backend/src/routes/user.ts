@@ -22,7 +22,7 @@ const getUserHandler = async (req: Request, res: Response): Promise<void> => {
     id:user.id,
     email: user.email,
      profile: user.profile,
-    username:user.name,
+    name:user.name,
     createdAt : user.id
      });
 };

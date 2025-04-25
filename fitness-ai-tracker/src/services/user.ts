@@ -15,7 +15,7 @@ export const getMe = async (token: string): Promise<any> => {
     const flattenedUser = {
         id: userData.id,
         email :userData.email,
-        name: userData.name ?? null,
+        name:userData.name,
         ...userData.profile,
     }
     return flattenedUser
