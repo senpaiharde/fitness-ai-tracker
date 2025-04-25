@@ -34,19 +34,16 @@ const getUserHandler = async (req: Request, res: Response): Promise<void> => {
 
 const getUserHandler2 = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
-    console.log('User ID:', req.user?.id);
     const users = readUsers();
     const user = users.find((u) => u.id === userId);
   
     if (!user) {
-      res.status(404).json({ error: 'User not found' });
-      return;
+        res.status(404).json({ error: 'User not found' });
+        return;
     }
   
-    
-    user.profile = req.body;
-    writeUsers(users);
-    res.json({ success: true });
+    const logs = user.profile?.enchancementLog || [];
+    res.status(200).json({ logs });
   };
 
 
@@ -55,6 +52,6 @@ const getUserHandler2 = async (req: Request, res: Response): Promise<void> => {
 
 
 router.get('/me', authMiddleware, getUserHandler);
-router.get('/profile', authMiddleware, getUserHandler);
+router.get('/logs', authMiddleware, getUserHandler2);
 
 export default router;

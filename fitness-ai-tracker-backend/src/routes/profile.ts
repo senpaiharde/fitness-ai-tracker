@@ -65,9 +65,7 @@ const updateLogHandler = async (
     if (!user.profile.enchancementLog) {
         user.profile.enchancementLog = [];
       }
-      if (!user.profile.enchancementLog) {
-        user.profile.enchancementLog = [];
-      }
+      
     
       user.profile.enchancementLog.push(log);
       writeUsers(users);

@@ -52,6 +52,20 @@
           "dose": 250,
           "time": "11",
           "goal": "test"
+        },
+        {
+          "date": 1745568976836,
+          "compound": "rad-140",
+          "dose": 20,
+          "time": "12",
+          "goal": "grow"
+        },
+        {
+          "date": 1745568994606,
+          "compound": "mk",
+          "dose": 20,
+          "time": "12",
+          "goal": "yes"
         }
       ]
     }
