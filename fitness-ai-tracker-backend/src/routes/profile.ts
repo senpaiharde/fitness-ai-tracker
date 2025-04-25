@@ -1,15 +1,20 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import { readUsers, writeUsers } from '../utils/userstore';
+
 type ProfileUpdate = {
-    age? : number,
-    weight? : number,
-    height? : number,
-    isEnchanded? : boolean;
-}
+  age?: number;
+  weight?: number;
+  height?: number;
+  isEnchanded?: boolean;
+  CreatedAt?: number;
+};
 const router = Router();
 
-const updateProfileHandler = async (req: Request<{}, {}, ProfileUpdate>, res: Response): Promise<void> => {
+const updateProfileHandler = async (
+  req: Request<{}, {}, ProfileUpdate>,
+  res: Response
+): Promise<void> => {
   const userId = req.user?.id;
   const users = readUsers();
   const userIndex = users.findIndex((u) => u.id === userId);

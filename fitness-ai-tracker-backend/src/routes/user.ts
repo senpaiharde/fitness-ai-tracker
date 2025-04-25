@@ -3,6 +3,7 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import { readUsers, writeUsers } from '../utils/userstore';
 import { write } from 'fs';
+import { profile } from 'console';
 
 const router = Router();
 
@@ -17,7 +18,13 @@ const getUserHandler = async (req: Request, res: Response): Promise<void> => {
     return;
   }
 
-  res.status(200).json({ email: user.email, profile: user.profile });
+  res.status(200).json({ 
+    id:user.id,
+    email: user.email,
+     profile: user.profile,
+    username:user.name,
+    createdAt : user.id
+     });
 };
 
 

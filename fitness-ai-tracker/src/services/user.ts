@@ -11,7 +11,14 @@ export const getMe = async (token: string): Promise<any> => {
         throw new Error(error.error || "Failed to fetch user");
     }
 
-    return res.json();
+    const userData = await res.json();
+    const flattenedUser = {
+        id: userData.id,
+        email :userData.email,
+        name: userData.name ?? null,
+        ...userData.profile,
+    }
+    return flattenedUser
 };
 
 export const updateProfileSettings = async (

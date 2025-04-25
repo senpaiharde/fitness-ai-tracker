@@ -1,5 +1,5 @@
-import { useDispatch, useSelector } from "react-redux";
-
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "../app/hooks";
 import { RootState } from "../app/store";
 import { useState } from "react";
 import { addEnchanmentLog } from "../features/user/userSlice";
@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const EnhancementLog: FC<Props> = ({ Isopen }) => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch()
     const user = useSelector((state: RootState) => state.user);
 
     const [compound, setCompound] = useState("");
@@ -18,7 +18,8 @@ export const EnhancementLog: FC<Props> = ({ Isopen }) => {
     const [time, setTime] = useState("");
     const [goal, setGoal] = useState("");
 
-    const handleAddLog = () => {
+    const handleAddLog = async (e: React.FormEvent) => {
+        e.preventDefault()
         if (!compound || !dose || !time) return;
 
         const newLog = {
@@ -26,7 +27,7 @@ export const EnhancementLog: FC<Props> = ({ Isopen }) => {
             compound,
             dose: Number(dose),
             time: time,
-            goal,
+            goal:goal,
         };
         dispatch(addEnchanmentLog(newLog));
         setCompound("");
