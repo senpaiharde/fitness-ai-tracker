@@ -44,7 +44,16 @@
       "age": 2323,
       "weight": 2323,
       "height": 2323,
-      "isEnchanded": true
+      "isEnchanded": true,
+      "enchancementLog": [
+        {
+          "date": 1745566608578,
+          "compound": "test",
+          "dose": 250,
+          "time": "11",
+          "goal": "test"
+        }
+      ]
     }
   }
 ]

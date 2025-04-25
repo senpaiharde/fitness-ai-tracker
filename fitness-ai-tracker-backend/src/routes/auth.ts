@@ -31,7 +31,10 @@ const signupHandler = async (req: Request, res: Response): Promise<void> => {
     email,
     name,
     password: hashed,
-    profile: {},
+    profile: {
+        isEnchaned: false,
+        enchancementLog: [],
+      },
     
   };
 

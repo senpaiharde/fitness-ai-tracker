@@ -7,7 +7,8 @@ type ProfileUpdate = {
   weight?: number;
   height?: number;
   isEnchanded?: boolean;
-  CreatedAt?: number;
+  CreatedAt?: number,
+  enchancementLog: [],
 };
 const router = Router();
 
@@ -34,4 +35,48 @@ const updateProfileHandler = async (
 };
 
 router.put('/me', authMiddleware, updateProfileHandler);
+
+
+
+
+type EnhancementLog = {
+    date: number,
+    compound: string,
+    dose: number,
+    time : string,
+    goal? : string,
+}
+const updateLogHandler = async (
+    req: Request<{}, {}, EnhancementLog>,
+    res: Response
+  ): Promise<void> => {
+    const userId = req.user?.id;
+    const log: EnhancementLog = req.body;
+
+    const users = readUsers()
+    const user = users.find(u => u.id ===userId)
+
+    if(!user) {
+         res.status(404).json({error:'user not found'})
+         return;
+    }
+
+
+    if (!user.profile.enchancementLog) {
+        user.profile.enchancementLog = [];
+      }
+      if (!user.profile.enchancementLog) {
+        user.profile.enchancementLog = [];
+      }
+    
+      user.profile.enchancementLog.push(log);
+      writeUsers(users);
+    
+      console.log('✅ Log saved:', log);
+      res.status(200).json({ success: true, log });
+    };
+
+    router.put('/log', authMiddleware, updateLogHandler);
 export default router;
+
+

@@ -4,15 +4,18 @@ import { RootState } from "../app/store";
 import { useState } from "react";
 import { addEnchanmentLog } from "../features/user/userSlice";
 import type { FC } from "react";
+import { updateLogSettings } from "../services/user";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
-    Isopen: any;
+    isOpen: boolean;
+    setIsOpen: (value: boolean) => void;
 };
 
-export const EnhancementLog: FC<Props> = ({ Isopen }) => {
+export const EnhancementLog: FC<Props> = ({ isOpen, setIsOpen }) => {
     const dispatch = useAppDispatch()
     const user = useSelector((state: RootState) => state.user);
-
+    const navigate = useNavigate()
     const [compound, setCompound] = useState("");
     const [dose, setDose] = useState<number | "">("");
     const [time, setTime] = useState("");
@@ -20,6 +23,12 @@ export const EnhancementLog: FC<Props> = ({ Isopen }) => {
 
     const handleAddLog = async (e: React.FormEvent) => {
         e.preventDefault()
+        const token = localStorage.getItem("token");
+        if (!token) {
+            alert("Missing token. Please login again.");
+            navigate("/login");
+            return;
+        }
         if (!compound || !dose || !time) return;
 
         const newLog = {
@@ -34,12 +43,13 @@ export const EnhancementLog: FC<Props> = ({ Isopen }) => {
         setDose("");
         setTime("");
         setGoal("");
-        Isopen(false);
+        setIsOpen(false);
+        updateLogSettings(token,newLog);
     };
-    if (!Isopen) return null;
+    if (!isOpen) return null;
     return (
         <div>
-            {Isopen && (
+            {isOpen && (
                 <div>
                     <h2>Edit Your logs {user?.user?.name} || user</h2>
                     <form onSubmit={handleAddLog}>

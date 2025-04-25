@@ -38,7 +38,7 @@ export const Dashboard = () => {
                 </div>
             )}
             {display && (
-                <EnhancementLog Isopen={display}/>
+                <EnhancementLog isOpen={display} setIsOpen={setdisplay}/>
             )}
         </div>
     )

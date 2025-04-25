@@ -41,3 +41,25 @@ export const updateProfileSettings = async (
 
     return res.json();
 };
+
+
+export const updateLogSettings = async (
+    token: string,
+    profileData: any
+): Promise<any> => {
+    const res = await fetch("http://localhost:4000/user/log", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(profileData),
+    });
+
+    if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "failed to update user");
+    }
+
+    return res.json();
+};
