@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type EnchancementLog = {
-    date: string,
+    date: number,
     compound: string,
-    dose: string,
+    dose: number,
     time: string,
     goal? :string,
 }
@@ -16,7 +16,7 @@ export type UserProfile = {
     weight?: number,
     height?:number,
     isEnchanded: boolean,
-    EnchancementLog? : EnchancementLog[];
+    enchancementLog? : EnchancementLog[];
     
 
 }
@@ -56,10 +56,10 @@ const userSlice = createSlice({
         },
         addEnchanmentLog : (state,action: PayloadAction<EnchancementLog>) => {
             if(state.user?.isEnchanded){
-                if(!state.user.EnchancementLog){
-                    state.user.EnchancementLog = []
+                if(!state.user.enchancementLog){
+                    state.user.enchancementLog = []
                 }
-                state.user.EnchancementLog.push(action.payload)
+                state.user.enchancementLog.push(action.payload)
             }
 
         }
