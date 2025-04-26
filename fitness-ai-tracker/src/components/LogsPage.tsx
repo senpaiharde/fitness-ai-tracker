@@ -1,11 +1,19 @@
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../app/hooks";
 import { RootState } from "../app/store";
-import { useState } from "react";
-import { addEnchanmentLog } from "../features/user/userSlice";
+import { useEffect, useState } from "react";
+
 import type { FC } from "react";
-import { updateLogSettings } from "../services/user";
+
 import { useNavigate } from "react-router-dom";
+import {
+    fetchLogs,
+    EnhancementLog,
+    createLog,
+    updateLog,
+    deleteLog,
+    selectLogs,
+} from "../features/logs/logsSlice";
 
 type Props = {
     isOpenlog: boolean;
@@ -15,21 +23,26 @@ type Props = {
 export const LogsPage: FC<Props> = ({ isOpenlog, setIsOpenlog }) => {
     const dispatch = useAppDispatch();
     const user = useSelector((state: RootState) => state.user);
-    const navigate = useNavigate();
+    const logs = useSelector(selectLogs);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingId, setEditingId] = useState<number | null>(null);
 
-    const handleAddLog = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const token = localStorage.getItem("token");
+    const onSave = () => {
+        if (editingId == null) return;
+        dispatch(updateLog({ id: editingId, updates: editForm }));
+        setEditingId(null);
     };
 
-    const formatter = new Intl.DateTimeFormat('en-GB', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      });
+    const [editForm, setEditForm] = useState<Partial<EnhancementLog>>({});
+
+    const formatter = new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+    });
     if (!isOpenlog) return null;
     return (
         <div>
@@ -39,19 +52,54 @@ export const LogsPage: FC<Props> = ({ isOpenlog, setIsOpenlog }) => {
                     <ul>
                         {user.user?.enchancementLog.map((log, index) => (
                             <li key={index}>
-
-                                <strong>Compound:  {log.compound}</strong>
-                                <br/>
+                                <strong>Compound: {log.compound}</strong>
+                                <br />
                                 <strong>Dosage: {log.dose} mg</strong>
-                                <br/>
+                                <br />
                                 <strong>Time: {log.time}</strong>
-                                <br/>
-                                Goal : {log.goal || "N/A"}
-                                <br/>
+                                <br />
+                                {editingId === log.id ? (
+                                    // EDIT MODE
+                                    <>
+                                        <input
+                                            type="text"
+                                            value={
+                                                editForm.goal ?? log.goal ?? ""
+                                            }
+                                            onChange={(e) =>
+                                                setEditForm({
+                                                    ...editForm,
+                                                    goal: e.target.value,
+                                                })
+                                            }
+                                        />
+                                        <button onClick={onSave}>Save</button>
+                                        <button
+                                            onClick={() => setEditingId(null)}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </>
+                                ) : (
+                                    // VIEW MODE
+                                    <>
+                                        <strong>Goal:</strong>{" "}
+                                        {log.goal || "N/A"}
+                                        <button
+                                            onClick={() => {
+                                                setEditingId(log.id);
+                                                setEditForm({ goal: log.goal });
+                                            }}
+                                        >
+                                            Edit
+                                        </button>
+                                    </>
+                                )}
                                 {`logged at ${formatter.format(log.date)}`}
                             </li>
                         ))}
                     </ul>
+
                     <button onClick={() => setIsOpenlog(false)}>Close</button>
                 </div>
             )}
