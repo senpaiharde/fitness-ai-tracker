@@ -1,6 +1,7 @@
 // src/features/user/userSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
+import { EnhancementLog } from "../logs/logsSlice";
 
 export interface UserProfile {
   id: string;
@@ -10,6 +11,7 @@ export interface UserProfile {
   weight?: number;
   height?: number;
   isEnchaned: boolean;
+  enchancementLog: EnhancementLog[]
 }
 
 interface UserState {

@@ -21,6 +21,15 @@ export const LogsPage: FC<Props> = ({ isOpenlog, setIsOpenlog }) => {
         e.preventDefault();
         const token = localStorage.getItem("token");
     };
+
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
     if (!isOpenlog) return null;
     return (
         <div>
@@ -28,14 +37,18 @@ export const LogsPage: FC<Props> = ({ isOpenlog, setIsOpenlog }) => {
                 <div>
                     <h2>{`Edit Your logs ${user?.user?.name || user}`}</h2>
                     <ul>
-                        {user.user?.enchancementLog?.map((log, index) => (
+                        {user.user?.enchancementLog.map((log, index) => (
                             <li key={index}>
 
-                                <strong>{log.compound}</strong> -{log.dose}mg at {log.time}
+                                <strong>Compound:  {log.compound}</strong>
+                                <br/>
+                                <strong>Dosage: {log.dose} mg</strong>
+                                <br/>
+                                <strong>Time: {log.time}</strong>
                                 <br/>
                                 Goal : {log.goal || "N/A"}
                                 <br/>
-                                {`logged at : ${new Date(log.date).toLocaleString}`}
+                                {`logged at ${formatter.format(log.date)}`}
                             </li>
                         ))}
                     </ul>
