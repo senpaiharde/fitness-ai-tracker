@@ -24,6 +24,7 @@ export default function  LoginForm() {
             setError(err.message);
 
         }
+        navigate('/profile');
     };
 
 

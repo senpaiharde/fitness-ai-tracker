@@ -44,30 +44,34 @@ type EnhancementLog = {
   time: string;
   goal?: string;
 };
+
+type CreateLogDTO = Omit<EnhancementLog, 'id'>;
+
 const createLogHandler = async (
-  req: Request<{}, {}, EnhancementLog>,
+  req: Request<{}, {}, CreateLogDTO>,
   res: Response
 ): Promise<void> => {
-  const userId = req.user?.id;
-  const log: EnhancementLog = req.body;
-
+  const userId = req.user!.id;
   const users = readUsers();
-  const user = users.find((u) => u.id === userId);
-
+  const user = users.find(u => u.id === userId);
   if (!user) {
-    res.status(404).json({ error: 'user not found' });
-    return;
+   res.status(404).json({ error: 'user not found' }) 
+   return ;
   }
 
-  if (!user.profile.enchancementLog) {
-    user.profile.enchancementLog = [];
-  }
+  // Generate a unique id on the server
+  const newLog: EnhancementLog = {
+    id: Date.now(),
+    ...req.body
+  };
 
-  user.profile.enchancementLog.push(log);
+  // Ensure the array exists
+  user.profile.enchancementLog = user.profile.enchancementLog || [];
+  user.profile.enchancementLog.push(newLog);
   writeUsers(users);
 
-  console.log(' Log created:', log);
-  res.status(201).json({ success: true, log });
+  console.log('✅ Log created:', newLog);
+  res.status(201).json({ success: true, log: newLog });
 };
 
 

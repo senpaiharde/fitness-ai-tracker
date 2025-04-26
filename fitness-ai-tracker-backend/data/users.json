@@ -66,6 +66,13 @@
           "dose": 20,
           "time": "12",
           "goal": "yes"
+        },
+        {
+          "date": 1714204800000,
+          "compound": "TestCompound",
+          "dose": 75,
+          "time": "15:00",
+          "goal": "Evening session"
         }
       ]
     }

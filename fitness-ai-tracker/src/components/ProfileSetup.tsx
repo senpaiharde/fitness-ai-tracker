@@ -45,7 +45,13 @@ const ProfileSetup: FC = (): JSX.Element => {
         }
         alert('updated porfile')
     };
+     
 
+    const hanldeNavigate  =() => {
+        navigate('/dashboard');
+
+
+    }
     return (
         <div style={{ padding: "2rem" }} className="">
             <h2>Profile Setup</h2>
@@ -87,7 +93,7 @@ const ProfileSetup: FC = (): JSX.Element => {
                 <button type="submit">Save Profile</button>
             </form>
             <LogoutButton />
-            <Link to='/dashboard' >Dashboard</Link>
+            <button onClick={hanldeNavigate}>dashboard</button>
         </div>
     );
 };
