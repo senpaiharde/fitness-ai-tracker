@@ -39,3 +39,6 @@ export const SignupUser = async (
       const data = await res.json()
       return data.token;
 }
+
+
+

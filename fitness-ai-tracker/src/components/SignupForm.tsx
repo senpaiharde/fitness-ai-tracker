@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { SignupUser } from "../services/auth";
 import { getMe } from "../services/user";
-import { login } from "../features/user/userSlice";
+import { login, signup } from "../features/user/userSlice";
 
 const SignupForm: FC = (): JSX.Element => {
     const [email, setEmail] = useState("");
@@ -18,17 +18,18 @@ const SignupForm: FC = (): JSX.Element => {
    
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            const token = await SignupUser(email, password, name);
-            localStorage.setItem("token", token);
-            const userDate = await getMe(token);
-
-            dispatch(login({user : userDate, token}))
-            alert("Welcome to the family");
-            navigate("/profile");
-        } catch (err: any) {
-            setError(err.message);
-        }
+       
+         
+               setError(null);
+       
+               dispatch(signup({
+                   email,password
+               }))
+               .unwrap()
+               .then(() => dispatch(fetchMe()))
+               .then(() => navigate('/profile'))
+               .catch(err => alert(err.message))
+           
     };
 
     return (

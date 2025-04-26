@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "../app/store";
 import { useAppDispatch } from "../app/hooks";
-import { loginUser } from "../services/auth";
+
 import { logout } from "../features/user/userSlice";
 
 
@@ -11,7 +11,8 @@ const Header = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const user = useSelector((state: RootState) => state.user.user)
-    const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
+    const token = useSelector((state: RootState) => state.user.token);
+    const isLoggedIn = Boolean(token)
     
 
     const handleLogout = async () => {

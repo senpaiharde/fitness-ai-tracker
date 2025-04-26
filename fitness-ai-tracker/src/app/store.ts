@@ -1,12 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "../features/user/userSlice";
 import trackerReducer from "../features/tracker/trackerSlice";
-
+import logReducer from "../features/logs/logsSlice";
 
 export const  store= configureStore({
     reducer: {
         user: userReducer,
-        tracker: trackerReducer
+        tracker: trackerReducer,
+        logs: logReducer,
     }
 
 })

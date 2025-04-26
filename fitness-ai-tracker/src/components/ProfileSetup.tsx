@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { updateProfile } from "../features/user/userSlice";
 import type { FC, JSX } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import LogoutButton from "./utilsCalls/LogoutButton";
-import { updateProfileSettings } from "../services/user";
+
 
 // fc its funcinal component and jsx.element its gonna incloud jsx
 const ProfileSetup: FC = (): JSX.Element => {
@@ -38,7 +38,7 @@ const ProfileSetup: FC = (): JSX.Element => {
         }
 
         try {
-            await updateProfileSettings(token, profileData);
+           updateProfile( profileData);
             navigate("/profile");
         } catch (err: any) {
             alert(err.message || "Failed to update profile");

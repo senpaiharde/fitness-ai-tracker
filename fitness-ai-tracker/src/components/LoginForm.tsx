@@ -2,6 +2,8 @@ import { useState } from "react";
 import { loginUser } from "../services/auth";
 import { Link, useNavigate } from "react-router-dom";
 import React from "react";
+import { useAppDispatch } from "../app/hooks";
+import { fetchMe, login } from "../features/user/userSlice";
 
 
 export default function  LoginForm() {
@@ -9,22 +11,23 @@ export default function  LoginForm() {
     const [email,setEmail] = useState('');
     const [password, setPassword] =useState('');
     const [error, setError] = useState<string | null>(null);
+    const dispatch = useAppDispatch();
+
+
+
+
     
     const handleSubmit = async (e:React.FormEvent) => {
         e.preventDefault();
         setError(null);
 
-
-        try{
-            const token = await loginUser(email,password);
-            localStorage.setItem('token',token);
-            alert('login sucessful!')
-            navigate('/profile');
-        }catch (err: any){
-            setError(err.message);
-
-        }
-        navigate('/profile');
+        dispatch(login({
+            email,password
+        }))
+        .unwrap()
+        .then(() => dispatch(fetchMe()))
+        .then(() => navigate('/profile'))
+        .catch(err => alert(err.message))
     };
 
 

@@ -2,9 +2,9 @@ import { useSelector } from "react-redux";
 import { useAppDispatch } from "../app/hooks";
 import { RootState } from "../app/store";
 import { useState } from "react";
-import { addEnchanmentLog } from "../features/user/userSlice";
+
 import type { FC } from "react";
-import { updateLogSettings } from "../services/user";
+import {  createLog} from '../features/logs/logsSlice'
 import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -23,12 +23,8 @@ export const EnhancementLog: FC<Props> = ({ isOpen, setIsOpen }) => {
 
     const handleAddLog = async (e: React.FormEvent) => {
         e.preventDefault()
-        const token = localStorage.getItem("token");
-        if (!token) {
-            alert("Missing token. Please login again.");
-            navigate("/login");
-            return;
-        }
+        
+       
         if (!compound || !dose || !time) return;
 
         const newLog = {
@@ -36,16 +32,16 @@ export const EnhancementLog: FC<Props> = ({ isOpen, setIsOpen }) => {
             date: Date.now(),
             compound,
             dose: Number(dose),
-            time: Date.now(),
+            time: time,
             goal:goal,
         };
-        dispatch(addEnchanmentLog(newLog));
+        dispatch(createLog(newLog));
         setCompound("");
         setDose("");
         setTime("");
         setGoal("");
         setIsOpen(false);
-        updateLogSettings(token,newLog);
+        
     };
     if (!isOpen) return null;
     return (
@@ -71,7 +67,7 @@ export const EnhancementLog: FC<Props> = ({ isOpen, setIsOpen }) => {
                             placeholder="what Time?"
                             type="number"
                             value={time}
-                            onChange={(e) => setTime(e.target.value)}
+                            onChange={(e) => setTime(Number(e.target.value))}
                         />
 
                         <input
