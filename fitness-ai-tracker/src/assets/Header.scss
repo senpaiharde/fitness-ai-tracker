@@ -1,0 +1,44 @@
+/* Full-width hero header */
+.lt-header {
+    width: 100%;
+    height: 250px;          /* requested height */
+    background: #060606;    /* black */
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;  /* brand at bottom-left, dock hovers at bottom-right */
+    padding: 0 2rem 2rem;   /* bottom padding leaves room for the dock */
+    position: relative;
+    box-sizing: border-box;
+  }
+  
+  /* Brand */
+  .lt-brand a {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  /* Auth links (when not logged in) */
+  .lt-auth-links {
+    display: flex;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+  .lt-auth-links a {
+    color: #38bdf8;              /* cyan accent */
+    text-decoration: none;
+  }
+  .lt-auth-links span {
+    color: #888;
+  }
+  
+  /* Dock tweaks so it hugs the bottom-right neatly */
+  .lt-dock .dock-panel {
+    bottom: 0;                   /* already absolute from Dock.css */
+    left: auto;
+    right: 0;                    /* anchor east */
+    transform: translateX(0);    /* cancel default centering */
+  }
+  
