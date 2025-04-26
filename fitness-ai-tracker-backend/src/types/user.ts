@@ -1,4 +1,5 @@
 export type EnhancementLog = {
+    id: number; 
     date: number;
     compound: string;
     dose: number;

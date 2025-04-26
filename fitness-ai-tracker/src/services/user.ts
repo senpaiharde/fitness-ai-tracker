@@ -48,7 +48,7 @@ export const updateLogSettings = async (
     profileData: any
 ): Promise<any> => {
     const res = await fetch("http://localhost:4000/user/log", {
-        method: "PUT",
+        method: "POST",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -63,3 +63,26 @@ export const updateLogSettings = async (
 
     return res.json();
 };
+
+
+/* export const deleteLog = async (
+    token: string,
+    profileData: any,
+): Promise<any> => {
+    const res = await fetch(`http://localhost:4000/user/log/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(profileData.id),
+    });
+
+    if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "failed to remove log");
+    }
+
+    return res.json();
+};
+*/

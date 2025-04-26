@@ -1,10 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type EnchancementLog = {
-    date: number;
+    id: number;  
+    date: number,
     compound: string;
     dose: number;
-    time: string;
+    time: number;
     goal?: string;
 };
 
@@ -60,9 +61,24 @@ const userSlice = createSlice({
                 state.user.enchancementLog.push(action.payload);
             }
         },
+        updateEnhancementLog: (state, action: PayloadAction<{ id: number; updates: Partial<EnchancementLog> }>) => {
+           if(!state.user?.enchancementLog) return
+           const idx = state.user.enchancementLog.findIndex(l => l.id === action.payload.id)
+           if(idx > -1){
+            state.user.enchancementLog[idx] = {
+                ...state.user.enchancementLog[idx],
+                ...action.payload.updates
+
+            }
+           }
+        },
+        deleteEnhancementLog: (state, action: PayloadAction<{ id: number }>) => {
+            if(!state.user?.enchancementLog) return;
+            state.user.enchancementLog = state.user.enchancementLog.filter(l => l.id !== action.payload.id)
+        }
     },
 });
 
-export const { login, logout, updateProfile, addEnchanmentLog } =
+export const { login, logout, updateProfile, addEnchanmentLog,deleteEnhancementLog,updateEnhancementLog } =
     userSlice.actions;
 export default userSlice.reducer;

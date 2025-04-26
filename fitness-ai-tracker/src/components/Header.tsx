@@ -1,13 +1,31 @@
 import { useSelector } from "react-redux";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "../app/store";
+import { useAppDispatch } from "../app/hooks";
+import { loginUser } from "../services/auth";
+import { logout } from "../features/user/userSlice";
 
 
 const Header = () => {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const user = useSelector((state: RootState) => state.user.user)
     const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
+    
 
+    const handleLogout = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+        await fetch("http://localhost:4000/auth/logout", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        }
+        localStorage.removeItem('token');
+        dispatch(logout());
+        navigate('/login')
+    }
 
     return (
         <header style={{
@@ -19,7 +37,7 @@ const Header = () => {
             {isLoggedIn ? (
                 <div>
                     <span>{user?.email}</span>
-                    <Link to='/logout'>Logout</Link>
+                   <button onClick={handleLogout}>Logout</button>
                 </div>
             ): (
                 <div >

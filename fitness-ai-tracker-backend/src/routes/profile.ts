@@ -2,18 +2,18 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import { readUsers, writeUsers } from '../utils/userstore';
 
-type ProfileUpdate = {
+type profile = {
   age?: number;
   weight?: number;
   height?: number;
   isEnchanded?: boolean;
-  CreatedAt?: number,
-  enchancementLog: [],
+  CreatedAt?: number;
+  enchancementLog: EnhancementLog[];
 };
 const router = Router();
 
 const updateProfileHandler = async (
-  req: Request<{}, {}, ProfileUpdate>,
+  req: Request<{}, {}, profile>,
   res: Response
 ): Promise<void> => {
   const userId = req.user?.id;
@@ -34,47 +34,140 @@ const updateProfileHandler = async (
   res.status(200).json({ success: true });
 };
 
-router.put('/me', authMiddleware, updateProfileHandler);
-
-
 
 
 type EnhancementLog = {
-    date: number,
-    compound: string,
-    dose: number,
-    time : string,
-    goal? : string,
-}
-const updateLogHandler = async (
-    req: Request<{}, {}, EnhancementLog>,
-    res: Response
-  ): Promise<void> => {
-    const userId = req.user?.id;
-    const log: EnhancementLog = req.body;
+  id: number;
+  date: number;
+  compound: string;
+  dose: number;
+  time: string;
+  goal?: string;
+};
+const createLogHandler = async (
+  req: Request<{}, {}, EnhancementLog>,
+  res: Response
+): Promise<void> => {
+  const userId = req.user?.id;
+  const log: EnhancementLog = req.body;
 
-    const users = readUsers()
-    const user = users.find(u => u.id ===userId)
+  const users = readUsers();
+  const user = users.find((u) => u.id === userId);
 
-    if(!user) {
-         res.status(404).json({error:'user not found'})
-         return;
+  if (!user) {
+    res.status(404).json({ error: 'user not found' });
+    return;
+  }
+
+  if (!user.profile.enchancementLog) {
+    user.profile.enchancementLog = [];
+  }
+
+  user.profile.enchancementLog.push(log);
+  writeUsers(users);
+
+  console.log(' Log created:', log);
+  res.status(201).json({ success: true, log });
+};
+
+
+
+
+
+
+const updatelog = async (
+  req: Request<{ id: string }, {}, Partial<EnhancementLog>>,
+  res: Response
+): Promise<void> => {
+  const userId = req.user?.id;
+  const users = readUsers();
+  const user = users.find((u) => u.id === userId);
+
+  if (!user) {
+    res.status(404).json({ error: 'user not found' });
+    return;
+  }
+  const idParam = req.params.id;
+  const logId = Number(idParam);
+  
+  const updates = req.body;
+  const orignalLogs = user.profile.enchancementLog || [];
+  let found = false;
+
+  user.profile.enchancementLog = orignalLogs.map((entry) => {
+    if (entry.id === logId) {
+      found = true;
+      return { ...entry, ...updates };
     }
+    return entry;
+  });
+  if (!found) {
+     res.status(404).json({ error: 'log entry not found' })
+     return;
+  }
 
 
-    if (!user.profile.enchancementLog) {
-        user.profile.enchancementLog = [];
-      }
-      
-    
-      user.profile.enchancementLog.push(log);
-      writeUsers(users);
-    
-      console.log('✅ Log saved:', log);
-      res.status(200).json({ success: true, log });
-    };
 
-    router.put('/log', authMiddleware, updateLogHandler);
+  writeUsers(users);
+  console.log('✅ Profile updated:', req.body);
+  res.status(200).json({ success: true });
+};
+
+
+
+
+
+const deleteLog = async (
+    req: Request<{ id: string }>, 
+    res: Response): 
+    Promise<void> => {
+
+  const userId = req.user?.id;
+
+  const users = readUsers();
+  const user = users.find((u) => u.id === userId);
+
+  if (!user) {
+    res.status(404).json({ error: 'user not found' });
+    return;
+  }
+
+  const logId = Number(req.params.id);
+  if (Number.isNaN(logId)) {
+   res.status(400).json({ error: 'Invalid log id' })
+   return ;
+  }
+  const originLength = user.profile.enchancementLog.length;
+
+  user.profile.enchancementLog = user.profile.enchancementLog.filter((log) => log.id !== logId);
+
+  if (user.profile.enchancementLog.length === originLength) {
+    res.status(404).json({ error: 'log entry not found' });
+    return;
+  }
+  writeUsers(users);
+
+  console.log('Log removed', logId);
+  res.status(200).json({ success: true });
+};
+
+const getLogsHandler = async (
+    req: Request, 
+    res: Response
+): 
+    Promise<void> => {
+    const users = readUsers();
+    const user = users.find(u => u.id === req.user!.id);
+    if (!user) { res.status(404).json({ error: 'user not found' })
+        return;}
+    res.json({ logs: user.profile.enchancementLog || [] });
+  };
+
+router.post('/log', authMiddleware, createLogHandler);
+
+
+router.get('/log', authMiddleware, getLogsHandler);
+router.put('/me', authMiddleware, updateProfileHandler);
+router.put('/log/:id', authMiddleware, updatelog);
+router.delete('/log/:id', authMiddleware, deleteLog);
 export default router;
-
-

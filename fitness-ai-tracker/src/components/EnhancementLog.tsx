@@ -18,7 +18,7 @@ export const EnhancementLog: FC<Props> = ({ isOpen, setIsOpen }) => {
     const navigate = useNavigate()
     const [compound, setCompound] = useState("");
     const [dose, setDose] = useState<number | "">("");
-    const [time, setTime] = useState("");
+    const [time, setTime] = useState<number | "">("");;
     const [goal, setGoal] = useState("");
 
     const handleAddLog = async (e: React.FormEvent) => {
@@ -32,10 +32,11 @@ export const EnhancementLog: FC<Props> = ({ isOpen, setIsOpen }) => {
         if (!compound || !dose || !time) return;
 
         const newLog = {
+            id: Date.now(),
             date: Date.now(),
             compound,
             dose: Number(dose),
-            time: time,
+            time: Date.now(),
             goal:goal,
         };
         dispatch(addEnchanmentLog(newLog));
