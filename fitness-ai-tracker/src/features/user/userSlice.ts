@@ -9,7 +9,7 @@ export interface UserProfile {
   age?: number;
   weight?: number;
   height?: number;
-  isEnchanded: boolean;
+  isEnchaned: boolean;
 }
 
 interface UserState {
@@ -24,6 +24,7 @@ const initialState: UserState = {
   status: "idle",
 };
 
+const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 
 export const signup = createAsyncThunk<
@@ -53,7 +54,7 @@ export const login = createAsyncThunk<
   { token: string; user: UserProfile },
   { email: string; password: string }
 >("user/login", async (creds, thunkAPI) => {
-  const res = await fetch("http://localhost:4000/auth/login", {
+  const res = await fetch(`${API}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(creds),
@@ -103,6 +104,9 @@ const userSlice = createSlice({
       state.user = null;
       state.status = "idle";
     },
+    setToken(state, action: PayloadAction<string>) {
+        state.token = action.payload;
+      },
   },
   extraReducers: (builder) => {
     builder
@@ -129,5 +133,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { logout } = userSlice.actions;
+export const { logout ,setToken} = userSlice.actions;
 export default userSlice.reducer;

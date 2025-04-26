@@ -3,9 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 import { useAppDispatch } from "../app/hooks";
-import { SignupUser } from "../services/auth";
-import { getMe } from "../services/user";
-import { login, signup } from "../features/user/userSlice";
+
+import { fetchMe, signup } from "../features/user/userSlice";
 
 const SignupForm: FC = (): JSX.Element => {
     const [email, setEmail] = useState("");
@@ -15,21 +14,28 @@ const SignupForm: FC = (): JSX.Element => {
     const [error, setError] = useState<string | null>(null);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-   
+
     const handleSignup = async (e: React.FormEvent) => {
         e.preventDefault();
-       
-         
-               setError(null);
-       
-               dispatch(signup({
-                   email,password
-               }))
-               .unwrap()
-               .then(() => dispatch(fetchMe()))
-               .then(() => navigate('/profile'))
-               .catch(err => alert(err.message))
-           
+
+        setError(null);
+
+        dispatch(signup({ email, password,name }))
+            .unwrap()
+            .then(({ token }) => {
+                //  Save the JWT
+                localStorage.setItem("token", token);
+                //   fetch full profile
+                return dispatch(fetchMe()).unwrap();
+            })
+            .then(() => {
+                //  navigate
+                navigate("/profile");
+            })
+            .catch((err) => {
+                // y error
+                setError(err.message);
+            });
     };
 
     return (

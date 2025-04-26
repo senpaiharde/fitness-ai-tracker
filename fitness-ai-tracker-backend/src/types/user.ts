@@ -13,10 +13,10 @@ export type User = {
   email: string;
   password: string;
   profile: {
-    
+    id : string,
     age?: number;
     weight?: number;
-    heught?: number;
+    height?: number;
     isEnchaned?: boolean;
     CreatedAt?: number;
     enchancementLog: EnhancementLog[]; 

@@ -1,5 +1,5 @@
-import { getMe } from "../../services/user";
-import { login,logout } from "./userSlice";
+
+import { fetchMe, login,logout } from "./userSlice";
 import { AppDispatch } from "../../app/store";
 
 
@@ -9,7 +9,7 @@ export const loadUserFromToken =async (dispatch:AppDispatch) => {
     if(!token) return;
 
     try{
-        const user = await getMe(token);
+        const user = await fetchMe(token);
         dispatch(login({user, token}));
 
     }catch {

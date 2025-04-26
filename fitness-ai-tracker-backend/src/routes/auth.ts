@@ -34,6 +34,7 @@ const signupHandler = async (req: Request, res: Response): Promise<void> => {
     profile: {
         isEnchaned: false,
         enchancementLog: [],
+        id: Date.now().toString()
       },
     
   };
@@ -59,13 +60,13 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       return;
     }
     if (!user) {
-        console.log('❌ User not found for:', email);
-  console.log('✅ Existing users:', users.map(u => u.email));
+        console.log(' User not found for:', email);
+  console.log(' Existing users:', users.map(u => u.email));
       res.status(404).json({ error: 'User not found' });
       return;
     }
-    console.log('🔐 Stored hash:', user.password);
-console.log('🔐 Incoming password:', password);
+    console.log(' Stored hash:', user.password);
+console.log(' Incoming password:', password);
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       res.status(401).json({ error: 'Invalid credentials' });
@@ -75,7 +76,7 @@ console.log('🔐 Incoming password:', password);
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '2h' });
     res.status(200).json({ token });
   } catch (err) {
-    console.error('❌ Login crash:', err);
+    console.error(' Login crash:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });

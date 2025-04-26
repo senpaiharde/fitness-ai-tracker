@@ -15,7 +15,7 @@ const ProfileSetup: FC = (): JSX.Element => {
     const [age, setAge] = useState<number | "">("");
     const [weight, setWeight] = useState<number | "">("");
     const [height, setHeight] = useState<number | "">("");
-    const [isEnchanded, setIsEnchanded] = useState(false);
+    const [isEnchaned, setisEnchaned] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -25,7 +25,7 @@ const ProfileSetup: FC = (): JSX.Element => {
             age: typeof age === "number" ? age : undefined,
             weight: typeof weight === "number" ? weight : undefined,
             height: typeof height === "number" ? height : undefined,
-            isEnchanded,
+            isEnchaned,
         };
 
         dispatch(updateProfile(profileData));
@@ -85,8 +85,8 @@ const ProfileSetup: FC = (): JSX.Element => {
                 <label>
                     <input
                         type="checkbox"
-                        checked={isEnchanded}
-                        onChange={() => setIsEnchanded(!isEnchanded)}
+                        checked={isEnchaned}
+                        onChange={() => setisEnchaned(!isEnchaned)}
                     />
                     Enhanced (steroids/sarms)
                 </label>

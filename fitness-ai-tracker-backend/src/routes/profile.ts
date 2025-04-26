@@ -3,10 +3,11 @@ import { authMiddleware } from '../middleware/authmiddleware';
 import { readUsers, writeUsers } from '../utils/userstore';
 
 type profile = {
+   id: string,
   age?: number;
   weight?: number;
   height?: number;
-  isEnchanded?: boolean;
+  isEnchaned?: boolean;
   CreatedAt?: number;
   enchancementLog: EnhancementLog[];
 };

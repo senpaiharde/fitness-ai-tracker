@@ -7,7 +7,7 @@
       "age": 24,
       "weight": 80,
       "height": 175,
-      "isEnchanded": true
+      "isEnchaned": true
     }
   },
   {
@@ -44,7 +44,7 @@
       "age": 2323,
       "weight": 2323,
       "height": 2323,
-      "isEnchanded": true,
+      "isEnchaned": true,
       "enchancementLog": [
         {
           "date": 1745566608578,
@@ -75,6 +75,28 @@
           "goal": "Evening session"
         }
       ]
+    }
+  },
+  {
+    "id": "1745666163988",
+    "email": "slava2@gmail.com",
+    "name": "slava",
+    "password": "$2b$10$0uOawFckXoNauUEFJ8K82.OEY/pYNcCyw7lITCRzRxYKoom8qjpNS",
+    "profile": {
+      "enchancementLog": [
+        {
+          "id": 1745668252555,
+          "date": 1745668252555,
+          "compound": "test",
+          "dose": 250,
+          "time": 6,
+          "goal": "grow"
+        }
+      ],
+      "age": 23232,
+      "weight": 23233,
+      "height": 2323,
+      "isEnchaned": true
     }
   }
 ]

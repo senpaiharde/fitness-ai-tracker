@@ -6,9 +6,11 @@ import { useState } from "react";
 import { EnhancementLog } from "./EnhancementLog";
 import { LogsPage } from "./LogsPage";
 
+
 export const Dashboard = () => {
     const currentUser = useSelector((state: RootState) => state.user.user);
     const isLoggedIn = currentUser !== null;
+    
     const user = useSelector((state: RootState) => state.user);
     const [display, setdisplay] = useState(false);
     const [displaylog, setdisplaylog] = useState(false);
@@ -21,8 +23,8 @@ export const Dashboard = () => {
                     <p>Age:{user.user?.age} </p>
                     <p>Height:{user.user?.height} </p>
                     <p>Weight:{user.user?.weight} </p>
-                    <p>{`isEnchanded:${user.user?.isEnchanded} `} </p>
-                    {user.user?.isEnchanded && (
+                    <p>{`isEnchaned:${user.user?.isEnchaned} `} </p>
+                    {user.user?.isEnchaned && (
                         <div>
                             <p>high Leauge</p>
                             <button onClick={() => setdisplay((prev) => !prev)}>
