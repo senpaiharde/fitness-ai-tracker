@@ -2,7 +2,7 @@ import { Router, RequestHandler } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { readUsers, writeUsers } from '../utils/userstore';
+
 import  User  from '../models/USer';
 import { Request, Response } from 'express';
 
