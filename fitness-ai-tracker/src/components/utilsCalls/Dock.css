@@ -10,7 +10,7 @@
   /* The actual strip of icons */
   .dock-panel {
     position: absolute;
-    bottom: 0.5rem;            /* push off the header bottom */
+    bottom:1rem;            /* push off the header bottom */
     left: 50%;                 /* center by default */
     transform: translateX(-50%);
     display: flex;
@@ -21,6 +21,7 @@
     background-color: #060606;
     border: 1px solid #222;
     padding: 0 0.5rem 0.5rem;
+    
   }
   
   /* Individual icon container */

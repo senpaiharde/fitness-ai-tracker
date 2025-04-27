@@ -26,7 +26,7 @@ import {
     const color = useTransform(
       dist,
       [0, 120],
-      ["#c9c9c9", "#ffffff"] // darker when close
+      ["#222", "#fff"] // darker when close
     );
   
     return (

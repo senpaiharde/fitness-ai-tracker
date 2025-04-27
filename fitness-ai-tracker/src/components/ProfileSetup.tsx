@@ -67,6 +67,8 @@ const ProfileSetup: FC = (): JSX.Element => {
                 }}
             >
                 <input
+                min="16"
+                max='120'
                     type="number"
                     placeholder="age"
                     value={age}
@@ -74,12 +76,15 @@ const ProfileSetup: FC = (): JSX.Element => {
                 />
 
                 <input
+                    max='180'
+                    
                     type="number"
                     placeholder="weight (kg)"
                     value={weight}
                     onChange={(e) => setWeight(Number(e.target.value))}
                 />
                 <input
+                max='240'
                     type="number"
                     placeholder="Height (em)"
                     value={height}

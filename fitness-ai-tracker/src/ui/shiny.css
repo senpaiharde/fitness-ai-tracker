@@ -1,0 +1,32 @@
+@keyframes shine {
+    from { background-position: 120% 0; }
+    to   { background-position: -120% 0; }
+  }
+  
+  .shiny {
+    --_shine-duration: 5s;
+  
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  
+    /* 1️⃣  top layer  = moving white streak (transparent elsewhere)  */
+    /* 2️⃣  bottom layer = solid grey baseline                       */
+    background:
+      linear-gradient(
+        120deg,
+        transparent 43%,
+        rgba(255,255,255,0.95) 50%,   /* bright core */
+        transparent 57%
+      )
+      0 0 / 200% 100% no-repeat,
+      #8e8e8e;                        /* steady grey layer */
+  
+    -webkit-background-clip: text;
+    background-clip: text;
+  
+    display: inline-block;
+    animation: shine var(--_shine-duration) linear infinite;
+  }
+  
+  .shiny.is-disabled { animation: none; }
+  

@@ -1,0 +1,40 @@
+/* === Shiny Button ====================================== */
+.btn-shiny {
+    --_shine-duration: 5s;
+  
+    position: relative;
+    padding: 0.6rem 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    background: transparent;
+    border: 2px solid #8e8e8e;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.25s;
+  
+    /* make the text use the shiny gradient */
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  
+    background-image:
+      linear-gradient(
+        120deg,
+        #8e8e8e 0%,
+        #8e8e8e 43%,
+        rgba(255,255,255,0.95) 50%,
+        #8e8e8e 57%,
+        #8e8e8e 100%
+      );
+    background-size: 200% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    animation: shine var(--_shine-duration) linear infinite;
+  }
+  
+  /* hover / focus – brighten border */
+  .btn-shiny:hover,
+  .btn-shiny:focus-visible {
+    border-color: rgba(255,255,255,0.95);
+    outline: none;
+  }
+  
