@@ -1,17 +1,19 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { updateProfile } from "../features/user/userSlice";
 import type { FC, JSX } from "react";
 import { useNavigate } from "react-router-dom";
 import LogoutButton from "./utilsCalls/LogoutButton";
-
+import { RootState } from "../app/store";
+import { useSelector } from "react-redux";
 
 // fc its funcinal component and jsx.element its gonna incloud jsx
 const ProfileSetup: FC = (): JSX.Element => {
     const dispatch = useAppDispatch();
-
+    const currentUser =useSelector((state: RootState) => state.user.user);
+    const isLoggedIn = currentUser !== null;
     const [age, setAge] = useState<number | "">("");
     const [weight, setWeight] = useState<number | "">("");
     const [height, setHeight] = useState<number | "">("");
@@ -54,6 +56,7 @@ const ProfileSetup: FC = (): JSX.Element => {
     }
     return (
         <div style={{ padding: "2rem" }} className="">
+             {isLoggedIn ? (<>
             <h2>Profile Setup</h2>
             <form
                 onSubmit={handleSubmit}
@@ -94,6 +97,10 @@ const ProfileSetup: FC = (): JSX.Element => {
             </form>
             <LogoutButton />
             <button onClick={hanldeNavigate}>dashboard</button>
+            </>):(<div>
+                <Link to="/login">Login</Link> |{" "}
+                <Link to="/signup">Sign Up</Link>
+            </div>)}
         </div>
     );
 };

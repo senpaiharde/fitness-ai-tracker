@@ -19,6 +19,8 @@ const Header: FC = () => {
     const isLoggedIn = Boolean(token)
     
 
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleLogout = async () => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -34,8 +36,8 @@ const Header: FC = () => {
 
 
 
-
     const dockItems = useMemo(
+        
         () =>
           [
             {
@@ -45,7 +47,7 @@ const Header: FC = () => {
             },
             {
               icon: <VscAccount size={18} />,
-              label: user?.email ?? "Profile",
+              label: user?.name ?? "Profile",
               onClick: () => navigate("/profile"),
             },
             {
@@ -59,9 +61,10 @@ const Header: FC = () => {
               onClick: handleLogout,
             },
           ] as const,
-        [navigate, handleLogout, user?.email]
+        [navigate, handleLogout, user?.name]
+        
       );
-
+    
     return (
         <header  className="lt-header">
             <h1 className="lt-brand">

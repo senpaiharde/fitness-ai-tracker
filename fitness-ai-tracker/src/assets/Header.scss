@@ -1,13 +1,15 @@
 /* Full-width hero header */
 .lt-header {
     width: 100%;
-    height: 250px;          /* requested height */
+    height: 115px;          /* requested height */
     background: #060606;    /* black */
     color: #fff;
     display: flex;
     justify-content: space-between;
-    align-items: flex-end;  /* brand at bottom-left, dock hovers at bottom-right */
-    padding: 0 2rem 2rem;   /* bottom padding leaves room for the dock */
+    align-items: flex-start;  /* brand at bottom-left, dock hovers at bottom-right */
+    justify-content: flex-start;
+    padding-left: 35px;
+    padding-top: 20px;
     position: relative;
     box-sizing: border-box;
   }
