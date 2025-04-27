@@ -48,22 +48,27 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 
   if (!email || !password) {
     res.status(400).json({ error: 'Missing fields' });
+    
+    console.log('Login attempt missing fields:', { email, password });
     return;
   }
 
   const user = await User.findOne({ email: email.toLowerCase().trim() });
+  console.log('DB findOne result for', email, ':', user ? 'FOUND' : 'NOT FOUND');
   if (!user) {
     res.status(404).json({ error: 'User not found' });
     return;
   }
 
   const match = await bcrypt.compare(password, user.passwordHash);
+  console.log('Password match for', email, ':', match);
   if (!match) {
     res.status(401).json({ error: 'Invaild credentials' });
     return;
   }
 
   const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '2h' });
+  console.log('Login successful for', email);
   res.json({ token });
 });
 

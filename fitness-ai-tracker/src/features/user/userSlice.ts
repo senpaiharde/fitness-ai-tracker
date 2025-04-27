@@ -56,7 +56,7 @@ export const login = createAsyncThunk<
   { token: string; user: UserProfile },
   { email: string; password: string }
 >("user/login", async (creds, thunkAPI) => {
-  const res = await fetch(`${API}/auth/login`, {
+    const res = await fetch(`http://localhost:4000/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(creds),

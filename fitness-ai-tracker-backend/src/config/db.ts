@@ -13,4 +13,5 @@ export const connectDB = async () => {
         console.log(err)
         process.exit(1);
     }
+    console.log("Mongo connected to", MONGODB_SECRET.includes("localhost") ? "LOCAL" : "ATLAS");
 }

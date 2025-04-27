@@ -1,15 +1,15 @@
-import { connectDB } from "../config/db";
-import User from "../models/USer";
-import { readFileSync } from "fs";
-import path from "path";
-import bcrypt from "bcryptjs";
+import { connectDB } from '../config/db';
+import User from '../models/USer';
+import { readFileSync } from 'fs';
+import path from 'path';
+import bcrypt from 'bcryptjs';
 
 async function run() {
   await connectDB();
 
   /* 1️⃣  always resolve from project root, not __dirname */
-  const jsonPath = path.join(process.cwd(), "data", "users.json");
-  const raw = readFileSync(jsonPath, "utf-8");
+  const jsonPath = path.join(process.cwd(), 'data', 'users.json');
+  const raw = readFileSync(jsonPath, 'utf-8');
   const legacy = JSON.parse(raw);
 
   let inserted = 0,
@@ -17,16 +17,19 @@ async function run() {
 
   for (const l of legacy) {
     /* 2️⃣  ensure passwordHash exists */
-    const hash =
-      l.passwordHash ??
-      (l.password ? await bcrypt.hash(l.password, 10) : undefined);
+
+    const hash = l.password;
+    if (!hash) {
+      console.warn(`⚠️  No legacy password for ${l.email}, skipping`);
+      continue;
+    }
 
     /* 3️⃣  upsert by email, not _id */
     const res = await User.updateOne(
       { email: l.email.toLowerCase() }, // <-- match on email
       {
         email: l.email.toLowerCase(),
-        name: l.name ?? "unknown",
+        name: l.name ?? 'unknown',
         passwordHash: hash,
         profile: {
           age: l.profile?.age,
@@ -49,6 +52,6 @@ async function run() {
 }
 
 run().catch((e) => {
-  console.error("❌ Migration failed:", e);
+  console.error('❌ Migration failed:', e);
   process.exit(1);
 });
