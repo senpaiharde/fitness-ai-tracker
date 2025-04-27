@@ -6,7 +6,7 @@ import profileRoutes from './routes/profile';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
-
+import scheduleRouter from "./routes/schedule";
 dotenv.config();
 const allowedOrigins = ['http://localhost:5173'];
 
@@ -26,6 +26,8 @@ app.use('/auth', authRoutes);
 console.log('✅ Auth routes loaded');
 app.use('/user', userRoutes);
 app.use('/user',profileRoutes)
+
+app.use("/api/schedule", scheduleRouter);
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });

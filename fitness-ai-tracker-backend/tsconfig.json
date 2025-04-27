@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": "./src",
+    "rootDir": "src",
     "outDir": "./dist",
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "target": "ES6",
