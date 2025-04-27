@@ -44,7 +44,7 @@ export const LogsPage: FC<Props> = ({ isOpenlog, setIsOpenlog }) => {
   if (!isOpenlog) return null;
 
   return (
-    <div>
+    <div style={{color:'white'}}>
       <h2>{`Edit Your logs ${user?.user?.name || ""}`}</h2>
       <ul>
         {user.user?.enchancementLog.map((log) => {

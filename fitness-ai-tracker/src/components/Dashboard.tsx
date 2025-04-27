@@ -53,6 +53,7 @@ export const Dashboard = () => {
             {display && (
                 <EnhancementLog isOpen={display} setIsOpen={setdisplay} />
             )}
+            
         </div>
     );
 };

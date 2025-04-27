@@ -3,7 +3,7 @@ import { authMiddleware } from '../middleware/authmiddleware';
 import { readUsers, writeUsers } from '../utils/userstore';
 
 type profile = {
-   id: string,
+  id: string;
   age?: number;
   weight?: number;
   height?: number;
@@ -35,8 +35,6 @@ const updateProfileHandler = async (
   res.status(200).json({ success: true });
 };
 
-
-
 type EnhancementLog = {
   id: number;
   date: number;
@@ -54,16 +52,16 @@ const createLogHandler = async (
 ): Promise<void> => {
   const userId = req.user!.id;
   const users = readUsers();
-  const user = users.find(u => u.id === userId);
+  const user = users.find((u) => u.id === userId);
   if (!user) {
-   res.status(404).json({ error: 'user not found' }) 
-   return ;
+    res.status(404).json({ error: 'user not found' });
+    return;
   }
 
   // Generate a unique id on the server
   const newLog: EnhancementLog = {
     id: Date.now(),
-    ...req.body
+    ...req.body,
   };
 
   // Ensure the array exists
@@ -74,11 +72,6 @@ const createLogHandler = async (
   console.log('✅ Log created:', newLog);
   res.status(201).json({ success: true, log: newLog });
 };
-
-
-
-
-
 
 const updatelog = async (
   req: Request<{ id: string }, {}, Partial<EnhancementLog>>,
@@ -94,7 +87,7 @@ const updatelog = async (
   }
   const idParam = req.params.id;
   const logId = Number(idParam);
-  
+
   const updates = req.body;
   const orignalLogs = user.profile.enchancementLog || [];
   let found = false;
@@ -107,26 +100,16 @@ const updatelog = async (
     return entry;
   });
   if (!found) {
-     res.status(404).json({ error: 'log entry not found' })
-     return;
+    res.status(404).json({ error: 'log entry not found' });
+    return;
   }
-
-
 
   writeUsers(users);
   console.log('✅ Profile updated:', req.body);
   res.status(200).json({ success: true });
 };
 
-
-
-
-
-const deleteLog = async (
-    req: Request<{ id: string }>, 
-    res: Response): 
-    Promise<void> => {
-
+const deleteLog = async (req: Request<{ id: string }>, res: Response): Promise<void> => {
   const userId = req.user?.id;
 
   const users = readUsers();
@@ -139,8 +122,8 @@ const deleteLog = async (
 
   const logId = Number(req.params.id);
   if (Number.isNaN(logId)) {
-   res.status(400).json({ error: 'Invalid log id' })
-   return ;
+    res.status(400).json({ error: 'Invalid log id' });
+    return;
   }
   const originLength = user.profile.enchancementLog.length;
 
@@ -156,20 +139,17 @@ const deleteLog = async (
   res.status(200).json({ success: true });
 };
 
-const getLogsHandler = async (
-    req: Request, 
-    res: Response
-): 
-    Promise<void> => {
-    const users = readUsers();
-    const user = users.find(u => u.id === req.user!.id);
-    if (!user) { res.status(404).json({ error: 'user not found' })
-        return;}
-    res.json({ logs: user.profile.enchancementLog || [] });
-  };
+const getLogsHandler = async (req: Request, res: Response): Promise<void> => {
+  const users = readUsers();
+  const user = users.find((u) => u.id === req.user!.id);
+  if (!user) {
+    res.status(404).json({ error: 'user not found' });
+    return;
+  }
+  res.json({ logs: user.profile.enchancementLog || [] });
+};
 
 router.post('/log', authMiddleware, createLogHandler);
-
 
 router.get('/log', authMiddleware, getLogsHandler);
 router.put('/me', authMiddleware, updateProfileHandler);
