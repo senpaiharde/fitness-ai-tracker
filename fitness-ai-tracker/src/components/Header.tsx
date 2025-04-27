@@ -7,6 +7,7 @@ import { VscSignOut,VscSettingsGear,VscAccount,VscHome } from "react-icons/vsc";
 import { logout } from "../features/user/userSlice";
 import Dock from "./utilsCalls/Dock";
 import { FC, useMemo } from "react";
+import HoverScaleText from "./utilsCalls/HoverScaleText";
 
 
 
@@ -15,8 +16,8 @@ const Header: FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const user = useSelector((state: RootState) => state.user.user)
-    const token = useSelector((state: RootState) => state.user.token);
-    const isLoggedIn = Boolean(token)
+    const currentUser = useSelector((state: RootState) => state.user.user);
+    const isLoggedIn = currentUser !== null;
     
 
     
@@ -68,7 +69,7 @@ const Header: FC = () => {
     return (
         <header  className="lt-header">
             <h1 className="lt-brand">
-            <Link to="/">LifeTracker</Link>
+            <HoverScaleText >lifeTracker</HoverScaleText>
             </h1>
             {isLoggedIn ? (
         <Dock

@@ -7,7 +7,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;  /* brand at bottom-left, dock hovers at bottom-right */
-    justify-content: flex-start;
+    padding-right: 35px;
     padding-left: 35px;
     padding-top: 20px;
     position: relative;
@@ -23,14 +23,22 @@
   }
   
   /* Auth links (when not logged in) */
-  .lt-auth-links {
-    display: flex;
-    gap: 0.5rem;
-    font-weight: 600;
+  .lt-brand-link {
+    color: #fff;
+    text-decoration: none;
+    display: inline-block;
+    will-change: transform, border-width, color;
+    border-style: solid;    /* new */
+    border-color: #fff;     /* will stay #fff; width animates */
+    padding: 0 0.25rem;     /* keeps border from hugging glyphs */
+    border-radius: 4px;
+   
   }
   .lt-auth-links a {
-    color: #38bdf8;              /* cyan accent */
+    color: white   ;           /* cyan accent */
     text-decoration: none;
+    
+    
   }
   .lt-auth-links span {
     color: #888;
