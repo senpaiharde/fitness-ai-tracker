@@ -21,6 +21,6 @@ const getUserHandler = async (req: Request, res: Response): Promise<void> => {
   })
 };
 
-router.get('/me', authMiddleware, getUserHandler);
+router.get('/profile', authMiddleware, getUserHandler);
 
 export default router;

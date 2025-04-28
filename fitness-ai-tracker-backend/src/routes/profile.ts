@@ -72,7 +72,7 @@ router.delete(
 );
 
 /* ---------- 5. update profile fields ---------- */
-router.put(
+router.get(
   '/me',
   authMiddleware,
   async (req: Request<{}, {}, any>, res: Response): Promise<void> => {
@@ -90,7 +90,7 @@ router.put(
       return;
     }
 
-    res.json({ success: true, profile: user.profile });
+    res.json({ success: true,user });
   }
 );
 

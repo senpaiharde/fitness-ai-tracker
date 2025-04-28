@@ -5,7 +5,7 @@ import ScheduleEntry from "../models/ScheduleEntry";
 const router = express.Router();
 router.use(authMiddleware);
 
-// GET /api/schedule/2025-04-30
+// GET /schedule/2025-04-30
 router.get("/:date", async (req, res) => {
   const data = await ScheduleEntry.find({
     userId: req.user!.id,
@@ -14,7 +14,7 @@ router.get("/:date", async (req, res) => {
   res.json(data);
 });
 
-// PUT /api/schedule/2025-04-30/15
+// PUT /schedule/2025-04-30/15
 router.put("/:date/:hour", async (req, res) => {
   const { date, hour } = req.params;
   const updates = req.body; // { planned, actual, status }
@@ -27,7 +27,7 @@ router.put("/:date/:hour", async (req, res) => {
   res.json(doc);
 });
 
-// DELETE /api/schedule/2025-04-30/15
+// DELETE /schedule/2025-04-30/15
 router.delete("/:date/:hour", async (req, res) => {
   const { date, hour } = req.params;
   await ScheduleEntry.deleteOne({

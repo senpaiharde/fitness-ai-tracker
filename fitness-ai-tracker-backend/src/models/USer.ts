@@ -56,13 +56,14 @@ export interface IUser extends mongoose.Document {
   };
 }
 
+// after your userSchema definition
 userSchema.virtual('scheduleEntries', {
-  ref: 'scheduleEntries',
+  ref: 'ScheduleEntry', // name of the model in ScheduleEntry.ts
   localField: '_id',
   foreignField: 'userId',
 });
 
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
-userSchema.set('toJSON', {virtuals: true})
-userSchema.set('toObject', {virtuals: true})
 export default mongoose.model<IUser>('User', userSchema);
