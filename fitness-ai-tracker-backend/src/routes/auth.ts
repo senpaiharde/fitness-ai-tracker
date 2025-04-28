@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-import  User  from '../models/USer';
+import User from '../models/USer';
 import { Request, Response } from 'express';
 
 dotenv.config();
@@ -48,7 +48,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 
   if (!email || !password) {
     res.status(400).json({ error: 'Missing fields' });
-    
+
     console.log('Login attempt missing fields:', { email, password });
     return;
   }

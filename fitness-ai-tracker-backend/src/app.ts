@@ -27,7 +27,7 @@ console.log('✅ Auth routes loaded');
 app.use('/user', userRoutes);
 app.use('/user',profileRoutes)
 
-app.use("/api/schedule", scheduleRouter);
+app.use("/schedule", scheduleRouter);
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
