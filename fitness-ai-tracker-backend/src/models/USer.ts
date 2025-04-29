@@ -5,7 +5,7 @@ import './ScheduleEntry';
 /* ---------- sub-document: User.ts ---------- */
 
 
-export interface Iuser extends mongoose.Document {
+export interface IUser extends mongoose.Document {
     fullname: string,
     email: string,
     birthdate?: Date,
@@ -21,7 +21,7 @@ export interface Iuser extends mongoose.Document {
     createdAt: Date,
 }
 
-const userSchema = new Schema<Iuser>(
+const userSchema = new Schema<IUser>(
     {
         fullname: {type: String, required: true},
         email: {type: String, required: true, unique: true},
@@ -39,4 +39,4 @@ const userSchema = new Schema<Iuser>(
     {timestamps:{createdAt:'createdAt', updatedAt: false}}
 )
 
-export default mongoose.model<Iuser>('user',userSchema);
+export default mongoose.model<IUser>('user',userSchema);
