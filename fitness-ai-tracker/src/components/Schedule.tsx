@@ -52,7 +52,7 @@ const Schedule: React.FC = () => {
       ) : (
         <ul >
           {entries.map(e => (
-            <li key={e._id} >
+            <li style={{color:"#fff"}} key={e._id} >
               <div><strong>{e.hour}:00</strong> — {e.planned || '—'}</div>
               <div>Actual: {e.actual || '—'}</div>
               <div>Status: {e.status}</div>
