@@ -4,7 +4,7 @@ import api from "../../services/apiClient";
 export const fetchDay = createAsyncThunk(
     "schedule/fetchDay",
     async (date: string) => {
-        const respone = await api.get(`schedule${date}`);
+        const respone = await api.get(`/schedule/${date}`);
         return respone.data;
     }
 );

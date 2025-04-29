@@ -48,7 +48,7 @@ const Schedule: React.FC = () => {
     dispatch(deleteHour({ date, hour }))
   }
   return (
-    <div >
+    <div  style={{color:'#fff'}}>
       <label htmlFor="date" >Date:</label>
       <input
         id="date"
