@@ -19,7 +19,7 @@ export const Dashboard = () => {
     console.log(user);
     return (
         <div className="dashboard">
-            {isLoggedIn ? (
+            {isLoggedIn ? (<>
                 <div style={{ textAlign: "center", padding: "2rem" }}>
                     <h2>
                         <Shiny speed={5}>{`Welcome ${user?.user?.name}`}</Shiny>
@@ -60,6 +60,13 @@ export const Dashboard = () => {
                         </div>
                     )}
                 </div>
+                <div >
+                {/* ...your existing nav/routes... */}
+                <h1>My Schedule</h1>
+                <Schedule />
+            </div>
+                </>
+
             ) : (
                 <div>
                     <Link to="/login">Login</Link> |{" "}
@@ -72,11 +79,7 @@ export const Dashboard = () => {
             {display && (
                 <EnhancementLog isOpen={display} setIsOpen={setdisplay} />
             )}
-            <div >
-                {/* ...your existing nav/routes... */}
-                <h1>My Schedule</h1>
-                <Schedule />
-            </div>
+            
         </div>
     );
 };

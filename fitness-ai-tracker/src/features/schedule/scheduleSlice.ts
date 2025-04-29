@@ -3,7 +3,10 @@ import api from "../../services/apiClient";
 
 export const fetchDay = createAsyncThunk(
     "schedule/fetchDay",
-    async (date: string) => (await api.get(`/schedule/${date}`)).data
+    async (date: string) => {
+        const respone = await api.get(`schedule${date}`);
+        return respone.data;
+    }
 );
 
 export const upsertHour = createAsyncThunk(
@@ -15,8 +18,16 @@ export const upsertHour = createAsyncThunk(
     }: {
         date: string;
         hour: number;
-        updates: any;
-    }) => (await api.put(`/schedule/${date}/${hour}`, updates)).data
+        updates: Partial<{
+            planned: string;
+            actual: string;
+            tags: string[];
+            status: "planned" | "done";
+        }>;
+    }) => {
+        const respone = await api.put(`/schedule/${date}/${hour}`, updates);
+        return respone.data;
+    }
 );
 
 export const deleteHour = createAsyncThunk(
@@ -28,28 +39,35 @@ export const deleteHour = createAsyncThunk(
 );
 
 type HourCell = {
+    _id: string;
+    userId: string;
+    date: string;
+
     hour: number;
     planned?: string;
     actual?: string;
-    status?: string | null;
+    tags?: string[];
+    status: "planned" | "done";
 } | null;
 
 const slice = createSlice({
     name: "schedule",
-    initialState: { byHour: Array<HourCell>(24).fill(null) },
+    initialState: { byHour: Array<HourCell>(24).fill(null) 
+
+    },
     reducers: {},
     extraReducers: (b) => {
-        b.addCase(fetchDay.fulfilled, (s, { payload }) => {
-            s.byHour = Array(24).fill(null);
-            payload.forEach((e: any) => {
-                s.byHour[e.hour] = e;
+        b.addCase(fetchDay.fulfilled, (state, { payload }) => {
+            state.byHour = Array(24).fill(null);
+            payload.forEach((entry: HourCell & { hour: number }) => {
+                state.byHour[entry.hour] = entry;
             });
         })
-            .addCase(upsertHour.fulfilled, (s, { payload }) => {
-                s.byHour[payload.hour] = payload;
+            .addCase(upsertHour.fulfilled, (state, { payload }) => {
+                state.byHour[payload.hour] = payload;
             })
-            .addCase(deleteHour.fulfilled, (s, { payload: hour }) => {
-                s.byHour[hour] = null;
+            .addCase(deleteHour.fulfilled, (state, { payload: hour }) => {
+                state.byHour[hour] = null;
             });
     },
 });
