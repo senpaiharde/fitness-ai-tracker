@@ -1,6 +1,7 @@
 // src/models/User.ts
 import mongoose, { Schema, Types } from 'mongoose';
-
+import './ScheduleEntry';
+import   ScheduleEntry  from './ScheduleEntry';
 /* ---------- sub-document: EnhancementLog ---------- */
 const enhancementLogSchema = new Schema(
   {
@@ -41,7 +42,7 @@ const userSchema = new Schema(
 
 /* optional: compound index for fast date+hour queries inside the array */
 userSchema.index({ _id: 1, 'profile.enchancementLog.date': 1 }, { sparse: true });
-
+export  type ScheduleEntry = Types.Subdocument<typeof ScheduleEntry>;
 export type EnhancementLog = Types.Subdocument<typeof enhancementLogSchema>;
 export interface IUser extends mongoose.Document {
   email: string;
@@ -53,7 +54,9 @@ export interface IUser extends mongoose.Document {
     weight?: number;
     isEnchaned: boolean;
     enchancementLog: EnhancementLog[];
+    
   };
+  scheduleEntries?: ScheduleEntry[];
 }
 
 // after your userSchema definition

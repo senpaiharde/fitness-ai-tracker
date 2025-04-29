@@ -1,5 +1,15 @@
 import { Request, Response, NextFunction, response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+
+
+
+
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: { id: string };
+  }
+}
+
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) throw new Error('Missing JWT_SECRET in .env');
 export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {

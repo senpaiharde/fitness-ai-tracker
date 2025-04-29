@@ -3,9 +3,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-import User from '../models/USer';
 import { Request, Response } from 'express';
-
+import User from '../models/User';
 dotenv.config();
 
 const router = Router();

@@ -1,5 +1,5 @@
 import { connectDB } from '../config/db';
-import User from '../models/USer';
+import User from '../models/User';
 import { readFileSync } from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';

@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
-import User from '../models/USer';
+import User from '../models/User';
+import ScheduleEntry from '../models/ScheduleEntry';
 
 const router = Router();
 
@@ -72,26 +73,31 @@ router.delete(
 );
 
 /* ---------- 5. update profile fields ---------- */
-router.get(
-  '/me',
-  authMiddleware,
-  async (req: Request<{}, {}, any>, res: Response): Promise<void> => {
+// in the same src/routes/user.ts, below your GET:
+
+// PATCH /user/me — updates profile fields
+router.patch('/me', authMiddleware, async (req, res): Promise<any>=> {
+    console.log('[route] PATCH /user/me', req.body);
+  
+    // map body keys to profile.* paths
     const updates = Object.fromEntries(
       Object.entries(req.body).map(([k, v]) => [`profile.${k}`, v])
     );
-
-    const user = await User.findByIdAndUpdate(req.user!.id, { $set: updates }, { new: true })
+  
+    const updated = await User.findByIdAndUpdate(
+      req.user!.id,
+      { $set: updates },
+      { new: true }
+    )
       .select('-passwordHash')
-      .populate('scheduleEntries')
-      .lean();
-
-    if (!user) {
-      res.status(404).json({ error: 'user not found' });
-      return;
+      .exec();
+  
+    if (!updated) {
+      return res.status(404).json({ error: 'User not found' });
     }
-
-    res.json({ success: true,user });
-  }
-);
+  
+    return res.json(updated);
+  });
+  
 
 export default router;
