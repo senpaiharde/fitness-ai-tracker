@@ -3,10 +3,9 @@ import { Router, Request, Response } from 'express'
 import { authMiddleware }    from '../middleware/authmiddleware'
 import User                  from '../models/User'
 import ScheduleEntry         from '../models/ScheduleEntry'
+console.log('🔥 user.ts router loaded from', __dirname)
 
 const router = Router()
-
-// apply auth to *all* /user/* routes
 router.use(authMiddleware)
 
 /**
@@ -31,29 +30,19 @@ router.get('/profile', async (req: Request, res: Response): Promise<any> => {
  * -> returns full user + scheduleEntries
  */
 router.get('/me', async (req: Request, res: Response): Promise<any> => {
-  console.log('🗓️ GET /user/me')
-  const userDoc = await User.findById((req as any).user.id)
-    .select('-passwordHash')
-    .lean()
-
-  if (!userDoc) {
-    return res.status(404).json({ error: 'User not found' })
-  }
-
-  // fetch all entries for this user
-  const scheduleEntries = await ScheduleEntry.find({ userId: (req as any).user.id })
-    .sort({ date: 1, hour: 1 })
-    .lean()
-
-  console.log('    → found', scheduleEntries.length, 'entries')
-
-  // merge into one object
-  const result = {
-    ...userDoc,
-    scheduleEntries,
-  }
-
-  return res.json(result)
+    console.log('🚦 hit GET /user/me')
+    const userId = (req as any).user.id
+  
+    const userDoc = await User.findById(userId).select('-passwordHash').lean()
+    if (!userDoc) return res.status(404).json({ error: 'User not found' })
+  
+    const scheduleEntries = await ScheduleEntry.find({ userId })
+      .sort({ date: 1, hour: 1 })
+      .lean()
+  
+    console.log('    → found', scheduleEntries.length, 'entries')
+  
+    return res.json({ ...userDoc, scheduleEntries })
 })
 
 /**
