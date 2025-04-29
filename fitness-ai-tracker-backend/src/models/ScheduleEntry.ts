@@ -1,18 +1,40 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, Types } from 'mongoose';
 
+export interface IScheduleEntry extends mongoose.Document { 
+    userId: Types.ObjectId;
+    date: Date,
+    taskTitle: string,
+    taskType?: string,
+    plannedStart: string,
+    plannedEnd: string,
+    actualStart?: string,
+    actualEnd?: string,
+    status: 'planned'|'done'|'skipped',
+    priority: 'low'|'medium'|'high',
+    recurrenceRule?: string,
+    goalId?: Types.ObjectId;
+    createdAt: Date;
+    updatedAt: Date;
+}
 
-const entrySchema = new mongoose.Schema({
-    userId : {type:String, required: true, index : true},
-    date : {type:String, required: true, index : true},
-    hour : {type:Number,min:0 , max:23, required: true, index : true},
-    planned: String,
-    actual: String,
-    tags: [String],
-    status: {type:String, enum: ['planned','done'], default:'planned'},
+const scheduleEntrySchema = new Schema<IScheduleEntry>(
+    {
+        userId:        { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+        date:          { type: Date, required: true, index: true },
+        taskTitle:     { type: String, required: true },
+        taskType:      String,
+        plannedStart:  String,
+        plannedEnd:    String,
+        actualStart:   String,
+        actualEnd:     String,
+        status:        { type: String, enum: ['planned','done','skipped'], default: 'planned' },
+        priority:      { type: String, enum: ['low','medium','high'], default: 'medium' },
+        recurrenceRule:String,
+        goalId:        { type: Schema.Types.ObjectId, ref: 'Goal' },
+      },
+      { timestamps: true }
+)
 
-},{timestamps:true});
+scheduleEntrySchema.index({userId: 1, date: 1, plannedStart: 1});
 
-entrySchema.index({ userId:1, date:1, hour:1 }, { unique:true });
-
-
-export default mongoose.model('ScheduleEntry',entrySchema);
+export default mongoose.model<IScheduleEntry>("ScheduleEntry", scheduleEntrySchema);
