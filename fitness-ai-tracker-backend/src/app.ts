@@ -11,6 +11,8 @@ import settingsRouter from './routes/setttings'
 import foodItemRouter from './routes/foodItems';
 import foodLogRouter from './routes/foodLogs'
 import supplementsRouter from './routes/supplementIntake';
+import compoundInjectionRouter from './routes/compoundInjection'
+
 dotenv.config()
 const app = express()
 app.use((req, res, next) => {
@@ -29,6 +31,7 @@ app.use('/settings', settingsRouter)
 app.use('/food-Items', foodItemRouter);
 app.use('/food-logs', foodLogRouter);
 app.use('/supplements', supplementsRouter)
+app.use('/supplements', compoundInjectionRouter)
 console.log('✅ User routes loaded')
 
 
