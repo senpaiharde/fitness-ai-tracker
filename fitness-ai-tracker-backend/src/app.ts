@@ -7,7 +7,7 @@ import dotenv  from 'dotenv'
 import authRoutes from './routes/auth'
 import userRoutes from './routes/user'
 import scheduleRouter from './routes/schedule'
-import userProfile from './routes/profile';
+import settingsRouter from './routes/setttings'
 dotenv.config()
 const app = express()
 app.use((req, res, next) => {
@@ -19,16 +19,18 @@ app.use(morgan('dev'))
 app.use(cors({ origin: ['http://localhost:5173'], credentials: true }))
 app.use(express.json())
 
-app.use('/auth', authRoutes)
-console.log('✅ Auth routes loaded')
 
+app.use('/auth', authRoutes)
 app.use('/user', userRoutes)
+app.use('/settings', settingsRouter)
+
+
 console.log('✅ User routes loaded')
 
 
 
 
-app.use('/profile', userProfile)
+
 console.log('✅ profile routes loaded')
 app.use('/schedule', scheduleRouter)
 console.log('✅ Schedule routes loaded')
