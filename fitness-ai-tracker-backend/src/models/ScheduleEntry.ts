@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types } from 'mongoose';
 
 export interface IScheduleEntry extends mongoose.Document { 
-    userId: Types.ObjectId;
+    userId: Types.ObjectId | string;
     date: Date,
     taskTitle: string,
     taskType?: string,
