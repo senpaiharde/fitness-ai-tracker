@@ -14,7 +14,7 @@ import supplementsRouter from './routes/supplementIntake';
 import compoundInjectionRouter from './routes/compoundInjection'
 import learningRouter from './routes/learning'
 import goalsRouter from './routes/goals'
-
+import summariesRouter from './routes/summaries'
 
 dotenv.config()
 const app = express()
@@ -37,6 +37,7 @@ app.use('/supplements', supplementsRouter)
 app.use('/supplements', compoundInjectionRouter)
 app.use('/learning', learningRouter)
 app.use('/goals', goalsRouter)
+app.use('/summaries', summariesRouter)
 
 
 
