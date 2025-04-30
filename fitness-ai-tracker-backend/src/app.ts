@@ -9,6 +9,7 @@ import userRoutes from './routes/user'
 import scheduleRouter from './routes/schedule'
 import settingsRouter from './routes/setttings'
 import foodItemRouter from './routes/foodItems';
+import foodLogRouter from './routes/foodLogs'
 dotenv.config()
 const app = express()
 app.use((req, res, next) => {
@@ -24,7 +25,8 @@ app.use(express.json())
 app.use('/auth', authRoutes)
 app.use('/user', userRoutes)
 app.use('/settings', settingsRouter)
-app.use('foodItems', foodItemRouter);
+app.use('food-Items', foodItemRouter);
+app.use('food-logs', foodLogRouter);
 
 console.log('✅ User routes loaded')
 
