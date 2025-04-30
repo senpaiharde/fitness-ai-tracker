@@ -12,6 +12,9 @@ import foodItemRouter from './routes/foodItems';
 import foodLogRouter from './routes/foodLogs'
 import supplementsRouter from './routes/supplementIntake';
 import compoundInjectionRouter from './routes/compoundInjection'
+import learningRouter from './routes/learning'
+import goalsRouter from './routes/goals'
+
 
 dotenv.config()
 const app = express()
@@ -32,6 +35,12 @@ app.use('/food-Items', foodItemRouter);
 app.use('/food-logs', foodLogRouter);
 app.use('/supplements', supplementsRouter)
 app.use('/supplements', compoundInjectionRouter)
+app.use('/learning', learningRouter)
+app.use('/goals', goalsRouter)
+
+
+
+
 console.log('✅ User routes loaded')
 
 
