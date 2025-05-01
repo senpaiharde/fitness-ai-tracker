@@ -1,79 +1,63 @@
-import type { FC, JSX } from "react";
-import { Link, useNavigate } from "react-router-dom";
+// src/components/SignupForm.tsx
 import React, { useState } from "react";
-
+import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch } from "../app/hooks";
+import { signup } from "../features/user/userSlice";
 
-import { fetchMe, signup } from "../features/user/userSlice";
+export default function SignupForm() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-const SignupForm: FC = (): JSX.Element => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [name, setName] = useState("");
+  const [fullname, setFullname] = useState("");
+  const [email, setEmail]       = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError]       = useState<string | null>(null);
 
-    const [error, setError] = useState<string | null>(null);
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
 
-    const handleSignup = async (e: React.FormEvent) => {
-        e.preventDefault();
+    try {
+      // signup thunk sets token & fetches user
+      await dispatch(signup({ fullname, email, password })).unwrap();
+      navigate("/profile");
+    } catch (err: any) {
+      setError(err);
+    }
+  };
 
-        setError(null);
-
-        dispatch(signup({ email, password,name }))
-            .unwrap()
-            .then(({ token }) => {
-                //  Save the JWT
-                localStorage.setItem("token", token);
-                //   fetch full profile
-                return dispatch(fetchMe()).unwrap();
-            })
-            .then(() => {
-                //  navigate
-                navigate("/profile");
-            })
-            .catch((err) => {
-                // y error
-                setError(err.message);
-            });
-    };
-
-    return (
-        <div style={{ padding: "2rem" }}>
-            <h2>Sign Up</h2>
-            <form
-                onSubmit={handleSignup}
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "1rem",
-                }}
-            >
-                <input
-                    type="text"
-                    placeholder="Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                {error && <div className="error">{error}</div>}
-                <button type="submit" className="btn"></button>
-                <Link to="/login">Don't an an account? login</Link>
-            </form>
-        </div>
-    );
-};
-
-export default SignupForm;
+  return (
+    <form onSubmit={handleSignup} style={{ padding: "2rem", maxWidth: 400 }}>
+      <h2>Sign Up</h2>
+      <input
+        type="text"
+        placeholder="Full Name"
+        value={fullname}
+        onChange={(e) => setFullname(e.target.value)}
+        required
+        className="input"
+      />
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        className="input"
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        className="input"
+      />
+      {error && <div className="error">{error}</div>}
+      <button type="submit" className="btn">
+        Sign Up
+      </button>
+      <Link to="/login">Already have an account? Log in</Link>
+    </form>
+  );
+}

@@ -8,6 +8,7 @@ import './ScheduleEntry';
 export interface IUser extends mongoose.Document {
     fullname: string,
     email: string,
+    passwordHash: string; 
     birthdate?: Date,
     weightKg?: number,
     baselineBodyFatPercent?: number,
@@ -25,6 +26,7 @@ const userSchema = new Schema<IUser>(
     {
         fullname: {type: String, required: true},
         email: {type: String, required: true, unique: true},
+        passwordHash: { type: String, required: true },
         birthdate: Date,
         weightKg: Number,
         baselineBodyFatPercent: Number,

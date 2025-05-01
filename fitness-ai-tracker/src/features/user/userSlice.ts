@@ -63,6 +63,7 @@ export const signup = createAsyncThunk<
             });
             const { token } = res.data as { token: string };
             dispatch(setToken(token));
+            localStorage.setItem("token", token);
             await dispatch(fetchMe());
         } catch (err: any) {
             return rejectWithValue(err.response?.data?.error || err.message);
@@ -80,6 +81,7 @@ export const login = createAsyncThunk<
         const res = await api.post("/auth/login", creds);
         const { token } = res.data as { token: string };
         dispatch(setToken(token));
+        localStorage.setItem("token", token);
         await dispatch(fetchMe());
     } catch (err: any) {
         return rejectWithValue(err.response?.data?.error || err.message);
@@ -108,9 +110,12 @@ const userSlice = createSlice({
             state.token = null;
             state.user = null;
             state.status = "idle";
+            localStorage.removeItem("token");
         },
         setToken(state, action: PayloadAction<string>) {
             state.token = action.payload;
+            // persist it immediately
+            localStorage.setItem("token", action.payload);
         },
     },
     extraReducers: (builder) => {
