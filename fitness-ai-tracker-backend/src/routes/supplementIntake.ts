@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import SupplementIntake, { ISupplementIntake } from '../models/SupplementIntake';
-import { timeStamp } from 'console';
+
 
 import { z } from 'zod';
 import { validate } from '../utils/validate';
@@ -35,17 +35,15 @@ const intakeSchema = z.object({
   dosageMg: z.number().positive(),
   notes: z.string().max(200).optional(),
 });
-router.post('/',validate(intakeSchema), async (req: Request, res: Response): Promise<any> => {
+router.post('/', validate(intakeSchema), async (req: Request, res: Response): Promise<any> => {
   try {
-    const payload = {
-      userId: req.user?.id,
-      supplementId: req.body.supplementId,
-      timestamp: req.body.timeStamp,
-      dosageMg: req.body.dosageMg,
-      notes: req.body.notes,
-    };
-    const log = await SupplementIntake.create(payload);
-    res.status(201).json(log);
+    
+    const data = await SupplementIntake.create({
+        userId:       req.user!.id,
+        ...req.body,                       // already validated & typed
+        timestamp: req.body.timestamp || new Date()
+      });
+    res.status(201).json(data);
   } catch (err: any) {
     console.error(err);
     res.status(500).json({ err: 'could not record supplements intake' });
@@ -62,7 +60,7 @@ router.delete('/:id', async (req: Request, res: Response): Promise<any> => {
     res.sendStatus(204);
   } catch (err: any) {
     console.error(err);
-    res.status(500).json({ err: 'could not delete supplementt intake' });
+    res.status(500).json({ err: 'could not delete supplement intake' });
   }
 });
 

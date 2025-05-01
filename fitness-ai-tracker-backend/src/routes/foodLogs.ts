@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import FoodLog, { IFoodLog } from '../models/FoodLog';
-
+import { z } from 'zod';
+import { validate } from '../utils/validate';
 
 
 const router = Router();
@@ -26,8 +27,32 @@ router.get('/', async (req: Request,res: Response): Promise<any> => {
     }
 })
 
-
-router.post('/', async (req,res): Promise<any> => {
+export const foodLogSchema = z.object({
+    /* ISO timestamp; default = now if omitted */
+    timestamp:  z.coerce.date().optional(),
+  
+    /* Either reference a catalog item … */
+    foodItemId: z.string().length(24).optional(),
+  
+    /* …or free-text entry           */
+    manualText: z.string().max(200).optional(),
+  
+    grams:      z.number().positive().optional(),
+    calories:   z.number().nonnegative().optional(),
+  
+    macros: z.object({
+      protein: z.number().nonnegative().optional(),
+      carbs:   z.number().nonnegative().optional(),
+      fat:     z.number().nonnegative().optional()
+    }).strict().optional(),
+  
+    notes:      z.string().max(200).optional()
+  }).strict()
+    /* Require at least foodItemId OR manualText */
+    .refine(d => d.foodItemId || d.manualText, {
+      message: 'Provide either foodItemId or manualText'
+    });
+router.post('/',validate(foodLogSchema), async (req,res): Promise<any> => {
     try{
         const payload = {
             userId: req.user!.id,
@@ -40,7 +65,10 @@ router.post('/', async (req,res): Promise<any> => {
             note: req.body.notes,
 
         };
-        const log = await FoodLog.create(payload);
+        const log = await FoodLog.create({
+            userId: req.user!.id,
+            ...req.body,
+        });
         res.status(201).json(log)
     }catch(err: any){
         console.error(err);

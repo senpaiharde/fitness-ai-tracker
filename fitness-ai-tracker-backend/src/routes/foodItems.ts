@@ -1,7 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import FoodItem, { IFoodItem } from '../models/FoodItem';
-
+import { z } from 'zod';
+import { validate } from '../utils/validate';
 
 const router = Router();
 router.use(authMiddleware);
@@ -27,11 +28,22 @@ router.get('/:id',async (req,res): Promise<any> => {
     }
 })
 
+export const foodItemSchema = z.object({
+    name:             z.string().min(1).max(120),
+    servingSizeGrams: z.number().positive(),
+    calories:         z.number().nonnegative(),
+    macros: z.object({
+      protein: z.number().nonnegative(),
+      carbs:   z.number().nonnegative(),
+      fat:     z.number().nonnegative()
+    }).strict()
+  }).strict();
 
-router.post('/',async (req,res):Promise<any> => {
+
+
+router.post('/',validate(foodItemSchema),async (req,res):Promise<any> => {
     try{
-        const {name, servingSizeGrams, calories, macros} = req.body;
-        const newItem = await FoodItem.create({name, servingSizeGrams, calories, macros});
+        const newItem = await FoodItem.create(req.body)
         res.status(201).json(newItem);
     }catch(err: any){
         console.error(err)
@@ -40,11 +52,15 @@ router.post('/',async (req,res):Promise<any> => {
 })
 
 
-router.put('/:id',async (req,res):Promise<any>=> {
+
+
+
+router.put('/:id',validate(foodItemSchema.partial()),    async (req,res):Promise<any>=> {
     try{
-        const updates = req.body;
-        const updated = await FoodItem.findByIdAndUpdate(req.params.id, updates, {new: true})
-        .lean<IFoodItem>()
+       
+        const updated = await FoodItem.findByIdAndUpdate(
+            req.body.id , {$set: req.body}, {new : true, runValidators: true}
+        )
         res.json(updated);
     }catch(err: any){
         console.error(err)

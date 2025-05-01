@@ -2,7 +2,8 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware }          from '../middleware/authmiddleware';
 import ScheduleEntry, { IScheduleEntry } from '../models/ScheduleEntry';
-
+import { z } from 'zod';
+import { validate } from '../utils/validate';
 const router = Router();
 router.use(authMiddleware);
 
@@ -30,25 +31,35 @@ router.get('/', async (req: Request, res: Response): Promise<any> => {
   }
 });
 
+
+
+
+
+
+
+export const createSchedule = z.object({
+    data: z.coerce.date(),
+    taskTitle: z.string().min(1).max(120),
+    taskType:      z.string().max(40).optional(),
+    plannedStart:  z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(),
+    plannedEnd:    z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(),
+    priority:      z.enum(['low','medium','high']).optional(),
+    recurrenceRule:z.string().max(200).optional(),
+    goalId:        z.string().length(24).optional()
+}).strict()
+
 /**
  * POST /schedule
  * { date, taskTitle, taskType?, plannedStart?, plannedEnd?, priority?, recurrenceRule?, goalId? }
  */
-router.post('/', async (req: Request, res: Response) => {
+
+router.post('/',validate(createSchedule), async (req: Request, res: Response) => {
   try {
-    const payload: Partial<IScheduleEntry> = {
-      userId:       req.user!.id,
-      date:         new Date(req.body.date),
-      taskTitle:    req.body.taskTitle,
-      taskType:     req.body.taskType,
-      plannedStart: req.body.plannedStart,
-      plannedEnd:   req.body.plannedEnd,
-      priority:     req.body.priority,
-      recurrenceRule: req.body.recurrenceRule,
-      goalId:       req.body.goalId,
-      status:       'planned'
-    };
-    const entry = await ScheduleEntry.create(payload);
+    
+    const entry = await ScheduleEntry.create({
+        userId: req.user!.id,
+        ...req.body
+    });
     res.status(201).json(entry);
   } catch (err: any) {
     console.error(err);
@@ -56,19 +67,24 @@ router.post('/', async (req: Request, res: Response) => {
   }
 });
 
+
+export const updateSchedule = createSchedule.partial().extend({
+    status:        z.enum(['planned','done','skipped']).optional(),
+    actualStart:   z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(),
+    actualEnd:     z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional()
+  });
 /**
  * PUT /schedule/:id
  * Body can include any updatable fields: taskTitle, actualStart, status, etc.
  */
-router.put('/:id', async (req: Request, res: Response):Promise<any>=> {
+router.put('/:id', validate(updateSchedule), async (req: Request, res: Response):Promise<any>=> {
   try {
-    const updates = { ...req.body };
-    if (updates.date) updates.date = new Date(updates.date);
+    
 
     const updated = await ScheduleEntry.findOneAndUpdate(
       { _id: req.params.id, userId: req.user!.id },
-      { $set: updates },
-      { new: true }
+      { $set: req.body },
+      { new: true,runValidators: true }
     ).lean();
 
     if (!updated) return res.status(404).json({ error: 'Entry not found' });
