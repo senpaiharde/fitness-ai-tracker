@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RootState } from "../app/store";
 import { useState } from "react";
 import { EnhancementLog } from "./EnhancementLog";
@@ -8,12 +8,21 @@ import { LogsPage } from "./LogsPage";
 import Shiny from "../ui/Shiny";
 import ShinyButton from "../ui/ShinyButtton";
 import Schedule from "./Schedule";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { selectToken, selectUser } from "../features/user/userSlice";
 
 export const Dashboard = () => {
     const currentUser = useSelector((state: RootState) => state.user.user);
-    const isLoggedIn = currentUser !== null;
-
-    const user = useSelector((state: RootState) => state.user);
+    
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+  
+    // ① Use the typed selector hook:
+    const token = useAppSelector(selectToken);
+    const user  = useAppSelector(selectUser);
+  
+    // ② Compute login state off the token
+    const isLoggedIn = Boolean(token);
     const [display, setdisplay] = useState(false);
     const [displaylog, setdisplaylog] = useState(false);
     console.log(user);
@@ -22,10 +31,10 @@ export const Dashboard = () => {
             {isLoggedIn ? (<>
                 <div style={{ textAlign: "center", padding: "2rem" }}>
                     <h2>
-                        <Shiny speed={5}>{`Welcome ${user?.user?.name}`}</Shiny>
+                        <Shiny speed={5}>{`Welcome ${user?.fullname}`}</Shiny>
                     </h2>
                     <p>
-                        <Shiny speed={5}>Age:{user.user?.age} </Shiny>
+                        <Shiny speed={5}>Age:{user?.birthdate} </Shiny>
                     </p>
                     <p>
                         <Shiny speed={5}>Height:{user.user?.height} Cm </Shiny>

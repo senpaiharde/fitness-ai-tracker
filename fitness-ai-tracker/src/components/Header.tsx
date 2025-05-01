@@ -17,10 +17,13 @@ import HoverScaleText from "./utilsCalls/HoverScaleText";
 const Header: FC = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
+    // ① Use the typed selector hook:
     const token = useAppSelector(selectToken);
     const user = useAppSelector(selectUser);
-    const isLoggedIn = !!token;
 
+    // ② Compute login state off the token
+    const isLoggedIn = Boolean(token);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleLogout = async () => {
         await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {

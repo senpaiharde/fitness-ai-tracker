@@ -23,14 +23,14 @@ interface UserState {
     token: string | null;
     user: UserProfile | null;
     status: "idle" | "loading" | "failed";
-     authChecked: boolean
+    authChecked: boolean;
 }
 
 const initialState: UserState = {
     token: null,
     user: null,
     status: "idle",
-    authChecked:false
+    authChecked: false,
 };
 
 // ─── Thunks ──────────────────────────────────────────────────────
@@ -42,7 +42,7 @@ export const fetchMe = createAsyncThunk<
     { state: RootState; rejectValue: string }
 >("user/fetchMe", async (_, { rejectWithValue }) => {
     try {
-        const res = await api.get("/users/me");
+        const res = await api.get("/user/me");
         return res.data as UserProfile;
     } catch (err: any) {
         return rejectWithValue(err.response?.data?.error || err.message);
@@ -97,7 +97,7 @@ export const updateProfile = createAsyncThunk<
     { rejectValue: string }
 >("user/updateProfile", async (changes, { rejectWithValue }) => {
     try {
-        const res = await api.put("/users/me", changes);
+        const res = await api.put("/user/me", changes);
         return res.data as UserProfile;
     } catch (err: any) {
         return rejectWithValue(err.response?.data?.error || err.message);
@@ -112,12 +112,15 @@ const userSlice = createSlice({
             state.token = null;
             state.user = null;
             state.status = "idle";
+            state.authChecked = true;
             localStorage.removeItem("token");
         },
         setToken(state, action: PayloadAction<string>) {
             state.token = action.payload;
-            // persist it immediately
             localStorage.setItem("token", action.payload);
+        },
+        setAuthChecked(state) {
+            state.authChecked = true;
         },
     },
     extraReducers: (builder) => {
@@ -126,9 +129,15 @@ const userSlice = createSlice({
             .addCase(fetchMe.pending, (state) => {
                 state.status = "loading";
             })
-            .addCase(fetchMe.fulfilled, (s,a) => { s.user = a.payload; s.authChecked = true; })
-            .addCase(fetchMe.rejected,  (s) => { s.authChecked = true; })
-
+            .addCase(fetchMe.fulfilled, (state, { payload }) => {
+                state.user = payload;
+                state.status = "idle";
+                state.authChecked = true;
+            })
+            .addCase(fetchMe.rejected, (state) => {
+                state.status = "idle";
+                state.authChecked = true;
+            })
             // signup hanlder
             .addCase(signup.pending, (state) => {
                 state.status = "loading";
@@ -165,7 +174,7 @@ const userSlice = createSlice({
     },
 });
 
-export const { logout, setToken } = userSlice.actions;
+export const { logout, setToken,setAuthChecked  } = userSlice.actions;
 export const selectUser = (state: RootState) => state.user.user;
 export const selectToken = (state: RootState) => state.user.token;
 export default userSlice.reducer;
