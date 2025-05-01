@@ -1,9 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware }        from '../middleware/authmiddleware';
 import CompoundInjection, { ICompoundInjection } from '../models/CompoundInjection';
-import { timeStamp } from 'console';
 
 
+import { z } from 'zod';
+import { validate } from '../utils/validate';
 const router = Router();
 router.use(authMiddleware);
 
@@ -28,7 +29,12 @@ router.get('/', async (req: Request,res: Response):Promise<any> => {
         res.status(500).json({err: 'could not fetch compound injections'})
     }
 })
-
+const intakeSchema = z.object({
+  supplementId: z.string().length(24), // Mongo ObjectId
+  timestamp: z.string().datetime().optional(), // ISO-string; default = now
+  dosageMg: z.number().positive(),
+  notes: z.string().max(200).optional(),
+});
 
 router.post('/', async (req: Request,res: Response):Promise<any> => {
     try{

@@ -2,11 +2,12 @@ import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import LearningSession, { ILearningSession } from '../models/LearningSeason';
 import LearningSeason from '../models/LearningSeason';
-
+import { z } from 'zod';
+import { validate } from '../utils/validate';
 const router = Router();
 router.use(authMiddleware);
 
-router.get('/', async (req: Request, res: Response): Promise<any> => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const dataParam = req.query.date as string | undefined;
     const filter: any = { userId: req.user!.id };
@@ -23,32 +24,51 @@ router.get('/', async (req: Request, res: Response): Promise<any> => {
   }
 });
 
-router.post('/', async (req, res): Promise<any> => {
+export const createLearning = z
+  .object({
+    date: z.coerce.date(),
+    topic: z.string().min(1).max(120),
+    startTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .optional(),
+    endTime: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .optional(),
+    notes: z.string().max(200).optional(),
+  })
+  .strict();
+
+router.post('/', validate(createLearning), async (req, res) => {
   try {
-    const payload = {
+    const session = await LearningSeason.create({
       userId: req.user!.id,
-      date: new Date(req.body.date),
-      topic: req.body.topic,
-      startTime: req.body.startTime,
-      endTime: req.body.endTime,
-      notes: req.body.notes,
-    };
-    const session = await LearningSeason.create(payload);
+      ...req.body,
+    });
     res.status(201).json(session);
   } catch (err: any) {
     console.error(err);
     res.status(500).json({ err: 'could not create learning session' });
   }
 });
-
-router.put('/:id', async (req, res): Promise<any> => {
+export const updateLearning = createLearning.partial().extend({
+  topic: z.string().min(1).max(120),
+  startTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+    .optional(),
+  endTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+    .optional(),
+});
+router.put('/:id', validate(updateLearning), async (req, res): Promise<any> => {
   try {
-    const updates: Partial<ILearningSession> = { ...req.body };
-    if (updates.date) updates.date = new Date(updates.date as any);
     const updated = await LearningSeason.findByIdAndUpdate(
-      { _id: req.params.id, userId: req.user!.id },
-      { $set: updates },
-      { new: true }
+      { _id: req.params.id, userId: req.user!.id }, // owner check
+      { $set: req.body },
+      { new: true, runValidators: true }
     ).lean<ILearningSession>();
     if (!updated) return res.status(404).json({ err: 'not found' });
     res.json(updated);
@@ -58,19 +78,18 @@ router.put('/:id', async (req, res): Promise<any> => {
   }
 });
 
-
-router.delete('/:id', async (req,res): Promise<any>=> {
-    try{
-        const result = await LearningSeason.deleteOne({
-            _id: req.params.id,
-            userId: req.user!.id
-        })
-        if(result.deletedCount === 0) return res.status(404).json({error: 'not found'})
-            res.sendStatus(204);
-    }catch(err:any){
-        console.error(err)
-        res.status(500).json({err: ' could not delete session'})
-    }
-})
+router.delete('/:id', async (req, res): Promise<any> => {
+  try {
+    const result = await LearningSeason.deleteOne({
+      _id: req.params.id,
+      userId: req.user!.id,
+    });
+    if (result.deletedCount === 0) return res.status(404).json({ error: 'not found' });
+    res.sendStatus(204);
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({ err: ' could not delete session' });
+  }
+});
 
 export default router;

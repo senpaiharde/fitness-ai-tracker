@@ -54,25 +54,16 @@ export const foodLogSchema = z.object({
     });
 router.post('/',validate(foodLogSchema), async (req,res): Promise<any> => {
     try{
-        const payload = {
-            userId: req.user!.id,
-            timeStamp: req.body.timeStamp,
-            foodItemId: req.body.foodItemId,
-            manualText: req.body.manualText,
-            grams: req.body.grams,
-            calories: req.body.calories,
-            macros: req.body.macros,
-            note: req.body.notes,
-
-        };
+        
         const log = await FoodLog.create({
             userId: req.user!.id,
             ...req.body,
+            timestamp: req.body.timestamp || new Date()
         });
         res.status(201).json(log)
     }catch(err: any){
         console.error(err);
-        res.status(500).json({err: 'ccould not create food log'})
+        res.status(500).json({err: 'could not create food log'})
     }
 })
 
