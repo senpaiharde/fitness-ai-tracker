@@ -65,7 +65,7 @@ export const updateLearning = createLearning.partial().extend({
 });
 router.put('/:id', validate(updateLearning), async (req, res): Promise<any> => {
   try {
-    const updated = await LearningSeason.findByIdAndUpdate(
+    const updated = await LearningSession.findByIdAndUpdate(
       { _id: req.params.id, userId: req.user!.id }, // owner check
       { $set: req.body },
       { new: true, runValidators: true }
@@ -80,7 +80,7 @@ router.put('/:id', validate(updateLearning), async (req, res): Promise<any> => {
 
 router.delete('/:id', async (req, res): Promise<any> => {
   try {
-    const result = await LearningSeason.deleteOne({
+    const result = await LearningSession.deleteOne({
       _id: req.params.id,
       userId: req.user!.id,
     });

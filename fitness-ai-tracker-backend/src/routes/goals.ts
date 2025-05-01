@@ -1,7 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import Goal, { IGoal }   from '../models/Goal';
-import LearningSession, { ILearningSession } from '../models/LearningSeason';
+
+import { z } from 'zod';
+import { validate } from '../utils/validate';
 
 
 const router = Router();
@@ -16,19 +18,39 @@ router.get('/', async (_req,res): Promise<any> => {
         res.status(500).json({err: 'could not fetch goals'})
     }
 })
+export const createLearning = z
+  .object({
+    date: z.coerce.date(),
+    title: z.string().min(1).max(120),
+    description: z.string().max(200).optional(),
+    createdAt: z.string().datetime().optional(),
+    targetDate: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .optional(),
+      status: z.enum(['active','paused','completed']).optional(),
+  })
+  .strict();
 
-
-router.put('/:id',async (req,res): Promise<any> => {
+export const updateLearning = createLearning.partial().extend({
+    title: z.string().min(1).max(120),
+  startTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+    .optional(),
+  endTime: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+    .optional(),
+});
+router.put('/:id',validate(updateLearning),async (req,res): Promise<any> => {
     try{
-        const updates: Partial<ILearningSession> = {...req.body}
-        if(updates.date) updates.date = new Date(updates.date as any)
-            const updated = await LearningSession
-        .findByIdAndUpdate(
-            {_id: req.params.id, userId: req.user!.id},
-            {$set : updates},
-            {new : true}
+        const updated = await Goal.findByIdAndUpdate(
+              { _id: req.params.id, userId: req.user!.id }, // owner check
+              { $set: req.body },
+              { new: true, runValidators: true }
         )
-        .lean<ILearningSession>();
+        .lean<IGoal>();
         if(!updated) return res.status(404).json({error: 'not found'})
             res.json(updated)
     }catch(err: any){
@@ -40,7 +62,7 @@ router.put('/:id',async (req,res): Promise<any> => {
 
 router.delete('/:id', async (req,res): Promise<any> => {
     try{
-        const result = await LearningSession.deleteOne({
+        const result = await Goal.deleteOne({
             _id: req.params.id,
             userId: req.user!.id
         })
