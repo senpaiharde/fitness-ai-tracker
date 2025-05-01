@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import User, { IUser } from '../models/User';
+import { z } from 'zod';
+import { validate } from '../utils/validate';
 
 
 const router = Router()
@@ -23,23 +25,24 @@ router.get('/me',async  (req: Request, res: Response): Promise<any>  => {
         res.status(500).json({error: 'could not fetch user'})
     }
 });
-
-router.put('/me', async (req:Request, res: Response): Promise<any> => {
+const userUpdateSchema = z.object({
+    fullname:               z.string().max(120).optional(),
+    birthdate:              z.coerce.date().optional(),
+    weightKg:               z.number().positive().optional(),
+    heightCm:               z.number().positive().optional(),
+    baselineBodyFatPercent: z.number().min(0).max(100).optional(),
+    goals:                  z.array(z.string()).optional(),
+    timeZone:               z.string().optional(),
+    notificationPrefs:      z.object({ email: z.boolean(), push: z.boolean() }).partial().optional(),
+    uiTheme:                z.enum(['light','dark']).optional()
+  }).strict();
+  
+router.put('/me', validate(userUpdateSchema), async (req:Request, res: Response): Promise<any> => {
     try{
-        const allowed = [
-            'fullname','birthdate','weightKg','heightCm',
-            'baselineBodyFatPercent','goals',
-            'timeZone','notificationPrefs','uiTheme'
-        ];
-        const updates : Partial<IUser> = {}
-        for (const key of allowed) {
-            if(req.body[key] !== undefined){
-                (updates as any)[key] = req.body[key]
-            }
-        }
+       
         const updated = await User.findByIdAndUpdate(
             req.user!.id,
-            {$set: updates},
+            {$set: req.body},
             {new : true}
         )
         .select('-passwordHash')
