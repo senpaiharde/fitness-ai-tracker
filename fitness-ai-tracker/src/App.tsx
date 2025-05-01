@@ -10,24 +10,43 @@ import LoginForm from "./components/LoginForm";
 import { Dashboard } from "./components/Dashboard";
 import SignupForm from "./components/SignupForm";
 import { useAppDispatch, useAppSelector } from "./app/hooks";
-import { useEffect } from "react";
+
 
 import Header from "./components/Header";
 import { fetchMe, selectToken, setToken } from "./features/user/userSlice";
+import { useEffect } from "react";
 
 function App() {
+    
     const dispatch = useAppDispatch();
-   const token = useAppSelector(selectToken);
+
+  // pull token & authChecked from Redux
+  const { token, authChecked } = useAppSelector((s) => ({
+    token: s.user.token,
+    authChecked: s.user.authChecked
+  }));
   const isAuthenticated = !!token;
 
+  // 🔄 bootstrap on mount
   useEffect(() => {
-    // on initial load, hydrate from localStorage
     const saved = localStorage.getItem("token");
     if (saved) {
+      // 1️⃣ rehydrate Redux
       dispatch(setToken(saved));
+      // 2️⃣ fetch the current user (will flip authChecked on fulfilled/rejected)
       dispatch(fetchMe());
+    } else {
+      // no token → nothing to fetch, mark checked
+      // dispatch a no-op that just flips authChecked
+      dispatch({ type: fetchMe.rejected.type, payload: "no-token" });
     }
   }, [dispatch]);
+
+  // if we’re still waiting on fetchMe() (and we did have a token), show loading
+  if (!authChecked && localStorage.getItem("token")) {
+    return <div>Loading…</div>;
+  }
+
     return (
         <Router>
             <Header />

@@ -23,12 +23,14 @@ interface UserState {
     token: string | null;
     user: UserProfile | null;
     status: "idle" | "loading" | "failed";
+     authChecked: boolean
 }
 
 const initialState: UserState = {
     token: null,
     user: null,
     status: "idle",
+    authChecked:false
 };
 
 // ─── Thunks ──────────────────────────────────────────────────────
@@ -124,13 +126,8 @@ const userSlice = createSlice({
             .addCase(fetchMe.pending, (state) => {
                 state.status = "loading";
             })
-            .addCase(fetchMe.fulfilled, (state, action) => {
-                state.user = action.payload;
-                state.status = "idle";
-            })
-            .addCase(fetchMe.rejected, (state) => {
-                state.status = "failed";
-            })
+            .addCase(fetchMe.fulfilled, (s,a) => { s.user = a.payload; s.authChecked = true; })
+            .addCase(fetchMe.rejected,  (s) => { s.authChecked = true; })
 
             // signup hanlder
             .addCase(signup.pending, (state) => {
