@@ -19,7 +19,7 @@ export interface IScheduleEntry extends mongoose.Document {
 
 const scheduleEntrySchema = new Schema<IScheduleEntry>(
     {
-        userId:        { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+        userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         date:          { type: Date, required: true, index: true },
         taskTitle:     { type: String, required: true },
         taskType:      String,

@@ -17,7 +17,7 @@ export interface IFoodLog extends mongoose.Document {
 
 const FoodLogSchema = new Schema<IFoodLog>(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true},
     timestamp: { type: Date, default: Date.now, index: true },
     foodItemId: { type: Schema.Types.ObjectId, ref: 'FoodItem' },
     manualText: String,

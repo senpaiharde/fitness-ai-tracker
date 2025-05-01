@@ -10,7 +10,7 @@ export interface ISupplementIntake extends mongoose.Document{
 
 const SupplementIntakeSchema = new Schema<ISupplementIntake>(
     {
-        userId:       { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+        userId:       { type: Schema.Types.ObjectId, ref: 'User', required: true},
         supplementId: { type: Schema.Types.ObjectId, ref: 'Supplement', required: true },
         timestamp:    { type: Date, default: Date.now, index: true },
         dosageMg:     { type: Number, required: true },

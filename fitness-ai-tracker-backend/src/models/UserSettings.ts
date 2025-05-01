@@ -14,7 +14,7 @@ export interface IUserSettings extends mongoose.Document {
 
 const UserSettingsSchema = new Schema<IUserSettings>(
     {
-        userId : {type: Schema.Types.ObjectId, ref: 'User', required: true, index: true},
+        userId : {type: Schema.Types.ObjectId, ref: 'User', required: true},
         preferredWakeTime: String,
         preferredSleepTime: String,
         learningFocusAreas: { type: [String], default: [] },

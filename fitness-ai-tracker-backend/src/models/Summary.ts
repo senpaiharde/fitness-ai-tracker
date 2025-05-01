@@ -21,7 +21,7 @@ export interface ISummary extends mongoose.Document {
 
 const SummarySchema = new Schema<ISummary>(
   {
-    userId:      { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    userId:      { type: Schema.Types.ObjectId, ref: 'User', required: true},
     periodType:  { type: String, enum: ['weekly','monthly','custom'], default: 'weekly' },
     periodStart: { type: Date, required: true },
     periodEnd:   { type: Date, required: true },

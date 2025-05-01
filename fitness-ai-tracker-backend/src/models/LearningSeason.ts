@@ -13,7 +13,7 @@ export interface ILearningSession extends mongoose.Document{
 
 const LearningSessionSchema = new Schema<ILearningSession>(
     {
-        userId:    { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+        userId:    { type: Schema.Types.ObjectId, ref: 'User', required: true},
         date:      { type: Date, required: true, index: true },
         topic:     { type: String, required: true },
         startTime: String,

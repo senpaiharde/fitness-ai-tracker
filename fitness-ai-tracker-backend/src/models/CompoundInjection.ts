@@ -12,7 +12,7 @@ export interface ICompoundInjection extends mongoose.Document {
 
 const CompoundInjectionSchema = new Schema<ICompoundInjection>(
   {
-    userId:       { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
+    userId:       { type: Schema.Types.ObjectId, ref: 'User', required: true},
     compoundId:   { type: Schema.Types.ObjectId, ref: 'Compound', required: true },
     timestamp:    { type: Date, default: Date.now, index: true },
     dosageMg:     { type: Number, required: true },
