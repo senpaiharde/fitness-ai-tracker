@@ -37,14 +37,14 @@ export const Dashboard = () => {
                         <Shiny speed={5}>Age:{user?.birthdate} </Shiny>
                     </p>
                     <p>
-                        <Shiny speed={5}>Height:{user.user?.height} Cm </Shiny>
+                        <Shiny speed={5}>Height:{user?.heightCm} Cm </Shiny>
                     </p>
                     <p>
-                        <Shiny speed={5}>Weight: {user.user?.weight} kg</Shiny>
+                        <Shiny speed={5}>Weight: {user?.weightKg} kg</Shiny>
                     </p>
                     <p>
                         <Shiny speed={5}>
-                            {`isEnchaned:${user.user?.isEnchaned} `}{" "}
+                            {`isEnchaned:${user?.timeZone} `}{" "}
                         </Shiny>
                     </p>
                     {user.user?.isEnchaned && (
