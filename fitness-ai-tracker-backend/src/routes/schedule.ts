@@ -80,23 +80,41 @@ router.post(
   }
 );
 
-export const updateSchedule = createSchedule.partial().extend({
-  status: z.enum(['planned', 'done', 'skipped']).optional(),
-  actualStart: z
-    .string()
-    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
-    .optional(),
-  actualEnd: z
-    .string()
-    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
-    .optional(),
-  hour: z.number(),
-});
+export const updateSchedule = z
+  .object({
+    
+    date: z.coerce.date().optional(),
+    taskTitle: z.string().min(1).max(120).optional(),
+    taskType: z.string().max(40).optional(),
+    plannedStart: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .optional(),
+    plannedEnd: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .optional(),
+    priority: z.enum(['low', 'medium', 'high']).optional(),
+    recurrenceRule: z.string().max(200).optional(),
+    goalId: z.string().length(24).optional(),
+    actualStart: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .optional(),
+    actualEnd: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .optional(),
+    status: z.enum(['planned', 'done', 'skipped']).optional(),
+    // now allow and strip out *any* other keys without error:
+  })
+  .passthrough();
 /**
  * PUT /schedule/:id
  * Body can include any updatable fields: taskTitle, actualStart, status, etc.
  */
-router.put('/:id', validate(updateSchedule), async (req: Request, res: Response): Promise<any> => {
+router.put('/:id',  deriveHour,                       
+    validate(updateSchedule), async (req: Request, res: Response): Promise<any> => {
   try {
     const updates: any = { ...req.body };
 

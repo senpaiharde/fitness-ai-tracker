@@ -1,219 +1,288 @@
 // src/components/ScheduleWithBlocks.tsx
-import React, { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
+import React, { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import {
-  fetchDay,
-  upsertHour,
-  deleteEntry,
-  selectSchedule,
-  setDate,
-} from '../features/schedule/scheduleSlice';
-import type { HourCell } from '../features/schedule/scheduleSlice';
+    fetchDay,
+    upsertHour,
+    deleteEntry,
+    selectSchedule,
+    setDate,
+} from "../features/schedule/scheduleSlice";
+import type { HourCell } from "../features/schedule/scheduleSlice";
 
 export default function ScheduleWithBlocks() {
-  const dispatch = useAppDispatch();
-  const schedule = useAppSelector(selectSchedule);
-  const currentDate = useAppSelector((s) => s.schedule.currentDate);
+    const dispatch = useAppDispatch();
+    const schedule = useAppSelector(selectSchedule);
+    const currentDate = useAppSelector((s) => s.schedule.currentDate);
 
-  // State for editing existing blocks
-  const [isEditing, setIsEditing] = useState<string | null>(null);
-  const [form, setForm] = useState<Partial<HourCell>>({});
+    // State for editing existing blocks
+    const [isEditing, setIsEditing] = useState<string | null>(null);
+    const [form, setForm] = useState<Partial<HourCell>>({});
 
-  // State for adding a new block
-  const [isAdding, setIsAdding] = useState(false);
-  const [newTask, setNewTask] = useState({
-    plannedStart: '08:00',
-    plannedEnd:   '09:00',
-    taskTitle:    '',
-    priority:     'medium' as 'low'|'medium'|'high',
-  });
+    // State for adding a new block
+    const [isAdding, setIsAdding] = useState(false);
+    const [newTask, setNewTask] = useState({
+        plannedStart: "08:00",
+        plannedEnd: "09:00",
+        taskTitle: "",
+        priority: "medium" as "low" | "medium" | "high",
+    });
 
-  // Load the schedule whenever the date changes
-  useEffect(() => {
-    dispatch(fetchDay(currentDate));
-  }, [currentDate, dispatch]);
+    // Load the schedule whenever the date changes
+    useEffect(() => {
+        dispatch(fetchDay(currentDate));
+    }, [currentDate, dispatch]);
 
-  // Handlers for adding
-  const startAdd = () => {
-    setIsAdding(true);
-    setNewTask({ plannedStart: '08:00', plannedEnd: '09:00', taskTitle: '', priority: 'medium' });
-  };
-
-  const saveNew = () => {
-    // derive hour from plannedStart
-    const hour = Number(newTask.plannedStart.split(':')[0]);
-    const updates = {
-      taskTitle:    newTask.taskTitle,
-      plannedStart: newTask.plannedStart,
-      plannedEnd:   newTask.plannedEnd,
-      priority:     newTask.priority,
+    // Handlers for adding
+    const startAdd = () => {
+        setIsAdding(true);
+        setNewTask({
+            plannedStart: "08:00",
+            plannedEnd: "09:00",
+            taskTitle: "",
+            priority: "medium",
+        });
     };
-    dispatch(upsertHour({ date: currentDate, hour, updates }));
-    setIsAdding(false);
-  };
 
-  const cancelAdd = () => {
-    setIsAdding(false);
-  };
+    const saveNew = () => {
+        // derive hour from plannedStart
+        const hour = Number(newTask.plannedStart.split(":")[0]);
+        const updates = {
+            taskTitle: newTask.taskTitle,
+            plannedStart: newTask.plannedStart,
+            plannedEnd: newTask.plannedEnd,
+            priority: newTask.priority,
+        };
+        dispatch(upsertHour({ date: currentDate, hour, updates }));
+        setIsAdding(false);
+    };
 
-  // Handlers for editing existing blocks (unchanged)
-  const startEdit = (entry: HourCell) => {
-    setForm({ ...entry });
-    setIsEditing(entry._id);
-  };
-  const saveEdit = () => {
-    if (!isEditing) return;
-    const { _id, hour, ...updates } = form as HourCell;
-    dispatch(upsertHour({ date: currentDate, hour, updates }));
-    setIsEditing(null);
-  };
-  const removeBlock = (entryId: string) => {
-    dispatch(deleteEntry(entryId));
-    setIsEditing(null);
-  };
+    const cancelAdd = () => {
+        setIsAdding(false);
+    };
 
-  return (
-    <div style={{ color: '#fff' }}>
-      {/* Date picker + Add button */}
-      <div style={{ marginBottom: 16 }}>
-        <input
-          type="date"
-          value={currentDate}
-          onChange={(e) => dispatch(setDate(e.target.value))}
-        />
-        <button onClick={startAdd} style={{ marginLeft: 8 }}>
-          + Add Task
-        </button>
-      </div>
+    // Handlers for editing existing blocks (unchanged)
+    const startEdit = (entry: HourCell) => {
+        setForm({ ...entry });
+        setIsEditing(entry._id);
+    };
+    const saveEdit = () => {
+        if (!isEditing) return;
+        const { _id, hour, ...updates } = form as HourCell;
+        dispatch(upsertHour({ date: currentDate, hour, updates }));
+        setIsEditing(null);
+    };
+    const removeBlock = (entryId: string) => {
+        dispatch(deleteEntry(entryId));
+        setIsEditing(null);
+    };
 
-      {/* Add form */}
-      {isAdding && (
-        <div style={{ marginBottom: 16, background: '#222', padding: 12 }}>
-          <label>
-            Start:
-            <input
-              type="time"
-              value={newTask.plannedStart}
-              onChange={(e) => setNewTask({ ...newTask, plannedStart: e.target.value })}
-            />
-          </label>
-          <label style={{ marginLeft: 8 }}>
-            End:
-            <input
-              type="time"
-              value={newTask.plannedEnd}
-              onChange={(e) => setNewTask({ ...newTask, plannedEnd: e.target.value })}
-            />
-          </label>
-          <label style={{ marginLeft: 8 }}>
-            Title:
-            <input
-              value={newTask.taskTitle}
-              onChange={(e) => setNewTask({ ...newTask, taskTitle: e.target.value })}
-              placeholder="What are you doing?"
-            />
-          </label>
-          <label style={{ marginLeft: 8 }}>
-            Priority:
-            <select
-              value={newTask.priority}
-              onChange={(e) =>
-                setNewTask({ ...newTask, priority: e.target.value as any })
-              }
-            >
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
-            </select>
-          </label>
-          <button onClick={saveNew} style={{ marginLeft: 8 }}>
-            Save
-          </button>
-          <button onClick={cancelAdd} style={{ marginLeft: 4 }}>
-            Cancel
-          </button>
+    return (
+        <div style={{ color: "#fff" }}>
+            {/* Date picker + Add button */}
+            <div style={{ marginBottom: 16 }}>
+                <input
+                    type="date"
+                    value={currentDate}
+                    onChange={(e) => dispatch(setDate(e.target.value))}
+                />
+                <button onClick={startAdd} style={{ marginLeft: 8 }}>
+                    + Add Task
+                </button>
+            </div>
+
+            {/* Add form */}
+            {isAdding && (
+                <div
+                    style={{
+                        marginBottom: 16,
+                        background: "#222",
+                        padding: 12,
+                    }}
+                >
+                    <label>
+                        Start:
+                        <input
+                            type="time"
+                            value={newTask.plannedStart}
+                            onChange={(e) =>
+                                setNewTask({
+                                    ...newTask,
+                                    plannedStart: e.target.value,
+                                })
+                            }
+                        />
+                    </label>
+                    <label style={{ marginLeft: 8 }}>
+                        End:
+                        <input
+                            type="time"
+                            value={newTask.plannedEnd}
+                            onChange={(e) =>
+                                setNewTask({
+                                    ...newTask,
+                                    plannedEnd: e.target.value,
+                                })
+                            }
+                        />
+                    </label>
+                    <label style={{ marginLeft: 8 }}>
+                        Title:
+                        <input
+                            value={newTask.taskTitle}
+                            onChange={(e) =>
+                                setNewTask({
+                                    ...newTask,
+                                    taskTitle: e.target.value,
+                                })
+                            }
+                            placeholder="What are you doing?"
+                        />
+                    </label>
+                    <label style={{ marginLeft: 8 }}>
+                        Priority:
+                        <select
+                            value={newTask.priority}
+                            onChange={(e) =>
+                                setNewTask({
+                                    ...newTask,
+                                    priority: e.target.value as any,
+                                })
+                            }
+                        >
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </label>
+                    <button onClick={saveNew} style={{ marginLeft: 8 }}>
+                        Save
+                    </button>
+                    <button onClick={cancelAdd} style={{ marginLeft: 4 }}>
+                        Cancel
+                    </button>
+                </div>
+            )}
+
+            {/* Schedule table with blocks */}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Task</th>
+                        <th>Priority</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {schedule.map((cell, hour) => {
+                        if (!cell) return null;
+                        const [startH] = cell.plannedStart
+                            .split(":")
+                            .map(Number);
+                        if (startH !== hour) return null;
+                        const [, endH] = cell.plannedEnd.split(":").map(Number);
+                        const span = endH - startH + 1;
+
+                        // Editing existing block
+                        if (isEditing === cell._id) {
+                            return (
+                                <tr key={cell._id}>
+                                    <td rowSpan={span}>
+                                        <input
+                                            type="time"
+                                            value={form.plannedStart}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    plannedStart:
+                                                        e.target.value,
+                                                })
+                                            }
+                                        />
+                                        –
+                                        <input
+                                            type="time"
+                                            value={form.plannedEnd}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    plannedEnd: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </td>
+                                    <td rowSpan={span}>
+                                        <input
+                                            value={form.taskTitle}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    taskTitle: e.target.value,
+                                                })
+                                            }
+                                        />
+                                    </td>
+                                    <td rowSpan={span}>
+                                        <select
+                                            value={form.priority}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    priority: e.target
+                                                        .value as any,
+                                                })
+                                            }
+                                        >
+                                            <option value="low">Low</option>
+                                            <option value="medium">
+                                                Medium
+                                            </option>
+                                            <option value="high">High</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <button onClick={saveEdit}>Save</button>
+                                        <button
+                                            onClick={() =>
+                                                removeBlock(cell._id)
+                                            }
+                                        >
+                                            Delete
+                                        </button>
+                                        <button
+                                            onClick={() => setIsEditing(null)}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        }
+
+                        // Normal display
+                        return (
+                            <tr key={cell._id}>
+                                <td rowSpan={span}>
+                                    {cell.plannedStart}–{cell.plannedEnd}
+                                </td>
+                                <td rowSpan={span}>{cell.taskTitle}</td>
+                                <td rowSpan={span}>{cell.priority}</td>
+                                <td>
+                                    <button onClick={() => startEdit(cell)}>
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => removeBlock(cell._id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
         </div>
-      )}
-
-      {/* Schedule table with blocks */}
-      <table>
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Task</th>
-            <th>Priority</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {schedule.map((cell, hour) => {
-            if (!cell) return null;
-            const [startH] = cell.plannedStart.split(':').map(Number);
-            if (startH !== hour) return null;
-            const [, endH] = cell.plannedEnd.split(':').map(Number);
-            const span = endH - startH + 1;
-
-            // Editing existing block
-            if (isEditing === cell._id) {
-              return (
-                <tr key={cell._id}>
-                  <td rowSpan={span}>
-                    <input
-                      type="time"
-                      value={form.plannedStart}
-                      onChange={(e) => setForm({ ...form, plannedStart: e.target.value })}
-                    />
-                    –
-                    <input
-                      type="time"
-                      value={form.plannedEnd}
-                      onChange={(e) => setForm({ ...form, plannedEnd: e.target.value })}
-                    />
-                  </td>
-                  <td rowSpan={span}>
-                    <input
-                      value={form.taskTitle}
-                      onChange={(e) => setForm({ ...form, taskTitle: e.target.value })}
-                    />
-                  </td>
-                  <td rowSpan={span}>
-                    <select
-                      value={form.priority}
-                      onChange={(e) =>
-                        setForm({ ...form, priority: e.target.value as any })
-                      }
-                    >
-                      <option value="low">Low</option>
-                      <option value="medium">Medium</option>
-                      <option value="high">High</option>
-                    </select>
-                  </td>
-                  <td>
-                    <button onClick={saveEdit}>Save</button>
-                    <button onClick={() => removeBlock(cell._id)}>Delete</button>
-                    <button onClick={() => setIsEditing(null)}>Cancel</button>
-                  </td>
-                </tr>
-              );
-            }
-
-            // Normal display
-            return (
-              <tr key={cell._id}>
-                <td rowSpan={span}>
-                  {cell.plannedStart}–{cell.plannedEnd}
-                </td>
-                <td rowSpan={span}>{cell.taskTitle}</td>
-                <td rowSpan={span}>{cell.priority}</td>
-                <td>
-                  <button onClick={() => startEdit(cell)}>Edit</button>
-                  <button onClick={() => removeBlock(cell._id)}>Delete</button>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
+    );
 }
