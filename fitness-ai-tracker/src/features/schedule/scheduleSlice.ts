@@ -37,12 +37,24 @@ export const upsertHour = createAsyncThunk<
   { date: string; hour: number; updates: Partial<HourCell> },
   { state: RootState }
 >("schedule/upsertHour", async ({ date, hour, updates }, { getState }) => {
+
+
   const existing = getState().schedule.byHour[hour];
-  if (existing && existing._id) {
+  if (existing ) {
     const res = await api.put<HourCell>(`/schedule/${existing._id}`, updates);
     return res.data;
   } else {
-    const payload = { date, hour, ...updates };
+    const { taskTitle, plannedStart, plannedEnd, taskType, priority, recurrenceRule, goalId } = updates;
+      const payload = {
+        date,
+        taskTitle,
+        taskType,
+        plannedStart,
+        plannedEnd,
+        priority,
+        recurrenceRule,
+        goalId,
+      };
     const res = await api.post<HourCell>("/schedule", payload);
     return res.data;
   }
