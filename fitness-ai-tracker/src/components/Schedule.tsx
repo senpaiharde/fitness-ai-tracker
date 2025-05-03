@@ -9,6 +9,7 @@ import {
     setDate,
 } from "../features/schedule/scheduleSlice";
 import type { HourCell } from "../features/schedule/scheduleSlice";
+import ScheduleAdd from "./scheduleAdd";
 
 export default function ScheduleWithBlocks() {
     const dispatch = useAppDispatch();
@@ -98,75 +99,11 @@ export default function ScheduleWithBlocks() {
 
             {/* Add form */}
             {isAdding && (
-                <div
-                    style={{
-                        marginBottom: 16,
-                        background: "#222",
-                        padding: 12,
-                    }}
-                >
-                    <label>
-                        Start:
-                        <input
-                            type="time"
-                            value={newTask.plannedStart}
-                            onChange={(e) =>
-                                setNewTask({
-                                    ...newTask,
-                                    plannedStart: e.target.value,
-                                })
-                            }
-                        />
-                    </label>
-                    <label style={{ marginLeft: 8 }}>
-                        End:
-                        <input
-                            type="time"
-                            value={newTask.plannedEnd}
-                            onChange={(e) =>
-                                setNewTask({
-                                    ...newTask,
-                                    plannedEnd: e.target.value,
-                                })
-                            }
-                        />
-                    </label>
-                    <label style={{ marginLeft: 8 }}>
-                        Title:
-                        <input
-                            value={newTask.taskTitle}
-                            onChange={(e) =>
-                                setNewTask({
-                                    ...newTask,
-                                    taskTitle: e.target.value,
-                                })
-                            }
-                            placeholder="What are you doing?"
-                        />
-                    </label>
-                    <label style={{ marginLeft: 8 }}>
-                        Priority:
-                        <select
-                            value={newTask.priority}
-                            onChange={(e) =>
-                                setNewTask({
-                                    ...newTask,
-                                    priority: e.target.value as any,
-                                })
-                            }
-                        >
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </label>
-                    <button onClick={saveNew} style={{ marginLeft: 8 }}>
-                        Save
-                    </button>
-                    <button onClick={cancelAdd} style={{ marginLeft: 4 }}>
-                        Cancel
-                    </button>
-                </div>
+                <>
+                <ScheduleAdd setNewTask={setNewTask} 
+                cancelAdd={cancelAdd}
+                newTask={newTask} saveNew={saveNew}/>
+                </>
             )}
 
             {/* Schedule table with blocks */}
