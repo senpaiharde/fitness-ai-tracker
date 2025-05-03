@@ -26,6 +26,9 @@ export default function ScheduleWithBlocks() {
         plannedEnd: "09:00",
         taskTitle: "",
         priority: "medium" as "low" | "medium" | "high",
+        taskType: 'chill' as "Workout" | 'Study'| 'chill'| 'Programming' | 'VideoGames' | 'cardio'
+        | 'anime'| 'new',
+        status: 'done' as 'planned' | "done"| 'skipped'
     });
 
     // Load the schedule whenever the date changes
@@ -41,6 +44,8 @@ export default function ScheduleWithBlocks() {
             plannedEnd: "09:00",
             taskTitle: "",
             priority: "medium",
+            taskType: 'chill',
+            status: 'done'
         });
     };
 
@@ -241,6 +246,24 @@ export default function ScheduleWithBlocks() {
                                             <option value="high">High</option>
                                         </select>
                                     </td>
+                                    <td rowSpan={span}>
+                                        <select
+                                            value={form.status}
+                                            onChange={(e) =>
+                                                setForm({
+                                                    ...form,
+                                                    status: e.target
+                                                        .value as any,
+                                                })
+                                            }
+                                        >
+                                            <option value="planned">planned</option>
+                                            <option value="done">
+                                               done
+                                            </option>
+                                            <option value="skipped">skipped</option>
+                                        </select>
+                                    </td>
                                     <td>
                                         <button onClick={saveEdit}>Save</button>
                                         <button
@@ -268,6 +291,7 @@ export default function ScheduleWithBlocks() {
                                 </td>
                                 <td rowSpan={span}>{cell.taskTitle}</td>
                                 <td rowSpan={span}>{cell.priority}</td>
+                                <td rowSpan={span}>{cell.status}</td>
                                 <td>
                                     <button onClick={() => startEdit(cell)}>
                                         Edit
