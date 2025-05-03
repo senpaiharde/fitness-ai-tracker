@@ -1,7 +1,7 @@
-import { useSelector } from "react-redux";
+
 
 import { Link, useNavigate } from "react-router-dom";
-import { RootState } from "../app/store";
+
 import { useState } from "react";
 import { EnhancementLog } from "./EnhancementLog";
 import { LogsPage } from "./LogsPage";
@@ -12,19 +12,36 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selectToken, selectUser } from "../features/user/userSlice";
 
 export const Dashboard = () => {
-    const currentUser = useSelector((state: RootState) => state.user.user);
-    
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-  
-    // ① Use the typed selector hook:
     const token = useAppSelector(selectToken);
     const user  = useAppSelector(selectUser);
-  
-    // ② Compute login state off the token
+    
     const isLoggedIn = Boolean(token);
     const [display, setdisplay] = useState(false);
     const [displaylog, setdisplaylog] = useState(false);
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
+    const birthIso: any = user?.birthdate
+ function calculateAge(birthIso: string) {
+    const birth = new Date(birthIso);
+    const today = new Date()
+
+    let age = today.getFullYear() - birth.getFullYear();
+
+    const monthdiff = today.getMonth() - birth.getMonth();
+    const daydiff = today.getDay() - birth.getDay();
+
+    if(monthdiff < 0  || (monthdiff === 0 && daydiff === 0)){return age--}
+
+    return age;
+
+  }
+  const age = calculateAge(birthIso)
+    //  Use the typed selector hook:
+   
+  
+    //  Compute login state off the token
+   
     console.log(user);
     return (
         <div className="dashboard">
@@ -34,7 +51,7 @@ export const Dashboard = () => {
                         <Shiny speed={5}>{`Welcome ${user?.fullname}`}</Shiny>
                     </h2>
                     <p>
-                        <Shiny speed={5}>Age:{user?.birthdate} </Shiny>
+                        <Shiny speed={5}>Age:{age} </Shiny>
                     </p>
                     <p>
                         <Shiny speed={5}>Height:{user?.heightCm} Cm </Shiny>
