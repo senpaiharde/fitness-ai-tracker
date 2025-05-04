@@ -11,6 +11,7 @@ import {
 import type { HourCell } from "../features/schedule/scheduleSlice";
 import ScheduleAdd from "./schedulesSite/ScheduleAdd";
 import ScheduleEdit from "./schedulesSite/ScheduleEdit";
+import NewTask from "./schedulesSite/utils/SaveNew";
 
 export default function ScheduleWithBlocks() {
     const dispatch = useAppDispatch();
@@ -23,15 +24,7 @@ export default function ScheduleWithBlocks() {
 
     // State for adding a new block
     const [isAdding, setIsAdding] = useState(false);
-    const [newTask, setNewTask] = useState({
-        plannedStart: "08:00",
-        plannedEnd: "09:00",
-        taskTitle: "",
-        priority: "medium" as "low" | "medium" | "high",
-        taskType: 'chill' as "Workout" | 'Study'| 'chill'| 'Programming' | 'VideoGames' | 'cardio'
-        | 'anime'| 'new',
-        status: 'done' as 'planned' | "done"| 'skipped'
-    });
+    const [newTask, setNewTask] = useState(NewTask);
 
     // Load the schedule whenever the date changes
     useEffect(() => {
@@ -40,7 +33,9 @@ export default function ScheduleWithBlocks() {
 
     // Handlers for adding
     const startAdd = () => {
+        
         setIsAdding(true);
+        
         setNewTask({
             plannedStart: "08:00",
             plannedEnd: "09:00",
