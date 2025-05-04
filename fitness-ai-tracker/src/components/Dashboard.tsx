@@ -61,9 +61,19 @@ export const Dashboard = () => {
                     </p>
                     <p>
                         <Shiny speed={5}>
-                            {`isEnchaned:${user?.timeZone} `}{" "}
+                           Main: {user?.goals}
                         </Shiny>
                     </p>
+                    <p>
+                        <Shiny speed={5}>
+                           BodyFat: {user?.baselineBodyFatPercent}%
+                        </Shiny>
+                    </p>
+                    <ShinyButton
+                                onClick={() => setdisplaylog((prev) => !prev)}
+                            >
+                                Set Schedule
+                            </ShinyButton>
                     {user.user?.isEnchaned && (
                         <div>
                             <p>
@@ -86,11 +96,7 @@ export const Dashboard = () => {
                         </div>
                     )}
                 </div>
-                <div >
-                {/* ...your existing nav/routes... */}
-                <h1>My Schedule</h1>
-                <Schedule />
-            </div>
+                
                 </>
 
             ) : (
@@ -100,7 +106,8 @@ export const Dashboard = () => {
                 </div>
             )}
             {displaylog && (
-                <LogsPage isOpenlog={displaylog} setIsOpenlog={setdisplaylog} />
+                <div style={{padding:'60px'}}><Schedule/></div>
+                
             )}
             {display && (
                 <EnhancementLog isOpen={display} setIsOpen={setdisplay} />
