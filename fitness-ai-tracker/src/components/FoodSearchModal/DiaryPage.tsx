@@ -6,6 +6,7 @@ import {
     deleteLog,
     selectFoodByHour,
     selectTotals,
+    fetchFoodLog
 } from "../../features/food/foodLogs";
 import FoodSearchModal from "./FoodSearchModal";
 
@@ -15,7 +16,7 @@ export default function DiaryPage() {
     const today = new Date().toISOString().slice(0, 10);
 
     useEffect(() => {
-        dispatch(fetchDiary(today));
+        dispatch(fetchFoodLog(today));
     }, [dispatch]);
 
     const rows = useAppSelector(selectFoodByHour);

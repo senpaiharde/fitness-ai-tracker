@@ -49,6 +49,7 @@ export const updateFoodLog = createAsyncThunk<
         const {
             timestamp,
             foodItemId,
+            
             manualText,
             grams,
             calories,
@@ -57,6 +58,7 @@ export const updateFoodLog = createAsyncThunk<
         } = updates;
         const payload = {
             date,
+            
             timestamp,
             foodItemId,
             manualText,
@@ -85,7 +87,8 @@ export const deleteLog = createAsyncThunk<string, string, { state: RootState }>(
 export const fetchDiary = createAsyncThunk<DiarySummary, string>(
     "foodLog/fetchDiary",
     async (date) => {
-        const res = await api.get("/food-logs/summary", { params: { date } });
+        const res = await api.get("/food-logs/summary", { params: { date },
+            headers: { "Cache-Control": "no-cache" } });
         return res.data as DiarySummary;
     }
 );
@@ -146,6 +149,7 @@ const foodLogSlice = createSlice({
                 );
             })
             .addCase(fetchDiary.fulfilled, (state, { payload }) => {
+                if (!payload || !payload.entries) return; 
                 state.byHour = Array(24).fill(null);
                 payload.entries.forEach((e) => (state.byHour[e.hour] = e));
                 state.totals = {
