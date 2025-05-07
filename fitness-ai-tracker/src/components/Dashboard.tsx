@@ -8,6 +8,8 @@ import ShinyButton from "../ui/ShinyButtton";
 import Schedule from "./Schedule";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selectToken, selectUser } from "../features/user/userSlice";
+import FoodSearchModal from "./FoodSearchModal/FoodSearchModal";
+import DiaryPage from "./FoodSearchModal/DiaryPage";
 
 export const Dashboard = () => {
     const token = useAppSelector(selectToken);
@@ -113,7 +115,7 @@ export const Dashboard = () => {
                 </div>
             )}
             {displaylog && <Schedule />}
-            {displayFood && <Schedule />}
+            {displayFood && <DiaryPage/>}
             {display && (
                 <EnhancementLog isOpen={display} setIsOpen={setdisplay} />
             )}

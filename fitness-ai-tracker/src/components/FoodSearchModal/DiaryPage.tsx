@@ -22,7 +22,7 @@ export default function DiaryPage() {
     const totals = useAppSelector(selectTotals);
 
     return (
-        <div style={{ padding: 20 }}>
+        <div style={{ padding: 20 , color:'white'}}>
             <h2>Diary {today}</h2>
             <button onClick={() => setModal(true)}>Add food</button>
 
@@ -43,7 +43,7 @@ export default function DiaryPage() {
                             l && (
                                 <tr key={l._id}>
                                     <td>{i}:00</td>
-                                    <td>{l.manualText ?? "Food"}</td>
+                                    <td>{l.manualText  ?? "Food"}</td>
                                     <td>{l.grams}</td>
                                     <td>{l.calories}</td>
                                     <td>
