@@ -102,4 +102,38 @@ router.delete('/:id',async (req,res): Promise<any> => {
     }
 })
 
+
+// src/routes/foodLogs.ts  (add below existing routes)
+router.get('/summary',validate(foodLogSchema), async (req: Request, res: Response): Promise<any> => {
+    try {
+      const date = new Date(req.query.date as string);
+      if (isNaN(date as any)) {
+        return res.status(400).json({ error: 'date query required' });
+      }
+      const next = new Date(date); next.setDate(next.getDate() + 1);
+  
+      const pipeline = [
+        { $match: { userId: req.user!.id, timestamp: { $gte: date, $lt: next } } },
+        {
+          $group: {
+            _id: null,
+            totalCalories: { $sum: '$calories' },
+            protein:       { $sum: '$macros.protein' },
+            carbs:         { $sum: '$macros.carbs' },
+            fat:           { $sum: '$macros.fat' },
+            entries: { $push: '$$ROOT' }
+          }
+        },
+        { $project: { _id: 0 } }
+      ];
+  
+      const [summary] = await FoodLog.aggregate(pipeline);
+      res.json(summary ?? { totalCalories: 0, protein: 0, carbs: 0, fat: 0, entries: [] });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Could not build summary' });
+    }
+  });
+  
+
 export default router;
