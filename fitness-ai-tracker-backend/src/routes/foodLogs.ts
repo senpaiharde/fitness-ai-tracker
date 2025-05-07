@@ -41,6 +41,7 @@ export const foodLogSchema = z.object({
     calories:   z.number().nonnegative().optional(),
     foodLog: z.enum(['morning', 'evening', 'night']).optional(),
     macros: z.object({
+        totalCalories: z.number().nonnegative().optional(),
       protein: z.number().nonnegative().optional(),
       carbs:   z.number().nonnegative().optional(),
       fat:     z.number().nonnegative().optional()

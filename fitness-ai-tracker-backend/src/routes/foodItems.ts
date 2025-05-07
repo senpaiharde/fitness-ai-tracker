@@ -33,6 +33,7 @@ export const foodItemSchema = z.object({
     servingSizeGrams: z.number().positive(),
     calories:         z.number().nonnegative(),
     macros: z.object({
+        
       protein: z.number().nonnegative(),
       carbs:   z.number().nonnegative(),
       fat:     z.number().nonnegative()
