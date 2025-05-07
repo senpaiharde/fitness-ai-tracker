@@ -35,7 +35,7 @@ export default function ScheduleWithBlocks() {
     const startAdd = () => {
         
         setIsAdding(true);
-        
+
         setNewTask({
             plannedStart: "08:00",
             plannedEnd: "09:00",
@@ -80,7 +80,7 @@ export default function ScheduleWithBlocks() {
     };
 
     return (
-        <div style={{ color: "#fff" }}>
+        <div style={{ color: "#fff" ,textAlign:'center' }} >
             {/* Date picker + Add button */}
             <div style={{ marginBottom: 16 }}>
                 <input
@@ -103,7 +103,7 @@ export default function ScheduleWithBlocks() {
             )}
 
             {/* Schedule table with blocks */}
-            <table>
+            <table >
                 <thead>
                     <tr>
                         <th>Time</th>

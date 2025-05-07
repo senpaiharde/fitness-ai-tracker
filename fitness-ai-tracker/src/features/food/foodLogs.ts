@@ -4,59 +4,59 @@ import api from "../../services/apiClient";
 import type { RootState } from "../../app/store";
 
 export interface HourCell {
-  _id: string;
-  userId: string;
-  date: string;
-  hour: number;
-  taskTitle: string;
-  taskType?: string;
-  plannedStart: string;
-  plannedEnd: string;
-  actualStart?: string;
-  actualEnd?: string;
-  status: "planned" | "done" | "skipped";
-  priority: "low" | "medium" | "high";
-  recurrenceRule?: string;
-  goalId?: string;
-  createdAt: string;
-  updatedAt: string;
+    _id: string;
+    userId: string,
+    date: number,
+    timestamp: Date;
+    hour: number;
+    foodItemId?: string;
+    manualText?: string;
+    grams?: number;
+    calories?: number;
+    foodLog: 'morning'| 'evening'| 'night'; 
+    macros?: {
+      protein: number;
+      carbs: number;
+      fat: number;
+    };
+    notes?: string;
 }
 
 // — 1. Fetch all entries for a given date
-export const fetchLog = createAsyncThunk<HourCell[], string>(
-  "schedule/fetchDay",
+export const fetchFoodLog = createAsyncThunk<HourCell[], string>(
+  "food/fetchFoodLog",
   async (date) => {
-    const res = await api.get("/schedule", { params: { date } });
+    const res = await api.get("/food-logs", { params: { date } });
     return res.data as HourCell[];
   }
 );
 
 // — 2. Create or update a single hour entry (block edit uses PUT)
-export const updateLog = createAsyncThunk<
+export const updateFoodLog = createAsyncThunk<
   HourCell,
   { date: string; hour: number; updates: Partial<HourCell> },
   { state: RootState }
->("schedule/upsertHour", async ({ date, hour, updates }, { getState }) => {
+>("food/updateFoodLog", async ({ date, hour, updates }, { getState }) => {
 
 
   const existing = getState().schedule.byHour[hour];
   if (existing ) {
-    const res = await api.put<HourCell>(`/schedule/${existing._id}`, updates);
+    const res = await api.put<HourCell>(`/food-logs/${existing._id}`, updates);
     return res.data;
   } else {
-    const {status, taskTitle, plannedStart, plannedEnd, taskType, priority, recurrenceRule, goalId } = updates;
+    const {timestamp,foodItemId,manualText,grams,calories,macros,notes } = updates;
       const payload = {
         date,
-        taskTitle,
-        taskType,
-        plannedStart,
-        plannedEnd,
-        priority,
-        recurrenceRule,
-        goalId,
-        status,
+        timestamp,
+        foodItemId,
+        manualText,
+        grams,
+        calories,
+        macros,
+        notes,
+        
       };
-    const res = await api.post<HourCell>("/schedule", payload);
+    const res = await api.post<HourCell>("/foodLog", payload);
     return res.data;
   }
 });
@@ -66,26 +66,26 @@ export const deleteLog = createAsyncThunk<
   string,
   string,
   { state: RootState }
->("schedule/deleteEntry", async (entryId, { getState, dispatch }) => {
-  await api.delete(`/schedule/${entryId}`);
+>("foodLog/deleteLog", async (entryId, { getState, dispatch }) => {
+  await api.delete(`/foodLog/${entryId}`);
   // reload the current day to stay in sync
   const date = getState().schedule.currentDate;
-  dispatch(fetchLog(date));
+  dispatch(fetchFoodLog(date));
   return entryId;
 });
 
-interface ScheduleState {
+interface LogState {
   byHour: (HourCell | null)[];
   currentDate: string;
 }
 
-const initialState: ScheduleState = {
+const initialState: LogState = {
   byHour: Array<HourCell | null>(24).fill(null),
   currentDate: new Date().toISOString().slice(0, 10),
 };
 
-const scheduleSlice = createSlice({
-  name: "schedule",
+const foodLogSlice = createSlice({
+  name: "foodLog",
   initialState,
   reducers: {
     setLog(state, action: PayloadAction<string>) {
@@ -95,14 +95,14 @@ const scheduleSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // load day
-      .addCase(fetchLog.fulfilled, (state, { payload }) => {
+      .addCase(fetchFoodLog.fulfilled, (state, { payload }) => {
         state.byHour = Array(24).fill(null);
         payload.forEach((entry) => {
           state.byHour[entry.hour] = entry;
         });
       })
       // upsert hour/block
-      .addCase(updateLog.fulfilled, (state, { payload }) => {
+      .addCase(updateFoodLog.fulfilled, (state, { payload }) => {
         state.byHour[payload.hour] = payload;
       })
       // delete block: clear any hours matching that _id
@@ -114,6 +114,6 @@ const scheduleSlice = createSlice({
   },
 });
 
-export const { setLog } = scheduleSlice.actions;
-export const selectSchedule = (state: RootState) => state.schedule.byHour;
-export default scheduleSlice.reducer;
+export const { setLog } = foodLogSlice.actions;
+export const LogFood = (state: RootState) => state.schedule.byHour;
+export default foodLogSlice.reducer;

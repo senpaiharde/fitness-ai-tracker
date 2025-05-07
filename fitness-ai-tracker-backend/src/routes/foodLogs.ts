@@ -30,7 +30,7 @@ router.get('/', async (req: Request,res: Response): Promise<any> => {
 export const foodLogSchema = z.object({
     /* ISO timestamp; default = now if omitted */
     timestamp:  z.coerce.date().optional(),
-  
+    date: z.coerce.date().optional(),
     /* Either reference a catalog item … */
     foodItemId: z.string().length(24).optional(),
   
@@ -39,7 +39,7 @@ export const foodLogSchema = z.object({
   
     grams:      z.number().positive().optional(),
     calories:   z.number().nonnegative().optional(),
-  
+    foodLog: z.enum(['morning', 'evening', 'night']).optional(),
     macros: z.object({
       protein: z.number().nonnegative().optional(),
       carbs:   z.number().nonnegative().optional(),
@@ -66,6 +66,30 @@ router.post('/',validate(foodLogSchema), async (req,res): Promise<any> => {
         res.status(500).json({err: 'could not create food log'})
     }
 })
+router.put('/:id',  validate(foodLogSchema), async (req: Request, res: Response): Promise<any> => {
+  try {
+    const updates: any = { ...req.body };
+
+    if (updates.plannedStart) {
+      const [h] = updates.plannedStart.split(':');
+      updates.hour = parseInt(h, 10);
+    }
+    const updated = await FoodLog.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user!.id },
+      { $set: updates },
+      { new: true, runValidators: true }
+    ).lean();
+
+    if (!updated) return res.status(404).json({ error: 'Entry not found' });
+    res.json(updated);
+  } catch (err: any) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not update entry' });
+  }
+});
+
+
+
 
 router.delete('/:id',async (req,res): Promise<any> => {
     try{

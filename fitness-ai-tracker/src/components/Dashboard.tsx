@@ -106,7 +106,7 @@ export const Dashboard = () => {
                 </div>
             )}
             {displaylog && (
-                <div style={{padding:'60px'}}><Schedule/></div>
+                <Schedule/>
                 
             )}
             {display && (
