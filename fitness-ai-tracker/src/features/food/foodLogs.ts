@@ -85,41 +85,38 @@ export const deleteLog = createAsyncThunk<string, string, { state: RootState }>(
 export const fetchDiary = createAsyncThunk<DiarySummary, string>(
     "foodLog/fetchDiary",
     async (date) => {
-      const res = await api.get("/food-logs/summary", { params: { date } });
-      return res.data as DiarySummary;
+        const res = await api.get("/food-logs/summary", { params: { date } });
+        return res.data as DiarySummary;
     }
-  );
-  interface DiarySummary {
+);
+interface DiarySummary {
     totalCalories: number;
     protein: number;
     carbs: number;
     fat: number;
     entries: HourCell[];
-  }
-  
+}
+
 interface Totals {
     calories: number;
     protein: number;
     carbs: number;
     fat: number;
-  }
-  
-  interface LogState {
+}
+
+interface LogState {
     byHour: (HourCell | null)[];
     currentDate: string;
-    totals: Totals;          // <- not an array
-  }
-  
-  const initialState: LogState = {
+    totals: Totals; // <- not an array
+}
+
+const initialState: LogState = {
     byHour: Array(24).fill(null),
     currentDate: new Date().toISOString().slice(0, 10),
     totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
-  };
-  
-
+};
 
 // diary thunk
-
 
 const foodLogSlice = createSlice({
     name: "foodLog",
@@ -153,15 +150,15 @@ const foodLogSlice = createSlice({
                 payload.entries.forEach((e) => (state.byHour[e.hour] = e));
                 state.totals = {
                     calories: payload.totalCalories,
-                    protein:  payload.protein,
-                    carbs:    payload.carbs,
-                    fat:      payload.fat
-                  };
+                    protein: payload.protein,
+                    carbs: payload.carbs,
+                    fat: payload.fat,
+                };
             });
     },
 });
 
 export const { setLog } = foodLogSlice.actions;
 export const selectFoodByHour = (s: RootState) => s.foodLog.byHour;
-export const selectTotals     = (s: RootState) => s.foodLog.totals;
+export const selectTotals = (s: RootState) => s.foodLog.totals;
 export default foodLogSlice.reducer;

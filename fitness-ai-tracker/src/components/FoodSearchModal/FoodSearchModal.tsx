@@ -62,9 +62,13 @@ export default function FoodSearchModal ({date, onClose}) {
                 <h4>{food.name}</h4>
                 <label>
                 Grams&nbsp;
-                <input type='number' />
-                </label></>
+                <input type='number' value={grams} onChange={(e) => setGrams(+e.target.value)}/>
+                </label>
+                <p>{preview!.kcal} * P {preview!.p} C {preview!.c} F {preview!.f}</p>
+                <button onClick={add}>add</button>
+                </>
             )}
+            <button onClick={onClose}>Close</button>
         </div>
     )
 
