@@ -65,7 +65,7 @@ export const updateFoodLog = createAsyncThunk<
             macros,
             notes,
         };
-        const res = await api.post<HourCell>("/foodLog", payload);
+        const res = await api.post<HourCell>("/food-logs", payload);
         return res.data;
     }
 });
@@ -74,7 +74,7 @@ export const updateFoodLog = createAsyncThunk<
 export const deleteLog = createAsyncThunk<string, string, { state: RootState }>(
     "foodLog/deleteLog",
     async (entryId, { getState, dispatch }) => {
-        await api.delete(`/foodLog/${entryId}`);
+        await api.delete(`/food-logs/${entryId}`);
         // reload the current day to stay in sync
         const date = getState().schedule.currentDate;
         dispatch(fetchFoodLog(date));
