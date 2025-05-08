@@ -31,7 +31,7 @@ const DiaryPage: React.FC = () => {
     const [editingEntry, setEditingEntry] = useState<HourCell | undefined>(
         undefined
     );
-
+    const [isEditing, setIsEditing] = useState(false);
     useEffect(() => {
         dispatch(fetchDiary(date));
         console.log(fetchDiary(date));
@@ -119,18 +119,19 @@ const DiaryPage: React.FC = () => {
                                 <td>{cell?.grams ?? "—"}</td>
                                 <td>{cell?.calories ?? "—"}</td>
                                 <td>
-                                <button
-                                    onClick={() => {
-                                        dispatch(deleteFoodLog(cell._id));
-                                        dispatch(fetchDiary(date));
-                                    }}
-                                >
-                                    Delete
-                                </button>
+                                    <button
+                                        onClick={() => {
+                                            dispatch(deleteFoodLog(cell._id));
+                                            dispatch(fetchDiary(date));
+                                        }}
+                                    >
+                                        Delete
+                                    </button>
                                 </td>
                                 <td>
                                     <button
-                                        onClick={() => setEditingEntry(cell)}
+                                        onClick={() => 
+                                        {setIsEditing(true); setEditingEntry(cell)} }
                                     >
                                         Edit
                                     </button>
@@ -156,12 +157,17 @@ const DiaryPage: React.FC = () => {
                 onClose={() => setModalOpen(false)}
                 date={date}
             />
-            <EditFoodModal
-                isOpen={!!editingEntry}
-                entry={editingEntry!}
-                date={date}
-                onClose={() => setEditingEntry(undefined)}
-            />
+           
+                  {isEditing && (<><EditFoodModal
+                        isOpen={isEditing}
+                        entry={editingEntry!}
+                        date={date}
+                        onClose={() => setIsEditing(false)}
+                    /></>)}
+                    
+               
+          
+            
         </div>
     );
 };
