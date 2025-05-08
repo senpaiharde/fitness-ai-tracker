@@ -3,29 +3,48 @@ import api from "../../services/apiClient";
 import type { RootState } from "../../app/store";
 
 
-export const searchFoodItems = createAsyncThunk(
-    "foodCatalog/search",
-    async (query:string) => {
-        const res = await api.get('food-items/search', {params: {q: query}})
-        return res.data as any[]
+export interface FoodItem {
+    _id: string;
+    name: string;
+    servingSizeGrams: number;
+    calories: number;
+    macros: { protein: number; carbs: number; fat: number };
+  }
+  
+  export const searchFoodItems = createAsyncThunk<FoodItem[], string>(
+    'foodCatalog/search',
+    async (query) => {
+      const res = await api.get<FoodItem[]>('food-items/search', { params: { q: query } });
+      return res.data;
     }
-)
-
-const slice = createSlice({
-    name: "foodCatalog",
-    initialState: {results: [] as any, status: 'idle' as 'idle'|"loading"},
-    reducers: {clear(state) {state.results=[];}},
-    extraReducers: (b) => {
-        b.addCase(searchFoodItems.pending,
-             (s) => 
-                {s.status='loading'});
-        b.addCase(searchFoodItems.fulfilled,
-            (s,a)=>
-                {s.status="idle";
-                    s.results=a.payload;});
+  );
+  
+  interface CatalogState {
+    results: FoodItem[];
+    status: 'idle' | 'loading';
+  }
+  
+  const initialCatalogState: CatalogState = {
+    results: [],
+    status: 'idle',
+  };
+  
+  const foodCatalogSlice = createSlice({
+    name: 'foodCatalog',
+    initialState: initialCatalogState,
+    reducers: {
+      clear(state) { state.results = []; }
+    },
+    extraReducers: builder => {
+      builder
+        .addCase(searchFoodItems.pending, state => { state.status = 'loading'; })
+        .addCase(searchFoodItems.fulfilled, (state, action) => {
+          state.status = 'idle';
+          state.results = action.payload;
+        });
     }
-})
-
-export const {clear} = slice.actions;
-export const selectResults = (s: RootState) => s.foodCatalog.results;
-export default slice.reducer;
+  });
+  
+  export const { clear } = foodCatalogSlice.actions;
+  export const selectResults = (state: RootState) => state.foodCatalog.results;
+  export default foodCatalogSlice.reducer;

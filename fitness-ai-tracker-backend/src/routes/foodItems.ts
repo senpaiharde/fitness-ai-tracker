@@ -84,20 +84,16 @@ router.get('/:id',async (req,res): Promise<any> => {
         res.status(500).json({error: 'error fetching item'})
     }
 })
-
 export const foodItemSchema = z.object({
     name:             z.string().min(1).max(120),
     servingSizeGrams: z.number().positive(),
     calories:         z.number().nonnegative(),
     macros: z.object({
-        
       protein: z.number().nonnegative(),
       carbs:   z.number().nonnegative(),
       fat:     z.number().nonnegative()
     }).strict()
   }).strict();
-
-
 
 router.post('/',validate(foodItemSchema),async (req,res):Promise<any> => {
     try{

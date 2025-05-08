@@ -1,76 +1,119 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+
+import {
+    searchFoodItems,
+    clear,
+    selectResults,
+} from "../../features/foodCatalog/foodCatalogSlice";
+import { updateFoodLog, fetchDiary } from "../../features/food/foodLogs";
+import type { RootState } from "../../app/store";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { searchFoodItems, selectResults, clear } from "../../features/foodCatalog/foodCatalogSlice";
-import { updateFoodLog } from "../../features/food/foodLogs";
-import { IoMdReturnLeft } from "react-icons/io";
 
+interface FoodSearchModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    date: string;
+}
 
+interface FoodItem {
+    _id: string;
+    name: string;
+    servingSizeGrams: number;
+    calories: number;
+    macros: {
+        protein: number;
+        carbs: number;
+        fat: number;
+    };
+}
 
-export default function FoodSearchModal ({date, onClose}) {
+const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
+    isOpen,
+    onClose,
+    date,
+}) => {
     const dispatch = useAppDispatch();
-    const results  = useAppSelector(selectResults);
-
-    const [query, setQuery] = useState('')
-    const [food, setFood] = useState<any|null>(null)
-    const [grams, setGrams] = useState(100)
+    const results = useAppSelector((state: RootState) => selectResults(state));
+    const status = useAppSelector((state: RootState) => state.foodCatalog.status);
+    const [query, setQuery] = useState("");
 
     useEffect(() => {
-        if(!query) {dispatch(clear()); return;}
-        const id = setTimeout(() => dispatch(searchFoodItems(query)), 300);
-        return () => clearTimeout(id);
-    },[query])
+        if (isOpen) {
+            setQuery("");
+            dispatch(clear());
+        }
+    }, [isOpen, dispatch]);
 
-    const choose = (f: any) => {setFood(f); setGrams(f.servingSizeGrams); dispatch(clear());}
-
-    const factor = food ? grams / food.servingSizeGrams : 0;
-    const preview = food && {
-        kcal : Math.round(food.calories * factor),
-        p: (food.macros.protein * factor).toFixed(1),
-        c: (food.macros.carbs * factor).toFixed(1),
-        f: (food.macros.fat * factor).toFixed(1),
-    }
-
-
-    const add = () => {
-        if(!food) return;
-        dispatch(updateFoodLog({
-            date,
-            hour: new Date().getHours(),
-            updates: {foodItemId: food._id, grams, foodLog: 'evening'}
-        }))
-        onClose()
+    const runSearch = () => {
+        if (query.trim()) dispatch(searchFoodItems(query.trim()));
     };
 
-    return(
-        <div>
-            <input value={query} 
-            onChange={(e) => setQuery(e.target.value)} placeholder="Search food..."/>
+    const addFood = (food: FoodItem) => {
+        const grams = food.servingSizeGrams;
+        const factor = grams / food.servingSizeGrams;
+        dispatch(
+            updateFoodLog({
+                date,
+                hour: new Date().getHours(),
+                updates: {
+                    foodItemId: food._id,
+                    grams,
+                    calories: Math.round(food.calories * factor),
+                    macros: {
+                        protein: Number(
+                            (food.macros.protein * factor).toFixed(1)
+                        ),
+                        carbs: Number((food.macros.carbs * factor).toFixed(1)),
+                        fat: Number((food.macros.fat * factor).toFixed(1)),
+                    },
+                },
+            })
+        )
+            .unwrap()
+            .then(() => {
+                dispatch(fetchDiary(date));
+                onClose();
+            })
+            .catch(console.error);
+    };
 
-            {!!results.length && (
-                <ul>
-                    {results.map(r=>(
-                        <li key={r._id??r.name} onClick={() => choose(r)}>
-                            {r.name} - {r.calories} kcal / {r.servingSizeGrams}g
+    if (!isOpen) return null;
 
-                        </li>
-                    ))}
-                </ul>
-            )}
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <header>
+                    <h2>Search Food</h2>
+                    <button onClick={onClose}>×</button>
+                </header>
+                <div className="modal-body">
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="e.g. banana"
+                        onKeyDown={(e) => e.key === "Enter" && runSearch()}
+                    />
+                    <button onClick={runSearch} disabled={status === "loading"}>
+                        {status === "loading" ? "Searching…" : "Search"}
+                    </button>
 
-            {food && (
-                <>
-                <h4>{food.name}</h4>
-                <label>
-                Grams&nbsp;
-                <input type='number' value={grams} onChange={(e) => setGrams(+e.target.value)}/>
-                </label>
-                <p>{preview!.kcal}  P {preview!.p} C {preview!.c} F {preview!.f}</p>
-                <button onClick={add}>add</button>
-                </>
-            )}
-            <button onClick={onClose}>Close</button>
+                    <ul>
+                        {results.map((food) => (
+                            <li key={food._id} className="food-item">
+                                <span>{food.name}</span>
+                                <span>{food.servingSizeGrams}g</span>
+                                <span>{food.calories} kcal</span>
+                                <button onClick={() => addFood(food)}>
+                                    Add
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
         </div>
-    )
+    );
+};
 
-  
-}
+export default FoodSearchModal;

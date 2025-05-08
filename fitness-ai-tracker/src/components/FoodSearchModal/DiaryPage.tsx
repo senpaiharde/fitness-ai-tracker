@@ -1,80 +1,93 @@
-import { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import React, { useEffect, useState } from "react";
 
 import {
     fetchDiary,
-    deleteLog,
     selectFoodByHour,
     selectTotals,
-    fetchFoodLog
+    setLog,
 } from "../../features/food/foodLogs";
+import type { RootState } from "../../app/store";
 import FoodSearchModal from "./FoodSearchModal";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
-export default function DiaryPage() {
+const DiaryPage: React.FC = () => {
     const dispatch = useAppDispatch();
-    const [modal, setModal] = useState(false);
-    const today = new Date().toISOString().slice(0, 10);
+    const date = useAppSelector((state: RootState) => state.foodLog.currentDate);
+    const logs = useAppSelector((state: RootState) => selectFoodByHour(state));
+    const total = useAppSelector((state: RootState) => selectTotals(state));
+    const [modalOpen, setModalOpen] = useState(false);
 
     useEffect(() => {
-        dispatch(fetchFoodLog(today));
-    }, [dispatch]);
+        dispatch(fetchDiary(date));
+    }, [dispatch, date]);
 
-    const rows = useAppSelector(selectFoodByHour);
-    const totals = useAppSelector(selectTotals);
+    const changeDate = (newDate: string) => {
+        dispatch(setLog(newDate));
+        dispatch(fetchDiary(newDate));
+    };
+
+    const prevDay = () => {
+        const d = new Date(date);
+        d.setDate(d.getDate() - 1);
+        changeDate(d.toISOString().slice(0, 10));
+    };
+
+    const nextDay = () => {
+        const d = new Date(date);
+        d.setDate(d.getDate() + 1);
+        changeDate(d.toISOString().slice(0, 10));
+    };
 
     return (
-        <div style={{ padding: 20 , color:'white'}}>
-            <h2>Diary {today}</h2>
-            <button onClick={() => setModal(true)}>Add food</button>
-
+        <div>
+            <div>
+                <button onClick={prevDay}> - </button>
+                <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => changeDate(e.target.value)}
+                />
+                <button onClick={nextDay}> + </button>
+                <button onClick={() => setModalOpen(true)}> Add food </button>
+            </div>
             <table>
                 <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Food</th>
-                        <th>g</th>
-                        <th>Kcal</th>
-                        <th>P/C/F</th>
-                        <th />
-                    </tr>
+                    <th>Hour</th>
+                    <th>Food</th>
+                    <th>Grams</th>
+                    <th>Calories</th>
                 </thead>
                 <tbody>
-                    {rows.map(
-                        (l, i) =>
-                            l && (
-                                <tr key={l._id}>
-                                    <td>{i}:00</td>
-                                    <td>{l.manualText  ?? "Food"}</td>
-                                    <td>{l.grams}</td>
-                                    <td>{l.calories}</td>
-                                    <td>
-                                        P{l.macros?.protein} C{l.macros?.carbs}{" "}
-                                        F{l.macros?.fat}
-                                    </td>
-                                    <td>
-                                        <button
-                                            onClick={() =>
-                                                dispatch(deleteLog(l._id))
-                                            }
-                                        >
-                                            🗑
-                                        </button>
-                                    </td>
-                                </tr>
-                            )
-                    )}
+                    {logs.map((cell, hr) => (
+                        <tr key={hr}>
+                            <th>{hr}:00</th>
+                            <th>
+                                {cell?.manualText ??
+                                    (typeof cell?.foodItemId === "object"
+                                        ? (cell.foodItemId as any).name
+                                        : "—")}
+                            </th>
+                            <th>{cell?.grams ?? "—"}</th>
+                            <th>{cell?.calories ?? "—"}</th>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
 
-            <h3>Totals</h3>
-            <p>
-                {totals.calories}kcal • P{totals.protein}g C{totals.carbs}g
-                F{totals.fat}g
-            </p>
-
-            {modal && (
-                <FoodSearchModal date={today} onClose={() => setModal(false)} />
-            )}
+            <div>
+                <strong>Totals:</strong>
+                <span>{total.calories}Kcal</span>
+                <span>{total.protein}protein</span>
+                <span>{total.carbs}carbs</span>
+                <span>{total.fat}fat</span>
+            </div>
+            <FoodSearchModal
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                date={date}
+            />
         </div>
     );
-}
+};
+
+export default DiaryPage;
