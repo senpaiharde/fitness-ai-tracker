@@ -32,33 +32,37 @@ export const foodLogSchema = z
   .object({
     /* ISO timestamp; default = now if omitted */
     timestamp: z.coerce.date().optional(),
-    date: z.coerce.date().optional(),
+    date:      z.coerce.date().optional(),
+
+    /* new: allow hour on updates */
+    hour:      z.number().int().min(0).max(23).optional(),
+
     /* Either reference a catalog item … */
     foodItemId: z.string().length(24).optional(),
 
     /* …or free-text entry           */
     manualText: z.string().max(200).optional(),
 
-    grams: z.number().positive().optional(),
-    calories: z.number().nonnegative().optional(),
-    foodLog: z.enum(['morning', 'evening', 'night']).optional(),
-    macros: z
+    grams:      z.number().positive().optional(),
+    calories:   z.number().nonnegative().optional(),
+    foodLog:    z.enum(['morning', 'evening', 'night']).optional(),
+    macros:     z
       .object({
         totalCalories: z.number().nonnegative().optional(),
-        protein: z.number().nonnegative().optional(),
-        carbs: z.number().nonnegative().optional(),
-        fat: z.number().nonnegative().optional(),
+        protein:       z.number().nonnegative().optional(),
+        carbs:         z.number().nonnegative().optional(),
+        fat:           z.number().nonnegative().optional(),
       })
       .strict()
       .optional(),
-
-    notes: z.string().max(200).optional(),
+    notes:      z.string().max(200).optional(),
   })
   .strict()
   /* Require at least foodItemId OR manualText */
-  .refine((d) => d.foodItemId || d.manualText, {
+  .refine(d => d.foodItemId || d.manualText, {
     message: 'Provide either foodItemId or manualText',
   });
+
 router.post('/', validate(foodLogSchema), async (req, res): Promise<any> => {
   try {
     const ts = req.body.timestamp ? new Date(req.body.timestamp) : new Date();
