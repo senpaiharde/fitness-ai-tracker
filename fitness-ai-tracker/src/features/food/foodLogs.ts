@@ -28,6 +28,7 @@ interface Totals {
     fat: number;
 }
 interface LogState {
+    entries: HourCell[];
     byHour: (HourCell | null)[];
     currentDate: string;
     totals: Totals;
@@ -42,6 +43,7 @@ interface DiarySummary {
 }
 
 const initialState: LogState = {
+    entries: [],
     byHour: Array(24).fill(null),
     currentDate: new Date().toISOString().slice(0, 10),
     totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
@@ -119,6 +121,7 @@ const foodLogSlice = createSlice({
                 });
             })
             .addCase(fetchDiary.fulfilled, (state, { payload }) => {
+                state.entries = payload.entries; 
                 state.byHour  = Array(24).fill(null);
                 payload.entries.forEach(e => state.byHour[e.hour] = e);
                 state.totals  = {
@@ -128,8 +131,9 @@ const foodLogSlice = createSlice({
                   fat:      payload.fat
                 };
               })
-            .addCase(updateFoodLog.fulfilled, (state, action) => {
-                state.byHour[action.payload.hour] = action.payload;
+            .addCase(updateFoodLog.fulfilled, (state, { payload }) => {
+                state.entries.push(payload);                        
+                state.byHour[payload.hour] = payload;
             })
             .addCase(deleteLog.fulfilled, (state, { payload: deletedId }) => {
                 state.byHour = state.byHour.map((cell) =>
@@ -140,6 +144,7 @@ const foodLogSlice = createSlice({
 });
 
 export const { setLog } = foodLogSlice.actions;
+export const selectEntries   = (s: RootState) => s.foodLog.entries;
 export const selectFoodByHour = (state: RootState) => state.foodLog.byHour;
 export const selectTotals = (state: RootState) => state.foodLog.totals;
 export default foodLogSlice.reducer;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import {
     fetchDiary,
+    selectEntries,
     selectFoodByHour,
     selectTotals,
     setLog,
@@ -9,19 +10,23 @@ import {
 import type { RootState } from "../../app/store";
 import FoodSearchModal from "./FoodSearchModal";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useSelector } from "react-redux";
 
 const DiaryPage: React.FC = () => {
     const dispatch = useAppDispatch();
     const date = useAppSelector(
         (state: RootState) => state.foodLog.currentDate
     );
+    const entires = useAppSelector((state: RootState) => selectEntries(state));
     const logs = useAppSelector((state: RootState) => selectFoodByHour(state));
     const total = useAppSelector((state: RootState) => selectTotals(state));
     const [modalOpen, setModalOpen] = useState(false);
-
+    const userCalories = 3050;
+    const Remaining = userCalories - total.calories;
+    const [Nutrition, setNutrition] = useState(false);
     useEffect(() => {
         dispatch(fetchDiary(date));
-        console.log(fetchDiary(date))
+        console.log(fetchDiary(date));
     }, [dispatch, date]);
 
     const changeDate = (newDate: string) => {
@@ -42,7 +47,7 @@ const DiaryPage: React.FC = () => {
     };
 
     return (
-        <div>
+        <div style={{ color: "white" }}>
             <div>
                 <button onClick={prevDay}> - </button>
                 <input
@@ -51,6 +56,22 @@ const DiaryPage: React.FC = () => {
                     onChange={(e) => changeDate(e.target.value)}
                 />
                 <button onClick={nextDay}> + </button>
+
+                <div>
+                    <strong>Calories Remaining</strong>
+                    <br />
+                    <span>
+                        {userCalories} <small> Goal </small>
+                    </span>{" "}
+                    -
+                    <span>
+                        {total.calories}
+                        <small> Food</small>
+                    </span>{" "}
+                    =<span>{Remaining}</span>
+                    <small> Left</small>
+                </div>
+
                 <button onClick={() => setModalOpen(true)}> Add food </button>
             </div>
             <table>
@@ -63,28 +84,47 @@ const DiaryPage: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {logs.map((cell, hr) => (
-                        <tr key={hr}>
-                            <th>{hr}:00</th>
-                            <th>
-                                {cell?.manualText ??
-                                    (typeof cell?.foodItemId === "object"
-                                        ? (cell.foodItemId as any).name
-                                        : "—")}
-                            </th>
-                            <th>{cell?.grams ?? "—"}</th>
-                            <th>{cell?.calories ?? "—"}</th>
-                        </tr>
-                    ))}
+                    {Array.from({ length: 24 }).flatMap((_, hr) => {
+                        const hourEntries = entires.filter(
+                            (e) => e?.hour === hr
+                        );
+                        if (hourEntries.length === 0) {
+                            return (
+                                <tr key={hr}>
+                                    <td>{hr}:00</td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                    <td>—</td>
+                                </tr>
+                            );
+                        }
+
+                        return hourEntries.map((cell, i) => (
+                            <tr key={`${hr}-${i}`}>
+                                <td>{hr}:00</td>
+                                <td>
+                                    {cell?.manualText ??
+                                        (typeof cell?.foodItemId === "object"
+                                            ? (cell.foodItemId as any).name
+                                            : "—")}
+                                </td>
+                                <td>{cell?.grams ?? "—"}</td>
+                                <td>{cell?.calories ?? "—"}</td>
+                            </tr>
+                        ));
+                    })}
                 </tbody>
             </table>
 
             <div>
                 <strong>Totals:</strong>
                 <span>{total.calories}Kcal</span>
-                <span>{total.protein}protein</span>
-                <span>{total.carbs}carbs</span>
-                <span>{total.fat}fat</span>
+                <br />
+                <span>{Math.round(total.protein)} protein</span>
+                <br />
+                <span>{Math.round(total.carbs)} carbs</span>
+                <br />
+                <span>{Math.round(total.fat)} fat</span>
             </div>
             <FoodSearchModal
                 isOpen={modalOpen}

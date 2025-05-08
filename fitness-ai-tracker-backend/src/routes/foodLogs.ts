@@ -109,54 +109,39 @@ router.delete('/:id', async (req, res): Promise<any> => {
 });
 
 // src/routes/foodLogs.ts  (add below existing routes)
-router.get(
-    '/summary',
-    // ← this middleware runs first
-    (req, res, next) => {
-        console.log(`[FoodLog.summary] HIT with date=`, req.query.date, ' user=', req.user?.id);
-      res.removeHeader('ETag');                                                     // turn off Express’s default ETag
-      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');         // never cache
-      res.setHeader('Pragma', 'no-cache');
-      next();
-    },
-    async (req: Request, res: Response): Promise<any> => {
-      try {
-        const dateParam = req.query.date as string;
-        const date = new Date(dateParam);
-        if (isNaN(date.getTime())) {
-            console.log('[FoodLog.summary] → invalid date:', dateParam);
-          return res.status(400).json({ error: 'date query required' });
-        }
-        const nextDay = new Date(date);
-        nextDay.setDate(nextDay.getDate() + 1);
-        console.log('[FoodLog.summary] running aggregation for range', date, '→', nextDay);
-        const pipeline = [
-          { $match: { userId: req.user!.id, timestamp: { $gte: date, $lt: nextDay } } },
-          {
-            $group: {
-              _id: null,
-              totalCalories: { $sum: '$calories' },
-              protein:       { $sum: '$macros.protein' },
-              carbs:         { $sum: '$macros.carbs' },
-              fat:           { $sum: '$macros.fat' },
-              entries:       { $push: '$$ROOT' },
-            },
-          },
-          { $project: { _id: 0 } }
-        ];
-  
-        const [summary] = await FoodLog.aggregate(pipeline);
-        console.log('[FoodLog.summary] AGG RESULT:', summary);
-        res.json(
-          summary ?? { totalCalories: 0, protein: 0, carbs: 0, fat: 0, entries: [] }
-        );
-      } catch (err) {
-        console.error(err);
-        console.error('[FoodLog.summary] ERROR:', err);
-        res.status(500).json({ error: 'Could not build summary' });
+router.get("/summary",
+  async (req: Request, res: Response): Promise<any> => {
+    try {
+        
+      const date = new Date(req.query.date as string);
+      if (isNaN(date as any)) {
+        return res.status(400).json({ error: 'date query required' });
       }
+      const next = new Date(date);
+      next.setDate(next.getDate() + 1);
+
+      const pipeline = [
+        { $match: { userId: req.user!.id, timestamp: { $gte: date, $lt: next } } },
+        {
+          $group: {
+            _id: null,
+            totalCalories: { $sum: '$calories' },
+            protein: { $sum: '$macros.protein' },
+            carbs: { $sum: '$macros.carbs' },
+            fat: { $sum: '$macros.fat' },
+            entries: { $push: '$$ROOT' },
+          },
+        },
+        { $project: { _id: 0 } },
+      ];
+      
+      const [summary] = await FoodLog.aggregate(pipeline);
+      res.json(summary ?? { totalCalories: 0, protein: 0, carbs: 0, fat: 0, entries: [] });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Could not build summary' });
     }
-  );
-  
+  }
+);
 
 export default router;
