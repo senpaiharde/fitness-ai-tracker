@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
     deleteFoodLog,
     fetchDiary,
+    HourCell,
     selectEntries,
     selectFoodByHour,
     selectTotals,
@@ -13,6 +14,7 @@ import type { RootState } from "../../app/store";
 import FoodSearchModal from "./FoodSearchModal";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
+import EditFoodModal from "./editFoodModal";
 
 const DiaryPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -26,6 +28,10 @@ const DiaryPage: React.FC = () => {
     const userCalories = 3050;
     const Remaining = userCalories - total.calories;
     const [Nutrition, setNutrition] = useState(false);
+    const [editingEntry, setEditingEntry] = useState<HourCell | undefined>(
+        undefined
+    );
+
     useEffect(() => {
         dispatch(fetchDiary(date));
         console.log(fetchDiary(date));
@@ -48,8 +54,6 @@ const DiaryPage: React.FC = () => {
         changeDate(d.toISOString().slice(0, 10));
     };
 
-
-   
     return (
         <div style={{ color: "white" }}>
             <div>
@@ -107,7 +111,6 @@ const DiaryPage: React.FC = () => {
                             <tr key={`${hr}-${i}`}>
                                 <td>{hr}:00</td>
                                 <td>
-                                    
                                     {cell?.manualText ??
                                         (typeof cell?.foodItemId === "object"
                                             ? (cell.foodItemId as any).name
@@ -115,9 +118,23 @@ const DiaryPage: React.FC = () => {
                                 </td>
                                 <td>{cell?.grams ?? "—"}</td>
                                 <td>{cell?.calories ?? "—"}</td>
-                                <button  onClick={() => {dispatch(deleteFoodLog(cell._id))
-                                    dispatch(fetchDiary(date));}}>Delete</button>
-                                    <button  >Edit</button>
+                                <td>
+                                <button
+                                    onClick={() => {
+                                        dispatch(deleteFoodLog(cell._id));
+                                        dispatch(fetchDiary(date));
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                                </td>
+                                <td>
+                                    <button
+                                        onClick={() => setEditingEntry(cell)}
+                                    >
+                                        Edit
+                                    </button>
+                                </td>
                             </tr>
                         ));
                     })}
@@ -138,6 +155,12 @@ const DiaryPage: React.FC = () => {
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
                 date={date}
+            />
+            <EditFoodModal
+                isOpen={!!editingEntry}
+                entry={editingEntry!}
+                date={date}
+                onClose={() => setEditingEntry(undefined)}
             />
         </div>
     );

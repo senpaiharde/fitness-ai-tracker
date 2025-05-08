@@ -106,6 +106,7 @@ const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                                 <span>{food.name}</span>
                                 <span>{food.servingSizeGrams}g</span>
                                 <span>{food.calories} kcal</span>
+                                
                                 <button onClick={() => addFood(food)}>
                                     Add
                                 </button>

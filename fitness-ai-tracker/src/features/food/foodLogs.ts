@@ -5,8 +5,8 @@ import type { RootState } from "../../app/store";
 export interface HourCell {
     _id: string;
     userId: string;
-    date: string;
-    timestamp: string;
+    date: string ;
+    timestamp: string | Date;
     hour: number;
     foodItemId?: any; // populated or string
     manualText?: string;

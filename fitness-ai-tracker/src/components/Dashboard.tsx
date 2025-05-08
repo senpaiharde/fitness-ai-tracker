@@ -70,13 +70,13 @@ export const Dashboard = () => {
                             <Shiny speed={5}>
                                 BodyFat: {user?.baselineBodyFatPercent}%
                             </Shiny>
-                        </p>
-                        <ShinyButton
+                        </p><div style={{paddingBottom:'10px'}}>
+                        <ShinyButton 
                             onClick={() => setdisplaylog((prev) => !prev)}
                         >
                             Set Schedule
-                        </ShinyButton>
-                        <ShinyButton
+                        </ShinyButton></div>
+                        <ShinyButton 
                             onClick={() => setdisplayFood((prev) => !prev)}
                         >
                             Add Food intake!
