@@ -55,12 +55,13 @@ export const fetchFoodLog = createAsyncThunk<HourCell[], string>(
         return res.data;
     }
 );
-export const deleteLog = createAsyncThunk<string, string, { state: RootState }>(
+export const deleteFoodLog = createAsyncThunk<string, string, { state: RootState }>(
     "foodLog/deleteLog",
     async (entryId, { getState, dispatch }) => {
+        console.log(entryId)
         await api.delete(`/food-logs/${entryId}`);
         // reload the current day to stay in sync
-        const date = getState().schedule.currentDate;
+        const date = getState().foodLog.currentDate
         dispatch(fetchFoodLog(date));
         return entryId;
     }
@@ -135,7 +136,7 @@ const foodLogSlice = createSlice({
                 state.entries.push(payload);                        
                 state.byHour[payload.hour] = payload;
             })
-            .addCase(deleteLog.fulfilled, (state, { payload: deletedId }) => {
+            .addCase(deleteFoodLog.fulfilled, (state, { payload: deletedId }) => {
                 state.byHour = state.byHour.map((cell) =>
                     cell && cell._id === deletedId ? null : cell
                 );

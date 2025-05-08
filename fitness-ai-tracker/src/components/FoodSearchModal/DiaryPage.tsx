@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 
 import {
+    deleteFoodLog,
     fetchDiary,
     selectEntries,
     selectFoodByHour,
     selectTotals,
     setLog,
+    updateFoodLog,
 } from "../../features/food/foodLogs";
 import type { RootState } from "../../app/store";
 import FoodSearchModal from "./FoodSearchModal";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { useSelector } from "react-redux";
+
 
 const DiaryPage: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -46,6 +48,8 @@ const DiaryPage: React.FC = () => {
         changeDate(d.toISOString().slice(0, 10));
     };
 
+
+   
     return (
         <div style={{ color: "white" }}>
             <div>
@@ -103,6 +107,7 @@ const DiaryPage: React.FC = () => {
                             <tr key={`${hr}-${i}`}>
                                 <td>{hr}:00</td>
                                 <td>
+                                    
                                     {cell?.manualText ??
                                         (typeof cell?.foodItemId === "object"
                                             ? (cell.foodItemId as any).name
@@ -110,6 +115,9 @@ const DiaryPage: React.FC = () => {
                                 </td>
                                 <td>{cell?.grams ?? "—"}</td>
                                 <td>{cell?.calories ?? "—"}</td>
+                                <button  onClick={() => {dispatch(deleteFoodLog(cell._id))
+                                    dispatch(fetchDiary(date));}}>Delete</button>
+                                    <button  >Edit</button>
                             </tr>
                         ));
                     })}

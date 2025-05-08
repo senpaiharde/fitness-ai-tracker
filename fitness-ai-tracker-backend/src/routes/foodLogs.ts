@@ -99,7 +99,9 @@ router.put('/:id', validate(foodLogSchema), async (req: Request, res: Response):
 
 router.delete('/:id', async (req, res): Promise<any> => {
   try {
-    const result = await FoodLog.deleteOne({ _id: req.params.id, userId: req.user?.id });
+    const result = await FoodLog.deleteOne({ 
+        _id: req.params.id,
+         userId: req.user?.id });
     if (result.deletedCount === 0) return res.status(404).json({ err: 'not found' });
     res.status(204);
   } catch (err: any) {
