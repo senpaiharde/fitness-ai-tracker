@@ -12,13 +12,16 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 const DiaryPage: React.FC = () => {
     const dispatch = useAppDispatch();
-    const date = useAppSelector((state: RootState) => state.foodLog.currentDate);
+    const date = useAppSelector(
+        (state: RootState) => state.foodLog.currentDate
+    );
     const logs = useAppSelector((state: RootState) => selectFoodByHour(state));
     const total = useAppSelector((state: RootState) => selectTotals(state));
     const [modalOpen, setModalOpen] = useState(false);
 
     useEffect(() => {
         dispatch(fetchDiary(date));
+        console.log(fetchDiary(date))
     }, [dispatch, date]);
 
     const changeDate = (newDate: string) => {
@@ -52,10 +55,12 @@ const DiaryPage: React.FC = () => {
             </div>
             <table>
                 <thead>
-                    <th>Hour</th>
-                    <th>Food</th>
-                    <th>Grams</th>
-                    <th>Calories</th>
+                    <tr>
+                        <th>Hour</th>
+                        <th>Food</th>
+                        <th>Grams</th>
+                        <th>Calories</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {logs.map((cell, hr) => (

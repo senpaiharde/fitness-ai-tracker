@@ -33,25 +33,56 @@ interface LogState {
     totals: Totals;
 }
 
+interface DiarySummary {
+    totalCalories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    entries: HourCell[];
+}
+
 const initialState: LogState = {
     byHour: Array(24).fill(null),
     currentDate: new Date().toISOString().slice(0, 10),
     totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
 };
-
-export const fetchDiary = createAsyncThunk<
-    {
-        totalCalories: number;
-        protein: number;
-        carbs: number;
-        fat: number;
-        entries: HourCell[];
-    },
-    string
->("foodLog/fetchDiary", async (date) => {
-    const res = await api.get("/food-logs/summary", { params: { date } });
-    return res.data;
-});
+export const fetchFoodLog = createAsyncThunk<HourCell[], string>(
+    "food/fetchFoodLog",
+    async (date) => {
+        const res = await api.get("/food-logs", { params: { date } });
+        return res.data;
+    }
+);
+export const deleteLog = createAsyncThunk<string, string, { state: RootState }>(
+    "foodLog/deleteLog",
+    async (entryId, { getState, dispatch }) => {
+        await api.delete(`/food-logs/${entryId}`);
+        // reload the current day to stay in sync
+        const date = getState().schedule.currentDate;
+        dispatch(fetchFoodLog(date));
+        return entryId;
+    }
+);
+export const fetchDiary = createAsyncThunk<DiarySummary, string>(
+    "foodLog/fetchDiary",
+    async (date, { dispatch }) => {
+        const entries = await dispatch(fetchFoodLog(date)).unwrap();
+        const totalCalories = entries.reduce(
+            (sum, e) => sum + (e.calories ?? 0),
+            0
+        );
+        const protein = entries.reduce(
+            (sum, e) => sum + (e.macros?.protein ?? 0),
+            0
+        );
+        const carbs = entries.reduce(
+            (sum, e) => sum + (e.macros?.carbs ?? 0),
+            0
+        );
+        const fat = entries.reduce((sum, e) => sum + (e.macros?.fat ?? 0), 0);
+        return { totalCalories, protein, carbs, fat, entries };
+    }
+);
 
 export const updateFoodLog = createAsyncThunk<
     HourCell,
@@ -81,20 +112,29 @@ const foodLogSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchDiary.fulfilled, (state, action) => {
+            .addCase(fetchFoodLog.fulfilled, (state, { payload }) => {
                 state.byHour = Array(24).fill(null);
-                action.payload.entries.forEach(
-                    (e) => (state.byHour[e.hour] = e)
-                );
-                state.totals = {
-                    calories: action.payload.totalCalories,
-                    protein: action.payload.protein,
-                    carbs: action.payload.carbs,
-                    fat: action.payload.fat,
-                };
+                payload.forEach((entry) => {
+                    state.byHour[entry.hour] = entry;
+                });
             })
+            .addCase(fetchDiary.fulfilled, (state, { payload }) => {
+                state.byHour  = Array(24).fill(null);
+                payload.entries.forEach(e => state.byHour[e.hour] = e);
+                state.totals  = {
+                  calories: payload.totalCalories,
+                  protein:  payload.protein,
+                  carbs:    payload.carbs,
+                  fat:      payload.fat
+                };
+              })
             .addCase(updateFoodLog.fulfilled, (state, action) => {
                 state.byHour[action.payload.hour] = action.payload;
+            })
+            .addCase(deleteLog.fulfilled, (state, { payload: deletedId }) => {
+                state.byHour = state.byHour.map((cell) =>
+                    cell && cell._id === deletedId ? null : cell
+                );
             });
     },
 });

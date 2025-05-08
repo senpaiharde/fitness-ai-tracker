@@ -34,7 +34,9 @@ const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
 }) => {
     const dispatch = useAppDispatch();
     const results = useAppSelector((state: RootState) => selectResults(state));
-    const status = useAppSelector((state: RootState) => state.foodCatalog.status);
+    const status = useAppSelector(
+        (state: RootState) => state.foodCatalog.status
+    );
     const [query, setQuery] = useState("");
 
     useEffect(() => {
@@ -80,7 +82,7 @@ const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay">
+        <div className="modal-overlay" style={{color:'#fff'}}>
             <div className="modal-content">
                 <header>
                     <h2>Search Food</h2>
