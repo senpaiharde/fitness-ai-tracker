@@ -1,0 +1,115 @@
+/* src/components/DiaryPage.scss */
+
+.diary-container {
+    display: grid;
+    grid-template-rows: 25% 45% auto;
+    height: 100vh;
+    gap: 1rem;
+    padding: 1rem;
+    box-sizing: border-box;
+    color: white;
+    background: #121212;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .date-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .calorie-summary {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+  }
+  .calorie-summary small {
+    display: block;
+    color: #aaa;
+    font-size: 0.75em;
+  }
+  .calorie-summary span {
+    font-size: 1.1em;
+    margin-left: 0.25rem;
+  }
+  
+  .add-btn {
+    background: #1f7a1f;
+    border: none;
+    padding: 0.5rem 1rem;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .table-wrapper {
+    overflow-y: auto;
+  }
+  
+  .table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table-wrapper thead {
+    position: sticky;
+    top: 0;
+    background: #1e1e1e;
+    z-index: 1;
+  }
+  
+  .table-wrapper th,
+  .table-wrapper td {
+    padding: 0.5rem;
+    text-align: left;
+  }
+  
+  .table-wrapper tbody tr {
+    display: grid;
+    grid-template-columns: 60px 1fr 80px 100px;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+  }
+  
+  .table-wrapper tbody tr:hover {
+    background-color: #222;
+  }
+  
+  .table-wrapper td:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .name {
+    font-weight: bold;
+  }
+  
+  .grams {
+    font-size: 0.75em;
+    color: #aaa;
+    margin-top: 0.25rem;
+  }
+  
+  .delete-btn {
+    background: #7a1f1f;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  
+  .log-panel {
+    overflow-y: auto;
+    border-top: 1px solid #333;
+    padding: 1rem;
+  }
+  

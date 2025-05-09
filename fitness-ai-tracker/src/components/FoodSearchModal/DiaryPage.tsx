@@ -16,6 +16,8 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
 import EditFoodModal from "./editFoodModal";
 
+import "../../assets/DiaryPage.scss";
+
 const DiaryPage: React.FC = () => {
     const dispatch = useAppDispatch();
     const date = useAppSelector(
@@ -55,8 +57,9 @@ const DiaryPage: React.FC = () => {
     };
 
     return (
-        <div style={{ color: "white" }}>
-            <div>
+        <div className="diary-container">
+            <div className="header">
+                <div className="date-controls">
                 <button onClick={prevDay}> - </button>
                 <input
                     type="date"
@@ -64,8 +67,8 @@ const DiaryPage: React.FC = () => {
                     onChange={(e) => changeDate(e.target.value)}
                 />
                 <button onClick={nextDay}> + </button>
-
-                <div>
+                </div>
+                <div className="calorie-summary"> 
                     <strong>Calories Remaining</strong>
                     <br />
                     <span>
@@ -80,8 +83,9 @@ const DiaryPage: React.FC = () => {
                     <small> Left</small>
                 </div>
 
-                <button onClick={() => setModalOpen(true)}> Add food </button>
+                <button className="add-btn" onClick={() => setModalOpen(true)}> Add food </button>
             </div>
+            <div className="table-wrapper">
             <table>
                 <thead>
                     <tr>
@@ -92,34 +96,25 @@ const DiaryPage: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {Array.from({ length: 24 }).flatMap((_, hr) => {
-                        const hourEntries = entires.filter(
-                            (e) => e?.hour === hr
-                        );
-                        if (hourEntries.length === 0) {
-                            return (
-                                <tr key={hr}>
-                                    <td>{hr}:00</td>
-                                    <td>—</td>
-                                    <td>—</td>
-                                    <td>—</td>
-                                </tr>
-                            );
-                        }
-
-                        return hourEntries.map((cell, i) => (
-                            <tr key={`${hr}-${i}`}>
-                                <td>{hr}:00</td>
+                    {entires
+                        .sort((a, b) => a.hour - b.hour)
+                        .map((cell, idx) => (
+                            <tr key={`${cell._id}-${idx}`}>
+                                <td>{cell.hour}:00</td>
                                 <td>
-                                    {cell?.manualText ??
-                                        (typeof cell?.foodItemId === "object"
+                                <span className="name">
+                                    {cell.manualText ??
+                                        (typeof cell.foodItemId === "object"
                                             ? (cell.foodItemId as any).name
                                             : "—")}
+                                             </span>
+                                             <span className="grams">{cell.grams ?? "—"}</span>
                                 </td>
-                                <td>{cell?.grams ?? "—"}</td>
-                                <td>{cell?.calories ?? "—"}</td>
+                                
+                                <td>{cell.calories ?? "—"}</td>
                                 <td>
                                     <button
+                                     className="delete-btn"
                                         onClick={() => {
                                             dispatch(deleteFoodLog(cell._id));
                                             dispatch(fetchDiary(date));
@@ -130,17 +125,21 @@ const DiaryPage: React.FC = () => {
                                 </td>
                                 <td>
                                     <button
-                                        onClick={() => 
-                                        {setIsEditing(true); setEditingEntry(cell)} }
+                                        onClick={() => {
+                                            setEditingEntry(cell);
+                                            setIsEditing(true);
+                                        }}
                                     >
                                         Edit
                                     </button>
                                 </td>
                             </tr>
-                        ));
-                    })}
+                        ))}
+                        <tr> <button style={{}} onClick={() => setModalOpen(true)}> Add food </button></tr>
                 </tbody>
+                
             </table>
+            </div>
 
             <div>
                 <strong>Totals:</strong>
@@ -152,22 +151,24 @@ const DiaryPage: React.FC = () => {
                 <br />
                 <span>{Math.round(total.fat)} fat</span>
             </div>
+            <div className="log-panel">
             <FoodSearchModal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
                 date={date}
             />
-           
-                  {isEditing && (<><EditFoodModal
+
+            {isEditing && (
+                
+                    <EditFoodModal
                         isOpen={isEditing}
                         entry={editingEntry!}
                         date={date}
                         onClose={() => setIsEditing(false)}
-                    /></>)}
-                    
-               
-          
-            
+                    />
+                
+            )}
+            </div>
         </div>
     );
 };
