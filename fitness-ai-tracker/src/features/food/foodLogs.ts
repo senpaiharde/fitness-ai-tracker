@@ -8,7 +8,7 @@ export interface HourCell {
     date: string ;
     timestamp: string | Date;
     hour: number;
-    foodItemId?: any; // populated or string
+    foodItemId?: any; 
     manualText?: string;
     grams?: number;
     calories?: number;
@@ -54,6 +54,26 @@ export const fetchFoodLog = createAsyncThunk<HourCell[], string>(
         const res = await api.get("/food-logs", { params: { date } });
         return res.data;
     }
+);
+
+export const createFoodLog = createAsyncThunk<
+  HourCell,      
+  {
+    date: string;
+    timestamp?: string;     // optional, server defaults
+    foodItemId?: string;
+    manualText?: string;
+    grams?: number;
+    calories?: number;
+    macros?: { protein?: number; carbs?: number; fat?: number };
+    notes?: string;
+  }
+>(
+  'foodLog/create',
+  async (payload) => {
+    const res = await api.post<HourCell>('/food-logs', payload);
+    return res.data;
+  }
 );
 export const deleteFoodLog = createAsyncThunk<string, string, { state: RootState }>(
     "foodLog/deleteLog",
@@ -140,7 +160,16 @@ const foodLogSlice = createSlice({
                 state.byHour = state.byHour.map((cell) =>
                     cell && cell._id === deletedId ? null : cell
                 );
-            });
+            })
+            .addCase(createFoodLog.fulfilled, (state, { payload }) => {
+                
+                state.entries.push(payload);
+                state.byHour[payload.hour] = payload;
+                state.totals.calories += payload.calories ?? 0;
+                state.totals.protein  += payload.macros?.protein ?? 0;
+                state.totals.carbs    += payload.macros?.carbs   ?? 0;
+                state.totals.fat      += payload.macros?.fat     ?? 0;
+              });
     },
 });
 
