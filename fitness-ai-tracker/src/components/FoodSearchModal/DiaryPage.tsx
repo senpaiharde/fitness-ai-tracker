@@ -104,9 +104,9 @@ const DiaryPage: React.FC = () => {
         <table>
           <thead>
             <tr>
-              <th>Hour</th>
-              <th>Food</th>
-              <th>Grams</th>
+              <th >Hour</th>
+              <th style={{paddingTop:'25px'}}>Food <span className="grams" style={{fontSize:"11px"}}>+Grams</span></th>
+              
               <th>Calories</th>
               <th>Actions</th>
             </tr>
