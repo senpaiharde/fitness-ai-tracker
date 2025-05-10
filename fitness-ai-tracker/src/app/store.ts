@@ -4,6 +4,7 @@ import trackerReducer from "../features/tracker/trackerSlice";
 import logReducer from "../features/logs/logsSlice";
 import scheduleReducer from '../features/schedule/scheduleSlice';
 import foodLogReducer from '../features/food/foodLogs';
+import learnReducer from '../features/learning/learning';
 import foodCatalogReducer from '../features/foodCatalog/foodCatalogSlice';
 export const  store= configureStore({
     reducer: {
@@ -13,6 +14,7 @@ export const  store= configureStore({
         schedule: scheduleReducer,
         foodLog: foodLogReducer,
         foodCatalog: foodCatalogReducer,
+        learn: learnReducer,
     }
 
 })

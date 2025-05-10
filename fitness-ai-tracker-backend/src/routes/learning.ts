@@ -28,6 +28,7 @@ export const createLearning = z
   .object({
     date: z.coerce.date(),
     topic: z.string().min(1).max(120),
+    hour: z.number(),
     startTime: z
       .string()
       .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
@@ -37,6 +38,8 @@ export const createLearning = z
       .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
       .optional(),
     notes: z.string().max(200).optional(),
+    goalId: z.string().length(24).optional(),
+    priority: z.enum(['low', 'medium', 'high']).optional(),
   })
   .strict();
 
@@ -58,10 +61,14 @@ export const updateLearning = createLearning.partial().extend({
     .string()
     .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
     .optional(),
+    goalId: z.string().length(24).optional(),
   endTime: z
     .string()
     .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
     .optional(),
+     status: z.enum(['planned', 'done', 'skipped']).optional(),
+    priority: z.enum(['low', 'medium', 'high']).optional(),
+    
 });
 router.put('/:id', validate(updateLearning), async (req, res): Promise<any> => {
   try {
