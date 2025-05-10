@@ -115,4 +115,8 @@ const LearnSlice = createSlice({
 
 export const { setDate } = LearnSlice.actions;
 export const selectLearn = (state: RootState) => state.learn.byHour;
+export const selectLearnEntries = (state: RootState): LearnCell[] =>
+    state.learn.byHour.filter(
+      (cell): cell is LearnCell => cell !== null
+    );
 export default LearnSlice.reducer;

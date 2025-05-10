@@ -7,15 +7,25 @@ import {
     deleteEntryLearn,
     selectLearn,
     setDate,
-} from "../../features/learning/learning";
-import type { LearnCell } from "../../features/learning/learning";
+    selectLearnEntries,
+} from "../../features/learning/learningSlice";
+import type { LearnCell } from "../../features/learning/learningSlice";
+import LearningAdd from "./learningAdd";
+import LearningEdit from "./learningEdit";
+const NewTask = {
+    startTime: "08:00",
+    endTime: "09:00",
+    topic: "",
+    priority: "medium" as "low" | "medium" | "high",
 
+    status: "done" as "planned" | "done" | "skipped",
+};
 
 const STATUS_ORDER: Array<LearnCell["status"]> = ["planned", "done", "skipped"];
 export default function ScheduleWithBlocks() {
     const dispatch = useAppDispatch();
-    const schedule = useAppSelector(selectLearn);
-    const currentDate = useAppSelector((s) => s.schedule.currentDate);
+    
+    const currentDate = useAppSelector((s) => s.learn.currentDate);
 
     // State for editing existing blocks
     const [isEditing, setIsEditing] = useState<string | null>(null);
@@ -25,7 +35,7 @@ export default function ScheduleWithBlocks() {
     const [isAdding, setIsAdding] = useState(false);
     const [newTask, setNewTask] = useState(NewTask);
 
-    const tasks = schedule.filter(Boolean) as LearnCell[];
+    const tasks = useAppSelector(selectLearnEntries);
     const totalTasks = tasks.length;
     const doneTasks = tasks.filter((t) => t.status === "done").length;
     const precent = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
@@ -43,18 +53,18 @@ export default function ScheduleWithBlocks() {
             endTime: "09:00",
             topic: "",
             priority: "medium",
-           
+
             status: "done",
         });
     };
 
     const saveNew = () => {
         // derive hour from plannedStart
-        const hour = Number(newTask.plannedStart.split(":")[0]);
+        const hour = Number(newTask.startTime.split(":")[0]);
         const updates = {
-            taskTitle: newTask.taskTitle,
-            plannedStart: newTask.plannedStart,
-            plannedEnd: newTask.plannedEnd,
+            topic: newTask.topic,
+            startTime: newTask.startTime,
+            endTime: newTask.endTime,
             priority: newTask.priority,
         };
         dispatch(updatingLearn({ date: currentDate, hour, updates }));
@@ -93,7 +103,7 @@ export default function ScheduleWithBlocks() {
             })
         );
     };
-    const changeDate = (d: string) => {
+    const changeDate = (d: any) => {
         dispatch(setDate(d));
         dispatch(updatingLearn(d));
     };
@@ -108,6 +118,133 @@ export default function ScheduleWithBlocks() {
         changeDate(d.toISOString().slice(0, 10));
     };
     return (
-        <></> 
-    )
+        <div className="schedule-container">
+            <div className="schedule-header">
+                <div className="header-controls">
+                    <div>
+                        <button
+                            style={{ margin: "5px" }}
+                            onClick={prevDay}
+                        >{`<`}</button>
+                        <input
+                            type="date"
+                            value={currentDate}
+                            onChange={(e) => dispatch(setDate(e.target.value))}
+                        />
+                        <button
+                            style={{ margin: "5px" }}
+                            onClick={nextDay}
+                        >{`>`}</button>
+                    </div>
+
+                    <button className="add-btn" onClick={startAdd}>
+                        + Add Task
+                    </button>
+                </div>
+                <div className="progress-bar">
+                    <div
+                        className="progress-filled"
+                        style={{ width: `${precent}%` }}
+                    />
+                </div>
+
+                <div className="progress-text">
+                    {doneTasks} / {totalTasks} Done {precent}%
+                </div>
+            </div>
+            <div className="schedule-table-wrapper">
+                {/* Add form */}
+                {isAdding && (
+                    <>
+                        <LearningAdd
+                            setNewTask={setNewTask}
+                            cancelAdd={cancelAdd}
+                            newTask={newTask}
+                            saveNew={saveNew}
+                        />
+                    </>
+                )}
+
+                {/* Schedule table with blocks */}
+                <table className="schedule-table">
+                    <thead>
+                        <tr style={{ maxWidth: "600px" }}>
+                            <th>Time</th>
+                            <th>Task</th>
+                            <th>Priority</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {tasks.map((cell, hour) => {
+                            if (!cell) return null;
+                            const [startH] = cell.startTime
+                                .split(":")
+                                .map(Number);
+                            if (startH !== hour) return null;
+                            const [, endH] = cell.endTime
+                                .split(":")
+                                .map(Number);
+                            const span = endH - startH + 1;
+
+                            // Editing existing block
+                            if (isEditing === cell._id) {
+                                return (
+                                    <LearningEdit
+                                    key={cell._id}
+                                    cell={cell}
+                                    form={form}
+                                    setForm={setForm}
+                                    span={span}
+                                    saveEdit={saveEdit}
+                                    cancelEdit={() => setIsEditing(null)}
+                                    removeBlock={() => {
+                                        removeBlock(cell._id);
+                                        setIsEditing(null);
+                                    }}
+                                    />
+                                );
+                            }
+
+                            // Normal display
+                            return (
+                                <tr
+                                    key={cell._id}
+                                    className={`status-${cell.status}`}
+                                >
+                                    <td rowSpan={span}>
+                                        {cell.startTime}–{cell.endTime}
+                                    </td>
+                                    <td rowSpan={span}>{cell.topic}</td>
+                                    <td rowSpan={span}>{cell.priority}</td>
+                                    <td rowSpan={span}>
+                                        <button
+                                            className={`status-btn ${cell.status}`}
+                                            onClick={() =>
+                                                handleToggleCheck(cell)
+                                            }
+                                        >
+                                            {cell.status}
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <button onClick={() => startEdit(cell)}>
+                                            Edit
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                removeBlock(cell._id)
+                                            }
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
 }
