@@ -1,0 +1,110 @@
+
+
+.schedule-container {
+    display: grid;
+    grid-template-rows: 35% 65%;
+    height: 100vh;
+    background: #121212;
+    color: white;
+    font-family: sans-serif;
+  }
+  
+  .schedule-header {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: #1e1e1e;
+  
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+  
+      button, input[type="date"] {
+        background: #2a2a2a;
+        border: 1px solid #333;
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .add-btn {
+        background: #1f7a1f;
+        border: none;
+      }
+    }
+  
+    .progress-bar {
+      height: 8px;
+      background: #333;
+      border-radius: 4px;
+      overflow: hidden;
+      .progress-filled {
+        height: 100%;
+        background: #4caf50;
+        transition: width 0.3s;
+      }
+    }
+    .progress-text {
+      text-align: center;
+      font-size: 0.9rem;
+    }
+  }
+  
+  .schedule-table-wrapper {
+    overflow-y: auto;
+    padding: 0.5rem;
+  
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+  
+      thead {
+        position: sticky;
+        top: 0;
+        background: #1e1e1e;
+        th { padding: 0.5rem; border-bottom: 1px solid #333; }
+      }
+  
+      tbody {
+        tr {
+          display: grid;
+          grid-template-columns: 120px 1fr 120px 120px 160px;
+          align-items: center;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid #333;
+  
+          &.status-pending { background: none; }
+          &.status-done    { background: rgba(76,175,80,0.2); }
+          &.status-skipped { background: rgba(255,165,0,0.2); }
+  
+          td { padding: 0 0.5rem; }
+  
+          .status-btn {
+            background: #333;
+            border: none;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+  
+            &.pending { background: #555; }
+            &.done    { background: #4caf50; }
+            &.skipped { background: #ff9800; }
+          }
+  
+          button {
+            background: #333;
+            border: 1px solid #555;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+  

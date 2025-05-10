@@ -14,7 +14,7 @@ export interface HourCell {
   plannedEnd: string;
   actualStart?: string;
   actualEnd?: string;
-  status: "planned" | "done" | "skipped";
+  status?: "planned" | "done" | "skipped";
   priority: "low" | "medium" | "high";
   recurrenceRule?: string;
   goalId?: string;
