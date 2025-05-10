@@ -22,7 +22,7 @@ const NewTask = {
 };
 
 const STATUS_ORDER: Array<LearnCell["status"]> = ["planned", "done", "skipped"];
-export default function ScheduleWithBlocks() {
+export default function Learning() {
     const dispatch = useAppDispatch();
     
     const currentDate = useAppSelector((s) => s.learn.currentDate);

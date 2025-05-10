@@ -17,11 +17,11 @@ export default function LearningAdd ({setNewTask,newTask,saveNew,cancelAdd })  {
                         Start:
                         <input
                             type="time"
-                            value={newTask.plannedStart}
+                            value={newTask.startTime}
                             onChange={(e) =>
                                 setNewTask({
                                     ...newTask,
-                                    plannedStart: e.target.value,
+                                    startTime: e.target.value,
                                 })
                             }
                         />
@@ -30,11 +30,11 @@ export default function LearningAdd ({setNewTask,newTask,saveNew,cancelAdd })  {
                         End:
                         <input
                             type="time"
-                            value={newTask.plannedEnd}
+                            value={newTask.endTime}
                             onChange={(e) =>
                                 setNewTask({
                                     ...newTask,
-                                    plannedEnd: e.target.value,
+                                    endTime: e.target.value,
                                 })
                             }
                         />
@@ -42,11 +42,11 @@ export default function LearningAdd ({setNewTask,newTask,saveNew,cancelAdd })  {
                     <label style={{ marginLeft: 8 }}>
                         Title:
                         <input
-                            value={newTask.taskTitle}
+                            value={newTask.topic}
                             onChange={(e) =>
                                 setNewTask({
                                     ...newTask,
-                                    taskTitle: e.target.value,
+                                    topic: e.target.value,
                                 })
                             }
                             placeholder="What are you doing?"

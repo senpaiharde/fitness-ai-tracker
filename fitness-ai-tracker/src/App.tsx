@@ -20,6 +20,7 @@ import {
 } from "./features/user/userSlice";
 import { useEffect } from "react";
 import DiaryPage from "./components/FoodSearchModal/DiaryPage";
+import Learning from "./components/Learning/learning";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -54,6 +55,16 @@ function App() {
                     element={
                         isAuthenticated ? (
                             <ProfileSetup />
+                        ) : (
+                            <Navigate to={"/login"} replace />
+                        )
+                    }
+                />
+                <Route
+                    path="/learning"
+                    element={
+                        isAuthenticated ? (
+                            <Learning />
                         ) : (
                             <Navigate to={"/login"} replace />
                         )

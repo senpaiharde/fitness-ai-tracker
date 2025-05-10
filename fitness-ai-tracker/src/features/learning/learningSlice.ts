@@ -49,7 +49,7 @@ LearnCell,
         topic,
         startTime,
         endTime,
-        
+        hour,
         priority,
         
         goalId,

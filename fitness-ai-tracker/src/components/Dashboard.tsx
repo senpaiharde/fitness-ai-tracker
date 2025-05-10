@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selectToken, selectUser } from "../features/user/userSlice";
 import FoodSearchModal from "./FoodSearchModal/FoodSearchModal";
 import DiaryPage from "./FoodSearchModal/DiaryPage";
+import Learning from "./Learning/learning";
 
 export const Dashboard = () => {
     const token = useAppSelector(selectToken);
@@ -19,6 +20,7 @@ export const Dashboard = () => {
     const [display, setdisplay] = useState(false);
     const [displaylog, setdisplaylog] = useState(false);
     const [displayFood, setdisplayFood] = useState(false);
+    const [displayLearning, setdisplayLearning] = useState(false);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -76,10 +78,16 @@ export const Dashboard = () => {
                         >
                             Set Schedule
                         </ShinyButton></div>
+                        <div style={{paddingBottom:'10px'}}>
                         <ShinyButton 
                             onClick={() => setdisplayFood((prev) => !prev)}
                         >
-                            Add Food intake!
+                            Sdd Food intake
+                        </ShinyButton></div>
+                        <ShinyButton 
+                            onClick={() => setdisplayLearning((prev) => !prev)}
+                        >
+                            Set Learning Time
                         </ShinyButton>
                         {user.user?.isEnchaned && (
                             <div>
@@ -114,6 +122,7 @@ export const Dashboard = () => {
                     <Link to="/signup">Sign Up</Link>
                 </div>
             )}
+             {displayLearning && <Learning />}
             {displaylog && <Schedule />}
             {displayFood && <DiaryPage/>}
             {display && (
