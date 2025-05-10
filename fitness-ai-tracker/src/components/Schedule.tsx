@@ -95,25 +95,34 @@ export default function ScheduleWithBlocks() {
             })
         );
     };
-
+    const changeDate = (d: string) => {
+        dispatch(setDate(d));
+        dispatch(fetchDay(d));
+    };
+    const prevDay = () => {
+        const d = new Date(currentDate);
+        d.setDate(d.getDate() - 1);
+        changeDate(d.toISOString().slice(0, 10));
+    };
+    const nextDay = () => {
+        const d = new Date(currentDate);
+        d.setDate(d.getDate() + 1);
+        changeDate(d.toISOString().slice(0, 10));
+    };
     return (
-        <div
-            className="schedule-container"
-            
-        >
+        <div className="schedule-container">
             {/* Date picker + Add button */}
             <div className="schedule-header">
-                <div className="header-controls" >
+                <div className="header-controls">
+                    <div><button style={{margin:'5px'}} onClick={prevDay}>{`<`}</button>
                     <input
                         type="date"
                         value={currentDate}
                         onChange={(e) => dispatch(setDate(e.target.value))}
                     />
-                    <button
-                        className="add-btn"
-                        onClick={startAdd}
-                        style={{ marginLeft: 8 }}
-                    >
+                     <button style={{margin:'5px'}} onClick={nextDay}>{`>`}</button></div>
+                
+                    <button className="add-btn" onClick={startAdd}>
                         + Add Task
                     </button>
                 </div>
@@ -142,9 +151,9 @@ export default function ScheduleWithBlocks() {
                 )}
 
                 {/* Schedule table with blocks */}
-                <table>
+                <table className="schedule-table">
                     <thead>
-                        <tr>
+                        <tr style={{ maxWidth: "600px" }}>
                             <th>Time</th>
                             <th>Task</th>
                             <th>Priority</th>
@@ -196,7 +205,7 @@ export default function ScheduleWithBlocks() {
                                                 handleToggleCheck(cell)
                                             }
                                         >
-                                            {" "}
+                                            {cell.status}
                                         </button>
                                     </td>
                                     <td>
