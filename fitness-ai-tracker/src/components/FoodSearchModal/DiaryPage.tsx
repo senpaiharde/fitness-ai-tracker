@@ -27,6 +27,9 @@ const DiaryPage: React.FC = () => {
   const [modalOpen,      setModalOpen]      = useState(false);
   const [editingEntry,   setEditingEntry]   = useState<HourCell|undefined>(undefined);
 
+  const userCalories = 3050;
+  const remaining    = userCalories - totals.calories;
+  const completionPercentage = userCalories > 0 ? (totals.calories / userCalories) * 100 : 0;
   // fetch on first render and whenever the date changes
   useEffect(() => {
     dispatch(fetchDiary(date));
@@ -49,8 +52,7 @@ const DiaryPage: React.FC = () => {
     changeDate(d.toISOString().slice(0,10));
   };
 
-  const userCalories = 3050;
-  const remaining    = userCalories - totals.calories;
+  
 
   return (
     <div className="diary-container">
@@ -88,6 +90,13 @@ const DiaryPage: React.FC = () => {
         <button className="add-btn">Complete Diary</button>
         </div>
        
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-start", marginTop: "6px" ,width:'100%',marginBottom:'3px' }}>
+            <div style={{ marginRight: "15px",marginLeft:'1px', fontSize: "11px" }}>{completionPercentage.toFixed(0)}%</div>
+            <div style={{ width: "100%", height: "5px", backgroundColor: "#e0e0e0", borderRadius: "4px", maxWidth: "100%" }}>
+              <div style={{ width: `${completionPercentage}%`, height: "7px", backgroundColor: "#44546F", borderRadius: "4px",
+               transition: "width 0.3s ease-in-out" }} />
+            </div>
+          </div>
       </div>
 
       {/* ───── TABLE (45%) ───── */}
