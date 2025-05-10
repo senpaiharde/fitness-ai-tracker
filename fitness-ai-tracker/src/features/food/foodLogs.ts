@@ -60,6 +60,7 @@ export const createFoodLog = createAsyncThunk<
   HourCell,      
   {
     date: string;
+    hour: number;
     timestamp?: string;     // optional, server defaults
     foodItemId?: string;
     manualText?: string;
@@ -142,6 +143,7 @@ const foodLogSlice = createSlice({
                 });
             })
             .addCase(fetchDiary.fulfilled, (state, { payload }) => {
+                
                 state.entries = payload.entries; 
                 state.byHour  = Array(24).fill(null);
                 payload.entries.forEach(e => state.byHour[e.hour] = e);
@@ -162,7 +164,7 @@ const foodLogSlice = createSlice({
                 );
             })
             .addCase(createFoodLog.fulfilled, (state, { payload }) => {
-                
+                 
                 state.entries.push(payload);
                 state.byHour[payload.hour] = payload;
                 state.totals.calories += payload.calories ?? 0;

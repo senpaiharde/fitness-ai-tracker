@@ -12,21 +12,26 @@
   }
   
   .header {
-    display: flex;
+    display: grid;
     align-items: center;
-    justify-content: space-between;
+    text-align: center;
+    
+     
   }
   
   .date-controls {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+  text-align: center;
+  justify-content: center;
   }
   
   .calorie-summary {
     display: flex;
     align-items: baseline;
     gap: 1.5rem;
+    justify-content: center;
   }
   .calorie-summary small {
     display: block;
@@ -46,6 +51,8 @@
     font-weight: bold;
     cursor: pointer;
     border-radius: 4px;
+    margin: 10px;
+
   }
   
   .table-wrapper {

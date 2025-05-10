@@ -80,10 +80,14 @@ const DiaryPage: React.FC = () => {
             <span>{remaining} kcal</span>
           </div>
         </div>
-
-        <button className="add-btn" onClick={() => setModalOpen(true)}>
-          + Add Food
+        <div> <button className="add-btn" onClick={() => setModalOpen(true)}>
+           Add Food
         </button>
+        <button className="add-btn">Notes</button>
+        <button className="add-btn">Nutrition</button>
+        <button className="add-btn">Complete Diary</button>
+        </div>
+       
       </div>
 
       {/* ───── TABLE (45%) ───── */}

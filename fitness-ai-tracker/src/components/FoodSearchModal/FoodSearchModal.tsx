@@ -5,7 +5,11 @@ import {
     clear,
     selectResults,
 } from "../../features/foodCatalog/foodCatalogSlice";
-import { updateFoodLog, fetchDiary } from "../../features/food/foodLogs";
+import {
+    updateFoodLog,
+    fetchDiary,
+    createFoodLog,
+} from "../../features/food/foodLogs";
 import type { RootState } from "../../app/store";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 
@@ -51,23 +55,22 @@ const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
     };
 
     const addFood = (food: FoodItem) => {
+        const now = new Date().toISOString();
         const grams = food.servingSizeGrams;
         const factor = grams / food.servingSizeGrams;
         dispatch(
-            updateFoodLog({
+            createFoodLog({
                 date,
+                timestamp: now,
                 hour: new Date().getHours(),
-                updates: {
-                    foodItemId: food._id,
-                    grams,
-                    calories: Math.round(food.calories * factor),
-                    macros: {
-                        protein: Number(
-                            (food.macros.protein * factor).toFixed(1)
-                        ),
-                        carbs: Number((food.macros.carbs * factor).toFixed(1)),
-                        fat: Number((food.macros.fat * factor).toFixed(1)),
-                    },
+                foodItemId: food._id,
+
+                grams,
+                calories: Math.round(food.calories * factor),
+                macros: {
+                    protein: Number((food.macros.protein * factor).toFixed(1)),
+                    carbs: Number((food.macros.carbs * factor).toFixed(1)),
+                    fat: Number((food.macros.fat * factor).toFixed(1)),
                 },
             })
         )
@@ -82,7 +85,7 @@ const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="modal-overlay" style={{color:'#fff'}}>
+        <div className="modal-overlay" style={{ color: "#fff" }}>
             <div className="modal-content">
                 <header>
                     <h2>Search Food</h2>
@@ -106,7 +109,7 @@ const FoodSearchModal: React.FC<FoodSearchModalProps> = ({
                                 <span>{food.name}</span>
                                 <span>{food.servingSizeGrams}g</span>
                                 <span>{food.calories} kcal</span>
-                                
+
                                 <button onClick={() => addFood(food)}>
                                     Add
                                 </button>
