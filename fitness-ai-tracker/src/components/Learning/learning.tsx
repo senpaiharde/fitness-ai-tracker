@@ -34,7 +34,7 @@ export default function Learning() {
     // State for adding a new block
     const [isAdding, setIsAdding] = useState(false);
     const [newTask, setNewTask] = useState(NewTask);
-
+    const schedule = useAppSelector(selectLearn);
     const tasks = useAppSelector(selectLearnEntries);
     const totalTasks = tasks.length;
     const doneTasks = tasks.filter((t) => t.status === "done").length;
@@ -176,7 +176,7 @@ export default function Learning() {
                         </tr>
                     </thead>
                     <tbody>
-                        {tasks.map((cell, hour) => {
+                        {schedule.map((cell, hour) => {
                             if (!cell) return null;
                             const [startH] = cell.startTime
                                 .split(":")
