@@ -1,4 +1,4 @@
-// src/routes/schedule.ts
+
 import { Router, Request, Response, NextFunction } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
 import ScheduleEntry, { IScheduleEntry } from '../models/ScheduleEntry';
