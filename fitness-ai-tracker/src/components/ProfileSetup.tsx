@@ -66,6 +66,7 @@ export default function ProfileSetup() {
             timeZone,
             notificationPrefs: { email: notifEmail, push: notifPush },
             uiTheme,
+            updatedAt: Date.now()
         };
 
         try {
