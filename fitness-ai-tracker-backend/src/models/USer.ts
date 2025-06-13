@@ -14,6 +14,7 @@ export interface IUser extends mongoose.Document {
     baselineBodyFatPercent?: number,
     goals: string[],
     timeZone: string,
+    updatedAt: Date,
     notificationPrefs: {
         email: boolean;
         push: boolean;
@@ -32,6 +33,7 @@ const userSchema = new Schema<IUser>(
         baselineBodyFatPercent: Number,
         goals: {type: [String], default: []},
         timeZone: {type: String, default: 'UTC'},
+        updatedAt: Date,
         notificationPrefs: {
             email: {type:Boolean, default: true},
             push: {type: Boolean, default:true}
