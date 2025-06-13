@@ -39,51 +39,10 @@ function stripJSONFences(raw: string): string {
   return trimmed;
 }
 
-/**
- * If GPT doesn’t return labels, we generate a set of fallback labels
- * based on words in the board’s title.
- */
-function generateTopicLabels(boardTitle: string): Array<{ title: string; color: string; id: string }> {
-  const colorPalette = [
-    '#1E90FF',
-    '#32CD32',
-    '#FFD700',
-    '#C19A6B',
-    '#8A2BE2',
-    '#FF8C00',
-    '#DC143C',
-  ];
 
-  const rawWords = boardTitle
-    .split(/[\s\-:,_]+/)
-    .map(w => w.toLowerCase())
-    .filter(w => w.length > 2);
 
-  const capitalizedWords = rawWords.map(w => w.charAt(0).toUpperCase() + w.slice(1));
 
-  const labels: string[] = [];
-  for (let i = 0; i < capitalizedWords.length && labels.length < 4; i++) {
-    const word = capitalizedWords[i];
-    if (!labels.includes(word)) {
-      labels.push(word);
-    }
-  }
-
-  const fallback = ['Travel', 'History', 'Sightseeing', 'Logistics', 'Culture', 'Planning', 'MustSee'];
-  let idx = 0;
-  while (labels.length < 7 && idx < fallback.length) {
-    if (!labels.includes(fallback[idx])) {
-      labels.push(fallback[idx]);
-    }
-    idx++;
-  }
-
-  return labels.slice(0, 7).map((title, i) => ({
-    id:    new mongoose.Types.ObjectId().toString(),
-    title,
-    color: colorPalette[i % colorPalette.length],
-  }));
-}
+  
 
 router.post('/', async (req: Request, res: Response): Promise<any> => {
   try {
