@@ -29,10 +29,10 @@ export default function ProfileSetup() {
             setBirthdate(user.birthdate?.slice(0, 10) ?? "");
             setWeightKg(user.weightKg ?? "");
             setBodyFat(user.baselineBodyFatPercent ?? "");
-            setGoals(user.goals.join(", "));
+            setGoals(user.goals?.join(", "));
             setTimeZone(user.timeZone);
-            setNotifEmail(user.notificationPrefs.email);
-            setNotifPush(user.notificationPrefs.push);
+            setNotifEmail(user.notificationPrefs?.email);
+            setNotifPush(user.notificationPrefs?.push);
             setUiTheme(user.uiTheme);
         }
     }, [user]);
@@ -96,7 +96,7 @@ export default function ProfileSetup() {
                 </label>
 
                 <label>
-                    Email (read-only)
+                    Email 
                     <input type="email" value={user.email} readOnly />
                 </label>
 
@@ -110,7 +110,7 @@ export default function ProfileSetup() {
                 </label>
 
                 <label>
-                    Weight (kg)
+                    Weight  (kg)
                     <input
                         type="number"
                         value={weightKg}

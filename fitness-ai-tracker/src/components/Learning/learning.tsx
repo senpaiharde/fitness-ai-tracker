@@ -176,7 +176,7 @@ export default function Learning() {
                         </tr>
                     </thead>
                     <tbody>
-                        {schedule.map((cell, hour) => {
+                       {schedule ? (schedule?.map((cell, hour) => {
                             if (!cell) return null;
                             const [startH] = cell.startTime
                                 .split(":")
@@ -241,7 +241,7 @@ export default function Learning() {
                                     </td>
                                 </tr>
                             );
-                        })}
+                        })): (<div>set schedule Or use Ai</div>)} 
                     </tbody>
                 </table>
             </div>
