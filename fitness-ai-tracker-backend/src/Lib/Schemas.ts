@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const logUserEntryZod = z.object({
+export const logUserEntryZod = z.object({
   workout: z
     .object({
       type: z.string(),

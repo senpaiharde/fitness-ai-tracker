@@ -19,6 +19,7 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "fitness-ai-tracker-backend": "file:",
+    "gpt-3-encoder": "^1.1.4",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.16.0",
