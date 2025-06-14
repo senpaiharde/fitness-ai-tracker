@@ -6,6 +6,13 @@ import { validate } from '../utils/validate';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
 import mongoose from 'mongoose';
+import { extractFieldsAdaptive } from '../services/aiPipeline.js';
+
+import { AIEntry }           from '../models/AIEntry.js';
+import { LifeLog }           from '../models/LifeLog.js';
+import  LearningSession    from '../models/LearningSeason';
+import FoodLog               from '../models/FoodLog.js';
+import CompoundInjection     from '../models/CompoundInjection.js';
 dotenv.config();
 
 
@@ -26,18 +33,6 @@ router.use(authMiddleware);
 
 
 
-/**
- * If ChatGPT wraps JSON in triple‐backticks, this will remove them.
- */
-function stripJSONFences(raw: string): string {
-  const trimmed = raw.trim();
-  const fenceRegex = /```(?:json)?\s*([\s\S]*?)\s*```/i;
-  const match = trimmed.match(fenceRegex);
-  if (match && match[1]) {
-    return match[1].trim();
-  }
-  return trimmed;
-}
 
 
 
@@ -46,54 +41,22 @@ function stripJSONFences(raw: string): string {
 
 router.post('/', async (req: Request, res: Response): Promise<any> => {
   try {
-    const { prompt } = req.body as { prompt?: string };
-    if (!prompt || typeof prompt !== 'string' || !prompt.trim()) {
-      return res.status(400).json({ error: '`prompt` (string) is required.' });
+    const userId  = req.user!.id;
+    const rawText = String(req.body.text || '').trim();
+    if (!rawText) {
+      return res.status(400).json({ error: '`text` field is required.' });
     }
 
-    // 1) Build the ChatGPT prompt
-    //    
-    //   
-    const systemMessage = {
-  role: 'system',
-  content: `
-
-`.trim()
-};
+      const verbose = req.query.verbose === 'true';
 
 
-const userMessage = {
-  role: 'user',
-  content: `Please create a new schedule payload for: "${prompt.trim()}"`
-};
-
-const completion = await openai.chat.completions.create({
-  model:       'gpt-4.1-nano',
-  messages:    [systemMessage, userMessage] as any[],
-  temperature: 0.2,
-  max_tokens:  8000,
-});
+       const { parsed, usage, raw } = await extractFieldsAdaptive(rawText, { verbose });
 
 
-    // 3) Extract raw response
-    const rawOutput = completion.choices[0].message?.content || '';
-    console.log('⏺ Raw GPT response:\n', rawOutput);
+   
 
-    // 4) Strip any ```json fences```
-    const jsonString = stripJSONFences(rawOutput);
-    console.log('⏺ Stripped JSON string:\n', jsonString);
 
-    // 5) Attempt to JSON.parse
-    let payload: {
-      
-    };
-
-    try {
-      payload = JSON.parse(jsonString);
-    } catch {
-      console.error('‼️ Failed to parse JSON from ChatGPT:\n', jsonString);
-      return res.status(500).json({ error: 'Failed to parse JSON from ChatGPT.' });
-    }
+   
 
    
     return res.status(201).json({  });

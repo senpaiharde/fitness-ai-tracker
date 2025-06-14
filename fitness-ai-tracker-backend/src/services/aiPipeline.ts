@@ -32,7 +32,7 @@ async function prepareText(raw: string): Promise<string> {
         role: 'system',
         content:
           'You are a concise summarizer. ' +
-          'Extract only the key activities, times, and numbers from the user’s text.'
+          'Extract only the key activities, times, and numbers from the user`s text.'
       },
       { role: 'user', content: raw }
     ]
