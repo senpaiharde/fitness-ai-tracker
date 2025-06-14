@@ -1,22 +1,25 @@
-// src/services/aiPipeline.ts
 import OpenAI from 'openai';
+
 import { encode } from 'gpt-3-encoder';
 import { logUserEntrySchema, logUserEntryZod, LogUserEntry } from '../Lib/Schemas';
 import { z } from 'zod';
 
 // Initialize the OpenAI client
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
+type CreateParams = Parameters<OpenAI['chat']['completions']['create']>[0];
+type MessageParam = CreateParams['messages'] extends Array<infer U> ? U : never;
 
-// ---- Configuration constants ----
+// Configuration constants
 const INPUT_TOKEN_LIMIT     = 1000;     // if user text exceeds this, we summarize first
 const SUMMARY_MAX_TOKENS    = 256;      // how many tokens the summary call may use
 const EXTRACTION_MAX_TOKENS = 256;      // default budget for the function-call extraction
 const SHORT_MODEL           = 'gpt-4o-mini';
 const LONG_MODEL            = 'gpt-3.5-turbo-1106';
 
-// ---- 1) Summarize very long inputs down to essentials ----
+//  Summarize very long inputs down to essentials 
 async function prepareText(raw: string): Promise<string> {
   const tokenCount = encode(raw).length;
+  
   if (tokenCount <= INPUT_TOKEN_LIMIT) return raw;
 
   // Summarize using a lightweight 3.5 model
@@ -35,13 +38,17 @@ async function prepareText(raw: string): Promise<string> {
     ]
   });
 
-  return summary.choices[0].message.content.trim();
+  const backMsg =  summary.choices[0].message;
+  if(!backMsg?.content){
+    throw new Error("no content returned");
+  }
+  return backMsg.content.trim();
 }
 
-// ---- 2) Safely call the function-call API with a retry on truncated JSON ----
+//  Safely call the function-call API with a retry on truncated JSON -
 async function safeExtract(
-  text: string,
-  messages: Array<{ role: string; content: string }>,
+  //text: string,
+  messages: MessageParam[],
   model: string,
   initialMaxTokens: number
 ): Promise<{
@@ -50,6 +57,8 @@ async function safeExtract(
   raw: string;
 }> {
   let maxTokens = initialMaxTokens;
+
+
 
   for (let attempt = 0; attempt < 2; attempt++) {
     const resp = await openai.chat.completions.create({
@@ -60,33 +69,43 @@ async function safeExtract(
       function_call: { name: logUserEntrySchema.name },
       max_tokens: maxTokens
     });
+     
+    const usage = resp.usage;
+    if (!usage) throw new Error('OpenAI response missing usage info');
+    
+     const call = resp.choices[0].message?.function_call;
 
-    const call = resp.choices[0].message.function_call!;
+
+
+    if (!call || !call.arguments) throw new Error('OpenAI did not return a function_call with arguments');
     const rawArgs = call.arguments;
+
+
+
+
     try {
       // Parse the JSON string
       const json = JSON.parse(rawArgs);
-      // Validate shape with Zod
       const parsed = logUserEntryZod.parse(json);
       return {
         parsed,
         usage: {
-          promptTokens:    resp.usage.prompt_tokens,
-          completionTokens:resp.usage.completion_tokens,
-          totalTokens:     resp.usage.total_tokens
+          promptTokens:    usage.prompt_tokens,
+          completionTokens:usage.completion_tokens,
+          totalTokens:     usage.total_tokens
         },
         raw: rawArgs
       };
     } catch {
       // If parsing or validation fails, double the budget once and retry
-      maxTokens = maxTokens * 2;
+     maxTokens *= 2;
     }
   }
 
   throw new Error('Could not parse complete JSON after retry');
 }
 
-// ---- 3) Orchestrator: choose model, prepare text, extract ----
+// Orchestrator: choose model, prepare text, extract 
 export async function extractFieldsAdaptive(
   rawText: string,
   opts: { verbose?: boolean } = {}
@@ -111,7 +130,7 @@ export async function extractFieldsAdaptive(
     : LONG_MODEL;
 
   // Build the common messages
-  const messages = [
+  const messages: MessageParam[] = [
     {
       role: 'system',
       content: 'Extract only the present fields; omit everything else.'
@@ -119,11 +138,11 @@ export async function extractFieldsAdaptive(
     { role: 'user', content: text }
   ];
 
-  // Estimate an initial budget (simple heuristic)
+  // Estimate an initial budget 
   const initialBudget = verbose
     ? 2000
     : Math.min(EXTRACTION_MAX_TOKENS, Math.ceil(tokenCount * 0.5) + 20);
 
   // Perform safe extraction with retry logic
-  return await safeExtract(messages as any, messages, model, initialBudget);
+   return safeExtract(messages, model, initialBudget);
 }
