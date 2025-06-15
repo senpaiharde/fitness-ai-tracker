@@ -15,6 +15,7 @@ import compoundInjectionRouter from './routes/compoundInjection';
 import learningRouter from './routes/learning';
 import goalsRouter from './routes/goals';
 import summariesRouter from './routes/summaries';
+import AiRouter from './routes/AiRoute';
 
 dotenv.config();
 const app = express();
@@ -34,6 +35,7 @@ app.use('/food-Items', foodItemRouter);
 app.use('/food-logs', foodLogRouter);
 app.use('/supplements', supplementsRouter);
 app.use('/supplements', compoundInjectionRouter);
+app.use('/ai/intake', AiRouter);
 app.use('/learning', learningRouter);
 app.use('/goals', goalsRouter);
 app.use('/summaries', summariesRouter);
