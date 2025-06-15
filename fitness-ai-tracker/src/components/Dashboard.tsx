@@ -82,7 +82,7 @@ export const Dashboard = () => {
                         <ShinyButton 
                             onClick={() => setdisplayFood((prev) => !prev)}
                         >
-                            Sdd Food intake
+                            Set Food intake
                         </ShinyButton></div>
                         <ShinyButton 
                             onClick={() => setdisplayLearning((prev) => !prev)}
