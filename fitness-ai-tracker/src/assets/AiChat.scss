@@ -1,3 +1,19 @@
 .AiChat{
-    
+    flex-direction: column;
+    flex: 1;
+   width: 100%;
+    position: relative;
+    border: 0 solid;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    display: grid;
+}
+
+
+.sidebarLeft{
+  overflow-y: auto;
+  height: 100%;
+  width: 25%;
+
 }
