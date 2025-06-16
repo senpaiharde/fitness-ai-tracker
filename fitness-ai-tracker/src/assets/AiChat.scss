@@ -1,19 +1,40 @@
-.AiChat{
-    flex-direction: column;
-    flex: 1;
-   width: 100%;
-    position: relative;
-    border: 0 solid;
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    display: grid;
+.AiChat {
+    background: #060606;
+    height: 100%;
+    max-width: 100%;
+    display: flex;
 }
 
+.sidebarLeft {
+    text-align: center;
+    padding: 1.5rem;
+    width: 20%;
+    height: 100%;
+    color: white;
+    border-right: 1px solid #222;
+}
 
-.sidebarLeft{
-  overflow-y: auto;
-  height: 100%;
-  width: 25%;
+.MainChat {
+    flex-direction: column;
+    display: flex;
+    height: 100%;
+    text-align: center;
+    color: white;
+    width: 100%;
+            padding-top: 30%;
+            
+}
+
+.MainChatH2{
+    font-size: 28px;
+}
+.MainChatInput{
+    padding-block: calc(var(--spacing)* 2.5);
+    background-color: transparent;
+    border: none;
+    border-radius: 12px;
+    padding-left: 2cm;
+    padding-right: 2rem;
+    text-align: center;
 
 }

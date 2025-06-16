@@ -46,10 +46,14 @@ export const AiForm = () => {
         <div className="AiChat">
             {isLoggedIn && (
                 <>
-                <nav className="sidebarLeft">
-                    2
-                </nav>
-                <div className="MainChat">2</div>
+                    <nav className="sidebarLeft">2</nav>
+                    <div className="MainChat">
+                        <h2 className="MainChatH2">Ready when you are.</h2>
+                        <input 
+                        placeholder="Ask anything"
+                        className="MainChatInput"
+                        />
+                    </div>
                 </>
             )}
         </div>
