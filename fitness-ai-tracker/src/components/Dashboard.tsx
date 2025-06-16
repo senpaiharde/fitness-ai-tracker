@@ -41,11 +41,7 @@ export const Dashboard = () => {
         return age;
     }
     const age = calculateAge(birthIso);
-    //  Use the typed selector hook:
 
-    //  Compute login state off the token
-
-    console.log(user);
     return (
         <div className="dashboard">
             {isLoggedIn ? (
@@ -72,24 +68,34 @@ export const Dashboard = () => {
                             <Shiny speed={5}>
                                 BodyFat: {user?.baselineBodyFatPercent}%
                             </Shiny>
-                        </p><div style={{paddingBottom:'10px'}}>
-                        <ShinyButton 
-                            onClick={() => setdisplaylog((prev) => !prev)}
-                        >
-                            Set Schedule
-                        </ShinyButton></div>
-                        <div style={{paddingBottom:'10px'}}>
-                        <ShinyButton 
-                            onClick={() => setdisplayFood((prev) => !prev)}
-                        >
-                            Set Food intake
-                        </ShinyButton></div>
-                        <ShinyButton 
-                            onClick={() => setdisplayLearning((prev) => !prev)}
-                        >
-                            Set Learning Time
+                        </p>
+                        <div style={{ paddingBottom: "10px" }}>
+                            <ShinyButton
+                                onClick={() => setdisplaylog((prev) => !prev)}
+                            >
+                                Set Schedule
+                            </ShinyButton>
+                        </div>
+                        <div style={{ paddingBottom: "10px" }}>
+                            <ShinyButton
+                                onClick={() => setdisplayFood((prev) => !prev)}
+                            >
+                                Set Food intake
+                            </ShinyButton>
+                        </div>
+                        <div style={{ paddingBottom: "10px" }}>
+                            <ShinyButton
+                                onClick={() =>
+                                    setdisplayLearning((prev) => !prev)
+                                }
+                            >
+                                Set Learning Time
+                            </ShinyButton>
+                        </div>
+                        <ShinyButton onClick={() => navigate("/chat")}>
+                            AI Tacker
                         </ShinyButton>
-                        {user.user?.isEnchaned && (
+                        {user?.user?.isEnchaned && (
                             <div>
                                 <p>
                                     <Shiny speed={5}>High Leauge</Shiny>
@@ -122,9 +128,9 @@ export const Dashboard = () => {
                     <Link to="/signup">Sign Up</Link>
                 </div>
             )}
-             {displayLearning && <Learning />}
+            {displayLearning && <Learning />}
             {displaylog && <Schedule />}
-            {displayFood && <DiaryPage/>}
+            {displayFood && <DiaryPage />}
             {display && (
                 <EnhancementLog isOpen={display} setIsOpen={setdisplay} />
             )}

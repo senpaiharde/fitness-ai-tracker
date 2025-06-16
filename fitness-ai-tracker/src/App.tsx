@@ -21,6 +21,7 @@ import {
 import { useEffect } from "react";
 import DiaryPage from "./components/FoodSearchModal/DiaryPage";
 import Learning from "./components/Learning/learning";
+import { AiForm } from "./components/AIForm/AiForm";
 
 function App() {
     const dispatch = useAppDispatch();
@@ -55,6 +56,16 @@ function App() {
                     element={
                         isAuthenticated ? (
                             <ProfileSetup />
+                        ) : (
+                            <Navigate to={"/login"} replace />
+                        )
+                    }
+                />
+                <Route
+                    path="/chat"
+                    element={
+                        isAuthenticated ? (
+                            <AiForm/>
                         ) : (
                             <Navigate to={"/login"} replace />
                         )
