@@ -49,13 +49,29 @@
     text-align: left;
     font-size: 16px;
     margin: 4px;
+    margin-bottom: 20px;
    
     
 
 }
-.MainChatContainerBotton{
+.MainChatContainerBottonArea{
     display: flex;
     justify-content: space-between;
+}
+.MainChatContainerButtonAdd{
+    width: 36px;
+    height: 36px;
+    background-color: #222;
+    border: none;
+    border-radius: 50%;
+    justify-content: center;
+    padding-top: 5px;
+    color: white;
+    margin-right: 6px;
+    &:hover{
+        cursor: pointer;
+        filter: brightness(155%);
+    }
 }
 .MainChatContainerButton{
     cursor: pointer;
@@ -67,7 +83,7 @@
      border-radius: 50%;
      padding-top: 5px;
      &:hover{
-        filter: brightness(70%);
+        filter: brightness(80%);
      }
 
 }
