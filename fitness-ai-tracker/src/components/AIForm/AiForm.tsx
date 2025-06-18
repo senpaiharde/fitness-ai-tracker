@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { EnhancementLog } from "./../EnhancementLog";
 
 import Shiny from "../../ui/Shiny";
@@ -13,19 +13,44 @@ import DiaryPage from "./../FoodSearchModal/DiaryPage";
 import Learning from "./../Learning/learning";
 import { SvgArrow, SvgMicro, SvgPlus } from "./SvgBox.jsx";
 
+type Answer =
+    | { type: "user"; payload: string }
+    | { type: "ack"; payload: string }
+    | { type: "chat"; payload: string }
+    | { type: "suggestion"; payload: string }
+    | {
+          type: "logs";
+          payload: {
+              loaded: string[];
+              logs: Record<string, any[]>;
+          };
+      };
+
 export const AiForm = () => {
     const token = useAppSelector(selectToken);
     const user = useAppSelector(selectUser);
-
     const isLoggedIn = Boolean(token);
-    const [display, setdisplay] = useState("");
+    const [text, setText] = useState("");
     const [loading, setLoading] = useState(false);
+    const [answers, setAnswers] = useState<Answer[]>([]);
+    const [showLogs, setShowLogs] = useState(false);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const API_BASE =  "http://localhost:4000";
+    const endRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [answers]);
+
+
+
+
+
+
+
+    const API_BASE = "http://localhost:4000";
     const handleChatAI = async () => {
-        if (!display.trim()) return alert("fill the text");
+        if (!text.trim()) return alert("fill the text");
         setLoading(true);
         try {
             const resp = await fetch(`${API_BASE}/ai/intake/`, {
@@ -34,20 +59,18 @@ export const AiForm = () => {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ display }),
+                body: JSON.stringify({ text }),
             });
-            const { data } = await resp.json();
-             if (!resp.ok) {
-        const errData = await resp.json();
-        throw new Error(errData.error || 'Failed To create chat!.');
-      }
+            const body = await resp.json();
+            if (!resp.ok) throw new Error(body.error || "AI call failed");
+            setAnswers((prev) => [...prev, ...(body.answers as Answer[])]);
         } catch (err: any) {
             console.error("err at creating chat with ai:", err);
             alert("failed to create chat: " + err.message);
-        }finally {
-      setLoading(false);
-      setdisplay('');
-    }
+        } finally {
+            setLoading(false);
+            
+        }
     };
     return (
         <div className="AiChat">
@@ -59,8 +82,8 @@ export const AiForm = () => {
                         <div className="MainChatContainer">
                             <input
                                 type="text"
-                                value={display}
-                                onChange={(e) => setdisplay(e.target.value)}
+                                value={text}
+                                onChange={(e) => setText(e.target.value)}
                                 placeholder="Ask anything"
                                 className="MainChatInput"
                             />
@@ -82,7 +105,9 @@ export const AiForm = () => {
                                         <SvgMicro />
                                     </button>
                                     <button
-                                        onClick={() => {handleChatAI()}}
+                                        onClick={() => {
+                                            handleChatAI();
+                                        }}
                                         className="MainChatContainerButton"
                                     >
                                         <SvgArrow />
