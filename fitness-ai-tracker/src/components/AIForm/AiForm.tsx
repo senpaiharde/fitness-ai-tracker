@@ -71,53 +71,119 @@ export const AiForm = () => {
             {isLoggedIn && (
                 <>
                     <nav className="sidebarLeft">2</nav>
-                    <div className="MainChat">
-                        {hasHistory ? (
-                            <></>
-                        ) : (
+                     <div className="MainChat">
+            {hasHistory ? (
+              <>
+                {/*) Chat history */}
+                <div className="chat-history">
+                  {answers.map((ans, i) => {
+                    switch (ans.type) {
+                      case "user":
+                        return <div key={i} className="msgUser">{ans.payload}</div>;
+                      case "ack":
+                      case "chat":
+                      case "suggestion":
+                        return <div key={i} className={`msgAi ${ans.type}`}>{ans.payload}</div>;
+                      case "logs":
+                        return (
+                          <div key={i} className="logsEntry">
+                            <button onClick={() => setShowLogs(s => !s)}>
+                              {showLogs ? "Hide Logs" : "Show Logs"}
+                            </button>
+                            {showLogs && ans.payload.loaded.map(cat => (
+                              <div key={cat}>
+                                <h4>{cat}</h4>
+                                <ul>
+                                  {(ans.payload.logs[cat] || []).map((log,j) =>
+                                    <li key={j}>{log.summary ?? JSON.stringify(log)}</li>
+                                  )}
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      default:
+                        return null;
+                    }
+                  })}
+                  <div ref={endRef} />
+                </div>
+
+              
+                <div className="MainChatContainer">
+                  <input
+                    type="text"
+                    value={text}
+                    onChange={e => setText(e.target.value)}
+                    placeholder="Ask anything"
+                    className="MainChatInput"
+                    disabled={loading}
+                  />
+                  <div className="MainChatContainerBottonArea">
+                    <div>
+                      <button className="MainChatContainerButtonAdd">
+                        <SvgPlus />
+                      </button>
+                    </div>
+                    <div>
+                      <button className="MainChatContainerButtonAdd">
+                        <SvgMicro />
+                      </button>
+                      <button
+                        onClick={handleChatAI}
+                        className="MainChatContainerButton"
+                        disabled={loading || !text.trim()}
+                      >
+                        <SvgArrow />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
                             <>
                                 <h2 className="MainChatH2">
                                     Ready when you are.
                                 </h2>
                                 <div className="Container">
-                                <div className="MainChatContainer">
-                                    <input
-                                        type="text"
-                                        value={text}
-                                        onChange={(e) =>
-                                            setText(e.target.value)
-                                        }
-                                        placeholder="Ask anything"
-                                        className="MainChatInput"
-                                    />
-                                    <div className="MainChatContainerBottonArea">
-                                        <div>
-                                            <button
-                                                title="Add photos and files"
-                                                className="MainChatContainerButtonAdd"
-                                            >
-                                                <SvgPlus />
-                                            </button>
-                                        </div>
+                                    <div className="MainChatContainer">
+                                        <input
+                                            type="text"
+                                            value={text}
+                                            onChange={(e) =>
+                                                setText(e.target.value)
+                                            }
+                                            placeholder="Ask anything"
+                                            className="MainChatInput"
+                                        />
+                                        <div className="MainChatContainerBottonArea">
+                                            <div>
+                                                <button
+                                                    title="Add photos and files"
+                                                    className="MainChatContainerButtonAdd"
+                                                >
+                                                    <SvgPlus />
+                                                </button>
+                                            </div>
 
-                                        <div>
-                                            <button
-                                                title="Add photos and files"
-                                                className="MainChatContainerButtonAdd"
-                                            >
-                                                <SvgMicro />
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    handleChatAI();
-                                                }}
-                                                className="MainChatContainerButton"
-                                            >
-                                                <SvgArrow />
-                                            </button>
+                                            <div>
+                                                <button
+                                                    title="Add photos and files"
+                                                    className="MainChatContainerButtonAdd"
+                                                >
+                                                    <SvgMicro />
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        handleChatAI();
+                                                    }}
+                                                    className="MainChatContainerButton"
+                                                >
+                                                    <SvgArrow />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
                                 </div>
                             </>
                         )}
