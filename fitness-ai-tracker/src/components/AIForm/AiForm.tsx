@@ -34,17 +34,20 @@ export const AiForm = () => {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ prompt }),
+                body: JSON.stringify({ display }),
             });
             const { data } = await resp.json();
              if (!resp.ok) {
         const errData = await resp.json();
-        throw new Error(errData.error || 'Failed To create Board!.');
+        throw new Error(errData.error || 'Failed To create chat!.');
       }
         } catch (err: any) {
-            console.error("err at creating board with ai:", err);
-            alert("failed to create board: " + err.message);
-        }
+            console.error("err at creating chat with ai:", err);
+            alert("failed to create chat: " + err.message);
+        }finally {
+      setLoading(false);
+      setdisplay('');
+    }
     };
     return (
         <div className="AiChat">
@@ -79,7 +82,7 @@ export const AiForm = () => {
                                         <SvgMicro />
                                     </button>
                                     <button
-                                        onClick={() => {}}
+                                        onClick={() => {handleChatAI()}}
                                         className="MainChatContainerButton"
                                     >
                                         <SvgArrow />
