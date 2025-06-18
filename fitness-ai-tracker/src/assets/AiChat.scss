@@ -28,6 +28,12 @@
 .MainChatH2{
     font-size: 28px;
 }
+.Container{
+ margin-right: 2rem;
+    margin-left: 2rem;
+    
+    
+}
 .MainChatContainer{
     padding-inline:10px;
     padding-block: 10px;
@@ -35,8 +41,12 @@
   background-color: #222;
   border: none;
     border-radius: 24px;
-    margin-right: 2rem;
-    margin-left: 2rem;
+    max-width: 768px;
+    width: 100%;
+    text-align: center;
+    justify-self: center;
+    
+   
 }
 .MainChatInput{
     
