@@ -44,7 +44,11 @@ export const AiForm = () => {
 
     const API_BASE = "http://localhost:4000";
     const handleChatAI = async () => {
-        if (!text.trim()) return alert("fill the text form");
+        console.log("text", text);
+        const userText = text.trim();
+        if (!userText) return alert("fill the text form");
+        setAnswers((prev) => [...prev, { type: "user", payload: userText }]);
+        setText("");
         setLoading(true);
         try {
             const resp = await fetch(`${API_BASE}/ai/intake/`, {
@@ -53,12 +57,19 @@ export const AiForm = () => {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ text }),
+                body: JSON.stringify({ userText }),
             });
             const body = await resp.json();
             if (!resp.ok) throw new Error(body.error || "AI call failed");
 
-            setAnswers((prev) => [...prev, ...(body.answers as Answer[])]);
+          
+            const apiAnswers = Array.isArray(body.answers)
+                ? (body.answers as Answer[])
+                : [];
+            if (!Array.isArray(body.answers)) {
+                console.warn("Expected body.answers array, got:", body.answers);
+            }
+            setAnswers((prev) => [...prev, ...apiAnswers]);
         } catch (err: any) {
             console.error("Ai Error:", err);
             alert("Error" + err.message);
@@ -70,77 +81,137 @@ export const AiForm = () => {
         <div className="AiChat">
             {isLoggedIn && (
                 <>
-                    <nav className="sidebarLeft">2</nav>
-                     <div className="MainChat">
-            {hasHistory ? (
-              <>
-                {/*) Chat history */}
-                <div className="chat-history">
-                  {answers.map((ans, i) => {
-                    switch (ans.type) {
-                      case "user":
-                        return <div key={i} className="msgUser">{ans.payload}</div>;
-                      case "ack":
-                      case "chat":
-                      case "suggestion":
-                        return <div key={i} className={`msgAi ${ans.type}`}>{ans.payload}</div>;
-                      case "logs":
-                        return (
-                          <div key={i} className="logsEntry">
-                            <button onClick={() => setShowLogs(s => !s)}>
-                              {showLogs ? "Hide Logs" : "Show Logs"}
-                            </button>
-                            {showLogs && ans.payload.loaded.map(cat => (
-                              <div key={cat}>
-                                <h4>{cat}</h4>
-                                <ul>
-                                  {(ans.payload.logs[cat] || []).map((log,j) =>
-                                    <li key={j}>{log.summary ?? JSON.stringify(log)}</li>
-                                  )}
-                                </ul>
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      default:
-                        return null;
-                    }
-                  })}
-                  <div ref={endRef} />
-                </div>
+                    <nav className="sidebarLeft"></nav>
+                    <div className="MainChat">
+                        {hasHistory ? (
+                            <>
+                                {/*) Chat history */}
+                                <div className="chat-history">
+                                    {answers?.map((ans, i) => {
+                                        switch (ans.type) {
+                                            case "user":
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className="msgUser"
+                                                    >
+                                                        {ans.payload}
+                                                    </div>
+                                                );
+                                            case "ack":
+                                            case "chat":
+                                            case "suggestion":
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className={`msgAi ${ans.type}`}
+                                                    >
+                                                        {ans.payload}
+                                                    </div>
+                                                );
+                                            case "logs":
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className="logsEntry"
+                                                    >
+                                                        <button
+                                                            onClick={() =>
+                                                                setShowLogs(
+                                                                    (s) => !s
+                                                                )
+                                                            }
+                                                        >
+                                                            {showLogs
+                                                                ? "Hide Logs"
+                                                                : "Show Logs"}
+                                                        </button>
+                                                        {showLogs &&
+                                                            ans.payload.loaded.map(
+                                                                (cat) => (
+                                                                    <div
+                                                                        key={
+                                                                            cat
+                                                                        }
+                                                                    >
+                                                                        <h4>
+                                                                            {
+                                                                                cat
+                                                                            }
+                                                                        </h4>
+                                                                        <ul>
+                                                                            {(
+                                                                                ans
+                                                                                    .payload
+                                                                                    .logs[
+                                                                                    cat
+                                                                                ] ||
+                                                                                []
+                                                                            ).map(
+                                                                                (
+                                                                                    log,
+                                                                                    j
+                                                                                ) => (
+                                                                                    <li
+                                                                                        key={
+                                                                                            j
+                                                                                        }
+                                                                                    >
+                                                                                        {log.summary ??
+                                                                                            JSON.stringify(
+                                                                                                log
+                                                                                            )}
+                                                                                    </li>
+                                                                                )
+                                                                            )}
+                                                                        </ul>
+                                                                    </div>
+                                                                )
+                                                            )}
+                                                    </div>
+                                                );
+                                            default:
+                                                return null;
+                                        }
+                                    })}
+                                    <div ref={endRef} />
+                                </div>
 
-              
-                <div className="MainChatContainer">
-                  <input
-                    type="text"
-                    value={text}
-                    onChange={e => setText(e.target.value)}
-                    placeholder="Ask anything"
-                    className="MainChatInput"
-                    disabled={loading}
-                  />
-                  <div className="MainChatContainerBottonArea">
-                    <div>
-                      <button className="MainChatContainerButtonAdd">
-                        <SvgPlus />
-                      </button>
-                    </div>
-                    <div>
-                      <button className="MainChatContainerButtonAdd">
-                        <SvgMicro />
-                      </button>
-                      <button
-                        onClick={handleChatAI}
-                        className="MainChatContainerButton"
-                        disabled={loading || !text.trim()}
-                      >
-                        <SvgArrow />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </>
-            ) : (
+                                <div className="MainChatContainer">
+                                    <input
+                                        type="text"
+                                        value={text}
+                                        onChange={(e) =>
+                                            setText(e.target.value)
+                                        }
+                                        placeholder="Ask anything"
+                                        className="MainChatInput"
+                                        disabled={loading}
+                                    />
+                                    <div className="MainChatContainerBottonArea">
+                                        <div>
+                                            <button className="MainChatContainerButtonAdd">
+                                                <SvgPlus />
+                                            </button>
+                                        </div>
+                                        <div>
+                                            <button className="MainChatContainerButtonAdd">
+                                                <SvgMicro />
+                                            </button>
+                                            <button
+                                                onClick={handleChatAI}
+                                                className="MainChatContainerButton"
+                                                disabled={
+                                                    loading || !text.trim()
+                                                }
+                                            >
+                                                <SvgArrow />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
                             <>
                                 <h2 className="MainChatH2">
                                     Ready when you are.
