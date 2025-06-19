@@ -1,13 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/authmiddleware';
-import FoodItem, { IFoodItem } from '../models/FoodItem';
-import { z } from 'zod';
-import { validate } from '../utils/validate';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
-import mongoose from 'mongoose';
 import { extractFieldsAdaptive } from '../services/aiPipeline';
-
 import { AIEntry } from '../models/AIEntry';
 import { LifeLog } from '../models/LifeLog';
 import LearningSession from '../models/LearningSeason';
@@ -15,37 +10,56 @@ import FoodLog from '../models/FoodLog';
 import CompoundInjection from '../models/CompoundInjection';
 
 dotenv.config();
-
 if (!process.env.OPENAI_API_KEY) {
   throw new Error('Missing OPENAI_API_KEY in environment');
 }
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const router = Router();
 router.use(authMiddleware);
 
-router.post('/', async (req: Request, res: Response): Promise<any> => {
+function buildSuggestionPrompt(parsed: Record<string, any>): string {
+  // Turn each value into a natural-language fragment
+  const parts = Object.entries(parsed)
+    .map(([key, val]) => {
+      if (val == null) return null;
+      // For simple primitives:
+      if (typeof val === 'string' || typeof val === 'number') {
+        // e.g. "studyMinutes: 45m..."
+        return `${key.replace(/([A-Z])/g, ' $1')}: ${val}`;
+      }
+      // For objects (e.g. workout, gaming):
+      return `${key.replace(/([A-Z])/g, ' $1')}: ${JSON.stringify(val)}`;
+    })
+    .filter(Boolean);
+
+  return (
+    `You are an upbeat personal coach. The user just logged: ` +
+    parts!.join(', ') +
+    `. Give one concise, motivational tip that references at least one of these items.`
+  );
+}
+
+router.post('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = req.user!.id;
-    const rawText = String(req.body.text || '').trim();
+    const rawText = (req.body.text || '').trim();
     if (!rawText) {
-      return res.status(400).json({ error: '`text` field is required.' });
+      res.status(400).json({ error: '`text` field is required.' });
+      return;
     }
 
-    const verbose = req.query.verbose === 'true';
+    // 1) Extract structured fields
+    const { parsed, usage, raw } = await extractFieldsAdaptive(rawText, { verbose: false });
 
-    const { parsed, usage, raw } = await extractFieldsAdaptive(rawText, { verbose });
-
+    // 2) Save the raw + parsed to AIEntry Schema!
     const aiEntry = await AIEntry.create({
       userId,
       rawText,
       ...parsed,
       usage,
       responseLength: raw.length,
-      verbose,
+      verbose: false,
     });
 
     const today = new Date();
@@ -53,64 +67,36 @@ router.post('/', async (req: Request, res: Response): Promise<any> => {
     if (parsed.workout) {
       await LifeLog.updateOne(
         { userId, date: today },
-        {
-          $set: {
-            training: {
-              type: parsed.workout.type,
-              weightKg: parsed.workout.weightKg,
-              reps: parsed.workout.reps,
-              time: parsed.workout.time,
-            },
-          },
-        },
+        { $set: { training: parsed.workout } },
         { upsert: true }
       );
     }
-
     if (parsed.studyMinutes != null) {
       const session = await LearningSession.create({
         userId,
-        Minutes: parsed.studyMinutes,
+        minutes: parsed.studyMinutes,
         date: today,
       });
       await LifeLog.updateOne(
-        {
-          userId,
-          date: today,
-        },
+        { userId, date: today },
         { $push: { studySessions: session._id } },
         { upsert: true }
       );
     }
-
     if (parsed.foodPlan) {
-      await FoodLog.create({
-        userId,
-        planText: parsed.foodPlan,
-        date: today,
-      });
+      await FoodLog.create({ userId, planText: parsed.foodPlan, date: today });
     }
     if (parsed.gaming) {
       await LifeLog.updateOne(
         { userId, date: today },
-        {
-          $push: {
-            gamingSessions: {
-              game: parsed.gaming.game,
-              minutes: parsed.gaming.minutes,
-              time: parsed.gaming.time,
-            },
-          },
-        },
+        { $push: { gamingSessions: parsed.gaming } },
         { upsert: true }
       );
     }
     if (parsed.injection) {
       const inj = await CompoundInjection.create({
         userId,
-        compound: parsed.injection.compound,
-        doseMg: parsed.injection.doseMg,
-        time: parsed.injection.time,
+        ...parsed.injection,
       });
       await LifeLog.updateOne(
         { userId, date: today },
@@ -119,50 +105,23 @@ router.post('/', async (req: Request, res: Response): Promise<any> => {
       );
     }
 
-    let message = 'updated boss';
-    if (parsed.workout) {
-      const w = parsed.workout;
-      message =
-        `logged your ${w.type}` +
-        (w.weightKg ? `at ${w.weightKg}KGX${w.reps}` : '') +
-        (w.time ? `${w.time}` : '');
-    }
+    // Build the generic "loaded"
+    const loaded = Object.entries(parsed) // [key, value]
+      .filter(([_, v]) => v != null) // keep only present fields
+      .map(([k]) => k); // extract the key names
+    const logsPayload = parsed;
 
-    const loaded: string[] = [];
-    const logsPayload: Record<string, any[]> = {};
-    if (parsed.workout) {
-      loaded.push('workout');
-      logsPayload.workout = [
-        /* fetch or include summary for UI */
-      ];
-    }
-    if (parsed.workout) {
-      loaded.push('studyMinutes');
-      logsPayload.studyMinutes = [
-        /* fetch or include summary for UI */
-      ];
-    }
-    if (parsed.workout) {
-      loaded.push('foodPlan');
-      logsPayload.foodPlan = [
-        /* fetch or include summary for UI */
-      ];
-    }
+    // answers
+    const answers: Array<{ type: string; payload: any }> = [];
 
-    if (parsed.workout) {
-      loaded.push('gaming');
-      logsPayload.gaming = [
-        /* fetch or include summary for UI */
-      ];
-    }
-    if (parsed.workout) {
-      loaded.push('injection');
-      logsPayload.injection = [
-        /* fetch or include summary for UI */
-      ];
-    }
+    // Acknowledgement
+    const ackMsg = loaded.length ? `Logged: ${loaded.join(', ')}` : 'Nothing to log.';
+    answers.push({ type: 'ack', payload: ackMsg });
 
-    const chatAnswers: { type: 'chat'; payload: string }[] = [];
+    //  Logs front-end can render each value from logsPayload
+    answers.push({ type: 'logs', payload: { loaded, logs: logsPayload } });
+
+    // Optional chat reply if question
     if (rawText.endsWith('?')) {
       const chat = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
@@ -172,38 +131,32 @@ router.post('/', async (req: Request, res: Response): Promise<any> => {
         ],
         max_tokens: 150,
       });
-      const aiMsg = chat.choices?.[0]?.message?.content?.trim() || '';
-      chatAnswers.push({ type: 'chat', payload: aiMsg });
+      const chatMsg = chat.choices?.[0]?.message?.content?.trim() || '';
+      answers.push({ type: 'chat', payload: chatMsg });
     }
 
+    //coaching
+    const prompt = buildSuggestionPrompt(parsed);
     const coach = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
+      temperature: 0.7,
       messages: [
-        { role: 'system', content: 'You are a personal AI coach,.' },
-        {
-          role: 'assistant',
-          content: `Based on today's logs (${loaded.join(', ')}), give one concise suggestion.`,
-        },
+        { role: 'system', content: 'You are an energetic life coach.' },
+        { role: 'user', content: prompt },
       ],
-      max_tokens: 150,
+      max_tokens: 100,
     });
     const suggestion = coach.choices?.[0]?.message?.content?.trim() || '';
-    
-    const answer = [
-       { type: 'ack',        payload: message },
-       { type: 'logs',       payload: { loaded, logs: logsPayload } },
-        ...chatAnswers,{ type: 'suggestion', payload: suggestion }
+    answers.push({ type: 'suggestion', payload: suggestion });
 
-    ]
-
-    console.log(aiEntry._id, message, 'ai answer');
-    return res.status(201).json({
-      aiEntryId: aiEntry._id,
-      message,
-    });
+    // Return the unified answers array
+    console.log(aiEntry._id, answers, 'AI answers');
+    res.status(201).json({ aiEntryId: aiEntry._id, answers });
+    return;
   } catch (err) {
-    console.error('Error in POST /api/autoBoard:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('Error in POST /api/ai/intake:', err);
+    res.status(500).json({ error: 'Internal server error' });
+    return;
   }
 });
 
