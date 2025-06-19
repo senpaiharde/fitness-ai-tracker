@@ -173,9 +173,29 @@ router.post('/', async (req: Request, res: Response): Promise<any> => {
         max_tokens: 150,
       });
       const aiMsg = chat.choices?.[0]?.message?.content?.trim() || '';
-       chatAnswers.push({ type: 'chat', payload: aiMsg });
+      chatAnswers.push({ type: 'chat', payload: aiMsg });
     }
-   
+
+    const coach = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: 'You are a personal AI coach,.' },
+        {
+          role: 'assistant',
+          content: `Based on today's logs (${loaded.join(', ')}), give one concise suggestion.`,
+        },
+      ],
+      max_tokens: 150,
+    });
+    const suggestion = coach.choices?.[0]?.message?.content?.trim() || '';
+    
+    const answer = [
+       { type: 'ack',        payload: message },
+       { type: 'logs',       payload: { loaded, logs: logsPayload } },
+        ...chatAnswers,{ type: 'suggestion', payload: suggestion }
+
+    ]
+
     console.log(aiEntry._id, message, 'ai answer');
     return res.status(201).json({
       aiEntryId: aiEntry._id,
