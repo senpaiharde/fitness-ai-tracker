@@ -6,13 +6,13 @@ import { validate } from '../utils/validate';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
 import mongoose from 'mongoose';
-import { extractFieldsAdaptive } from '../services/aiPipeline.js';
+import { extractFieldsAdaptive } from '../services/aiPipeline';
 
-import { AIEntry }           from '../models/AIEntry.js';
-import { LifeLog } from '../models/LifeLog.js';
+import { AIEntry } from '../models/AIEntry';
+import { LifeLog } from '../models/LifeLog';
 import LearningSession from '../models/LearningSeason';
-import FoodLog from '../models/FoodLog.js';
-import CompoundInjection from '../models/CompoundInjection.js';
+import FoodLog from '../models/FoodLog';
+import CompoundInjection from '../models/CompoundInjection';
 
 dotenv.config();
 
@@ -128,6 +128,55 @@ router.post('/', async (req: Request, res: Response): Promise<any> => {
         (w.time ? `${w.time}` : '');
     }
 
+    const loaded: string[] = [];
+    const logsPayload: Record<string, any[]> = {};
+    if (parsed.workout) {
+      loaded.push('workout');
+      logsPayload.workout = [
+        /* fetch or include summary for UI */
+      ];
+    }
+    if (parsed.workout) {
+      loaded.push('studyMinutes');
+      logsPayload.studyMinutes = [
+        /* fetch or include summary for UI */
+      ];
+    }
+    if (parsed.workout) {
+      loaded.push('foodPlan');
+      logsPayload.foodPlan = [
+        /* fetch or include summary for UI */
+      ];
+    }
+
+    if (parsed.workout) {
+      loaded.push('gaming');
+      logsPayload.gaming = [
+        /* fetch or include summary for UI */
+      ];
+    }
+    if (parsed.workout) {
+      loaded.push('injection');
+      logsPayload.injection = [
+        /* fetch or include summary for UI */
+      ];
+    }
+
+    const chatAnswers: { type: 'chat'; payload: string }[] = [];
+    if (rawText.endsWith('?')) {
+      const chat = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: 'You are a helpful coach.' },
+          { role: 'user', content: rawText },
+        ],
+        max_tokens: 150,
+      });
+      const aiMsg = chat.choices?.[0]?.message?.content?.trim() || '';
+       chatAnswers.push({ type: 'chat', payload: aiMsg });
+    }
+   
+    console.log(aiEntry._id, message, 'ai answer');
     return res.status(201).json({
       aiEntryId: aiEntry._id,
       message,

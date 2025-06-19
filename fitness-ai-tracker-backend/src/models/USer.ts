@@ -1,8 +1,8 @@
-// src/models/User.ts
+
 import mongoose, { Schema, Types } from 'mongoose';
 import './ScheduleEntry';
 
-/* ---------- sub-document: User.ts ---------- */
+
 
 
 export interface IUser extends mongoose.Document {
