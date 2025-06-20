@@ -44,25 +44,26 @@ export const AiForm = () => {
 
     const API_BASE = "http://localhost:4000";
     const handleChatAI = async () => {
-        console.log("text", text);
         const userText = text.trim();
         if (!userText) return alert("fill the text form");
+
+       
         setAnswers((prev) => [...prev, { type: "user", payload: userText }]);
         setText("");
         setLoading(true);
+
         try {
-            const resp = await fetch(`${API_BASE}/ai/intake/`, {
+            const resp = await fetch(`${API_BASE}/ai/intake`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ userText }),
+                body: JSON.stringify({ text: userText }),
             });
             const body = await resp.json();
             if (!resp.ok) throw new Error(body.error || "AI call failed");
 
-          
             const apiAnswers = Array.isArray(body.answers)
                 ? (body.answers as Answer[])
                 : [];
@@ -71,12 +72,16 @@ export const AiForm = () => {
             }
             setAnswers((prev) => [...prev, ...apiAnswers]);
         } catch (err: any) {
-            console.error("Ai Error:", err);
-            alert("Error" + err.message);
+            console.error("AI error:", err);
+            alert("Error: " + err.message);
         } finally {
             setLoading(false);
         }
     };
+
+    if (!isLoggedIn) {
+        return <p>Please log in to use the AI Tracker.</p>;
+    }
     return (
         <div className="AiChat">
             {isLoggedIn && (
