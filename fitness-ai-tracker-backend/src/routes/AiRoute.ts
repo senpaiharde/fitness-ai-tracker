@@ -122,26 +122,36 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
     answers.push({ type: 'logs', payload: { loaded, logs: logsPayload } });
 
     // Optional chat reply if question
-    if (rawText.endsWith('?')) {
+    if (loaded.length === 0) {
       const chat = await openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are a helpful coach.' },
+          { role: 'system', content: 'You are Jarvis, a friendly personal assistant.' },
+          { role: 'user', content: rawText },
+        ],
+        max_tokens: 50,
+      });
+      const chatMsg = chat.choices?.[0]?.message?.content?.trim() || '';
+      answers.push({ type: 'chat', payload: chatMsg });
+    } else if (rawText.endsWith('?')) {
+      const chat = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: 'You are an professional successful coach.' },
           { role: 'user', content: rawText },
         ],
         max_tokens: 150,
       });
       const chatMsg = chat.choices?.[0]?.message?.content?.trim() || '';
       answers.push({ type: 'chat', payload: chatMsg });
-    }
-
+        }
     //coaching
     const prompt = buildSuggestionPrompt(parsed);
     const coach = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       temperature: 0.7,
       messages: [
-        { role: 'system', content: 'You are an energetic life coach.' },
+        { role: 'system', content: 'You are an professional successful coach.' },
         { role: 'user', content: prompt },
       ],
       max_tokens: 100,
