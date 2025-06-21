@@ -47,7 +47,6 @@ export const AiForm = () => {
         const userText = text.trim();
         if (!userText) return alert("fill the text form");
 
-       
         setAnswers((prev) => [...prev, { type: "user", payload: userText }]);
         setText("");
         setLoading(true);
@@ -192,6 +191,14 @@ export const AiForm = () => {
                                         placeholder="Ask anything"
                                         className="MainChatInput"
                                         disabled={loading}
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === "Enter" &&
+                                                text.trim().length > 0
+                                            ) {
+                                                handleChatAI();
+                                            }
+                                        }}
                                     />
                                     <div className="MainChatContainerBottonArea">
                                         <div>
@@ -229,6 +236,14 @@ export const AiForm = () => {
                                             onChange={(e) =>
                                                 setText(e.target.value)
                                             }
+                                            onKeyDown={(e) => {
+                                                if (
+                                                    e.key === "Enter" &&
+                                                    text.trim().length > 0
+                                                ) {
+                                                    handleChatAI();
+                                                }
+                                            }}
                                             placeholder="Ask anything"
                                             className="MainChatInput"
                                         />
