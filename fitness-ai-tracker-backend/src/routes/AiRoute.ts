@@ -140,7 +140,7 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
           { role: 'system', content: 'You are an professional successful coach.' },
           { role: 'user', content: rawText },
         ],
-        max_tokens: 150,
+        max_tokens: 50,
       });
       const chatMsg = chat.choices?.[0]?.message?.content?.trim() || '';
       answers.push({ type: 'chat', payload: chatMsg });
