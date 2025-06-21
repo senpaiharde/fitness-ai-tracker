@@ -164,7 +164,7 @@ Use 'no_coaching' if it's just a normal log (e.g. meals, workout, hours) with no
 
     // Only trigger coach if needed
     if (shouldCoach) {
-      const suggestion = await generateCoachingTip(parsed);
+      const suggestion = await generateCoachingTip(parsed,rawText);
       answers.push({ type: 'suggestion', payload: suggestion });
     }
     // Return the unified answers array
