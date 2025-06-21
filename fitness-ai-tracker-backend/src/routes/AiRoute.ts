@@ -8,6 +8,7 @@ import { LifeLog } from '../models/LifeLog';
 import LearningSession from '../models/LearningSeason';
 import FoodLog from '../models/FoodLog';
 import CompoundInjection from '../models/CompoundInjection';
+import { generateCoachingTip } from '../services/coatch';
 
 dotenv.config();
 if (!process.env.OPENAI_API_KEY) {
@@ -133,32 +134,39 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       });
       const chatMsg = chat.choices?.[0]?.message?.content?.trim() || '';
       answers.push({ type: 'chat', payload: chatMsg });
-    } else if (rawText.endsWith('?')) {
-      const chat = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: 'You are an professional successful coach.' },
-          { role: 'user', content: rawText },
-        ],
-        max_tokens: 50,
-      });
-      const chatMsg = chat.choices?.[0]?.message?.content?.trim() || '';
-      answers.push({ type: 'chat', payload: chatMsg });
-        }
+    }
     //coaching
-    const prompt = buildSuggestionPrompt(parsed);
-    const coach = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      temperature: 0.7,
-      messages: [
-        { role: 'system', content: 'You are an professional successful coach.' },
-        { role: 'user', content: prompt },
-      ],
-      max_tokens: 100,
-    });
-    const suggestion = coach.choices?.[0]?.message?.content?.trim() || '';
-    answers.push({ type: 'suggestion', payload: suggestion });
+    
+    const classificationPrompt = `
+You are a classification assistant. The user just submitted this message:
 
+"${rawText}"
+
+Respond only with one word: 'coaching' or 'no_coaching'.
+
+Use 'coaching' if the user sounds emotional, overwhelmed, uncertain, expressing stress, asking for advice, or reflecting.
+
+Use 'no_coaching' if it's just a normal log (e.g. meals, workout, hours) with no emotional weight.
+`;
+
+    const intentCheck = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      temperature: 0,
+      max_tokens: 5,
+      messages: [
+        { role: 'system', content: 'You are a razor-sharp classifier for coaching intent.' },
+        { role: 'user', content: classificationPrompt },
+      ],
+    });
+
+    const coachingDecision = intentCheck.choices?.[0]?.message?.content?.trim().toLowerCase();
+    const shouldCoach = coachingDecision === 'coaching';
+
+    // Only trigger coach if needed
+    if (shouldCoach) {
+      const suggestion = await generateCoachingTip(parsed);
+      answers.push({ type: 'suggestion', payload: suggestion });
+    }
     // Return the unified answers array
     console.log(aiEntry._id, answers, 'AI answers');
     res.status(201).json({ aiEntryId: aiEntry._id, answers });

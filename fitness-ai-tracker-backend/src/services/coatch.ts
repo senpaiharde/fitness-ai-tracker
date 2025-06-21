@@ -15,10 +15,10 @@ export async function generateCoachingTip(parsed: Record<string, any>) {
   const prompt = `
 You're a brutally honest, high-level human performance coach with deep psychological insight.
 
-Here’s a raw human log. It may be chaotic, expressive, emotional, incomplete, or totally freeform — analyze it deeply:
+Here's a raw human log. It may be chaotic, expressive, emotional, incomplete, or totally freeform — analyze it deeply:
 → ${parts.join(', ')}
 
-Respond with a clear, powerful insight or mindset reframe based on what they logged. Don’t waste words — speak truth.
+Respond with a clear, powerful insight or mindset reframe based on what they logged. Don't waste words — speak truth.
 `;
 
   const response = await openai.chat.completions.create({
